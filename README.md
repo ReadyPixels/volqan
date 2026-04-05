@@ -1,6 +1,10 @@
-# Volqan
+<p align="center">
+  <img src="logo.png" alt="Volqan" width="120" />
+</p>
 
-> The universal open-source application framework
+<h1 align="center">Volqan</h1>
+
+<p align="center">The universal open-source application framework</p>
 
 [![License: Open Core Attribution License v1.0](https://img.shields.io/badge/license-Open%20Core%20Attribution%20License%20v1.0-0f766e.svg)](./LICENSE-ATTRIBUTION.md)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22-3c873a.svg)](https://nodejs.org)
