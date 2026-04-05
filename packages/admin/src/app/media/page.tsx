@@ -341,7 +341,7 @@ export default function MediaPage() {
                       variant="ghost"
                       size="icon"
                       className="w-7 h-7 opacity-0 group-hover:opacity-100 text-[hsl(var(--destructive))]"
-                      onClick={(e) => { e.stopPropagation(); setFiles((prev) => prev.filter((f) => f.id !== file.id)); }}
+                      onClick={(e: any) => { e.stopPropagation(); setFiles((prev) => prev.filter((f) => f.id !== file.id)); }}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>

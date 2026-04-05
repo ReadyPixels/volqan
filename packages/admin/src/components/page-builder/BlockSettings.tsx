@@ -90,7 +90,7 @@ function FieldInput({ field, value, onChange }: FieldInputProps) {
           value={String(value ?? field.defaultValue ?? '')}
           onChange={(e) => onChange(e.target.value)}
         >
-          {field.options?.map((opt) => (
+          {field.options?.map((opt: any) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
             </option>
@@ -114,14 +114,14 @@ function FieldInput({ field, value, onChange }: FieldInputProps) {
             placeholder="#000000"
             onChange={(e) => onChange(e.target.value)}
           />
-          {value && (
+          {value ? (
             <button
               onClick={() => onChange('')}
               className="text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
             >
               <X className="w-3.5 h-3.5" />
             </button>
-          )}
+          ) : null}
         </div>
       );
 
@@ -203,10 +203,10 @@ export function BlockSettings({ block, onUpdate, onDelete, onClose }: BlockSetti
   }
 
   const contentFields = definition?.schema.fields.filter(
-    (f) => !f.group || f.group === 'content',
+    (f: any) => !f.group || f.group === 'content',
   ) ?? [];
-  const styleFieldsSchema = definition?.schema.fields.filter((f) => f.group === 'style') ?? [];
-  const advancedFieldsSchema = definition?.schema.fields.filter((f) => f.group === 'advanced') ?? [];
+  const styleFieldsSchema = definition?.schema.fields.filter((f: any) => f.group === 'style') ?? [];
+  const advancedFieldsSchema = definition?.schema.fields.filter((f: any) => f.group === 'advanced') ?? [];
 
   return (
     <aside className="flex flex-col h-full bg-[hsl(var(--card))] border-l border-[hsl(var(--border))] w-72 flex-shrink-0">
@@ -231,7 +231,7 @@ export function BlockSettings({ block, onUpdate, onDelete, onClose }: BlockSetti
         {/* Content fields */}
         {contentFields.length > 0 && (
           <SettingsSection title="Content" defaultOpen>
-            {contentFields.map((field) => (
+            {contentFields.map((field: any) => (
               <div key={field.key}>
                 <label className="block text-xs font-medium text-[hsl(var(--foreground))] mb-1">
                   {field.label}
@@ -243,7 +243,7 @@ export function BlockSettings({ block, onUpdate, onDelete, onClose }: BlockSetti
                 <FieldInput
                   field={field}
                   value={block.props[field.key]}
-                  onChange={(v) => updateProp(field.key, v)}
+                  onChange={(v: any) => updateProp(field.key, v)}
                 />
               </div>
             ))}
@@ -252,7 +252,7 @@ export function BlockSettings({ block, onUpdate, onDelete, onClose }: BlockSetti
 
         {/* Style: schema fields + base style props */}
         <SettingsSection title="Style" defaultOpen={false}>
-          {styleFieldsSchema.map((field) => (
+          {styleFieldsSchema.map((field: any) => (
             <div key={field.key}>
               <label className="block text-xs font-medium text-[hsl(var(--foreground))] mb-1">
                 {field.label}
@@ -260,18 +260,18 @@ export function BlockSettings({ block, onUpdate, onDelete, onClose }: BlockSetti
               <FieldInput
                 field={field}
                 value={block.props[field.key] ?? block.style[field.key as keyof BlockStyleProps]}
-                onChange={(v) => updateProp(field.key, v)}
+                onChange={(v: any) => updateProp(field.key, v)}
               />
             </div>
           ))}
-          {STYLE_FIELDS.map((sf) => (
-            <div key={sf.key}>
+          {STYLE_FIELDS.map((sf: any) => (
+            <div key={String(sf.key)}>
               <label className="block text-xs font-medium text-[hsl(var(--foreground))] mb-1">
                 {sf.label}
               </label>
               <FieldInput
                 field={{ key: sf.key, label: sf.label, type: sf.type }}
-                value={block.style[sf.key]}
+                value={(block.style as any)[sf.key]}
                 onChange={(v) => updateStyle(sf.key, String(v))}
               />
             </div>
@@ -280,7 +280,7 @@ export function BlockSettings({ block, onUpdate, onDelete, onClose }: BlockSetti
 
         {/* Advanced */}
         <SettingsSection title="Advanced" defaultOpen={false}>
-          {advancedFieldsSchema.map((field) => (
+          {advancedFieldsSchema.map((field: any) => (
             <div key={field.key}>
               <label className="block text-xs font-medium text-[hsl(var(--foreground))] mb-1">
                 {field.label}
@@ -288,7 +288,7 @@ export function BlockSettings({ block, onUpdate, onDelete, onClose }: BlockSetti
               <FieldInput
                 field={field}
                 value={block.props[field.key]}
-                onChange={(v) => updateProp(field.key, v)}
+                onChange={(v: any) => updateProp(field.key, v)}
               />
             </div>
           ))}

@@ -162,7 +162,7 @@ export class LocalStorageProvider implements StorageProvider {
       ? path.join(this.uploadDir, sanitizeFolderPath(folder))
       : this.uploadDir;
 
-    let entries: fs.Dirent[];
+    let entries: any[];
     try {
       entries = await fs.readdir(targetDir, { withFileTypes: true });
     } catch (err) {

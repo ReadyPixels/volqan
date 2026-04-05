@@ -86,8 +86,8 @@ export class SchemaBuilder {
         name: definition.name,
         slug: definition.slug,
         description: definition.description ?? null,
-        fields: definition.fields as unknown as import('@prisma/client').Prisma.InputJsonValue,
-        settings: definition.settings as unknown as import('@prisma/client').Prisma.InputJsonValue,
+        fields: definition.fields as unknown,
+        settings: definition.settings as unknown,
       },
     });
 
@@ -116,7 +116,7 @@ export class SchemaBuilder {
 
     const record = await this.prisma.contentType.update({
       where: { slug },
-      data: data as Parameters<typeof this.prisma.contentType.update>[0]['data'],
+      data: data as any,
     });
 
     return this._recordToDefinition(record);
@@ -156,7 +156,7 @@ export class SchemaBuilder {
    */
   async listContentTypes(): Promise<ContentTypeDefinition[]> {
     const records = await this.prisma.contentType.findMany({ orderBy: { name: 'asc' } });
-    return records.map((r) => this._recordToDefinition(r));
+    return records.map((r: any) => this._recordToDefinition(r));
   }
 
   // -------------------------------------------------------------------------

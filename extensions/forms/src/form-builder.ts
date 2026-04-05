@@ -39,6 +39,8 @@ export interface FormFieldValidation {
   accept?: string[];
   /** Maximum file size in bytes for file fields. */
   maxFileSize?: number;
+  /** Custom error message shown when validation fails. */
+  message?: string;
 }
 
 // ---------------------------------------------------------------------------

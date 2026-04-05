@@ -219,7 +219,7 @@ export function createContentTypeCreateHandler(
       if (!body) return badRequest('Request body is required') as NextResponse;
 
       const definition = await schemaBuilder.createContentType(
-        body as Parameters<SchemaBuilder['createContentType']>[0],
+        body as unknown as Parameters<SchemaBuilder['createContentType']>[0],
       );
       return created(definition) as NextResponse;
     } catch (err) {

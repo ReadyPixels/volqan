@@ -347,15 +347,15 @@ export async function loadConfig(
 
   // 2. Merge config file
   const fileConfig = await loadConfigFile();
-  config = deepMerge(config as AnyObject, fileConfig as AnyObject) as VolqanConfig;
+  config = deepMerge(config as any, fileConfig as any) as unknown as VolqanConfig;
 
   // 3. Merge env var overrides
   const envOverrides = loadEnvOverrides();
-  config = deepMerge(config as AnyObject, envOverrides as AnyObject) as VolqanConfig;
+  config = deepMerge(config as any, envOverrides as any) as unknown as VolqanConfig;
 
   // 4. Merge programmatic overrides (highest priority)
   if (overrides) {
-    config = deepMerge(config as AnyObject, overrides as AnyObject) as VolqanConfig;
+    config = deepMerge(config as any, overrides as any) as unknown as VolqanConfig;
   }
 
   // 5. Validate

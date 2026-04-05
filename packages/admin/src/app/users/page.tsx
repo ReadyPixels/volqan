@@ -92,7 +92,7 @@ function InviteDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
             required
             placeholder="teammate@example.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e: any) => setEmail(e.target.value)}
           />
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Role</label>
@@ -187,7 +187,7 @@ export default function UsersPage() {
             <Input
               placeholder="Search users..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e: any) => setSearchQuery(e.target.value)}
               className="max-w-xs"
             />
           </div>

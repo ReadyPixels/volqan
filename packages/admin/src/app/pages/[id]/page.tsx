@@ -119,14 +119,14 @@ export default function EditPagePage() {
   async function handleSave(blocks: Block[], meta: Page['meta']) {
     // In production: PATCH /api/pages/:id
     if (!page) return;
-    setPage((p) => p ? { ...p, blocks, meta, updatedAt: new Date() } : p);
+    setPage((p: any) => p ? { ...p, blocks, meta, updatedAt: new Date() } : p);
     await new Promise((r) => setTimeout(r, 600));
   }
 
   async function handlePublish() {
     // In production: PATCH /api/pages/:id { status: 'published' }
     if (!page) return;
-    setPage((p) => p ? { ...p, status: 'published', publishedAt: new Date() } : p);
+    setPage((p: any) => p ? { ...p, status: 'published', publishedAt: new Date() } : p);
     await new Promise((r) => setTimeout(r, 400));
   }
 

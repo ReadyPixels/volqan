@@ -140,7 +140,12 @@ export async function resolveAuth(
 /**
  * Role hierarchy from lowest (VIEWER) to highest (SUPER_ADMIN).
  */
-const ROLE_HIERARCHY: UserRole[] = ['VIEWER', 'EDITOR', 'ADMIN', 'SUPER_ADMIN'];
+const ROLE_HIERARCHY: UserRole[] = [
+  'VIEWER' as UserRole,
+  'EDITOR' as UserRole,
+  'ADMIN' as UserRole,
+  'SUPER_ADMIN' as UserRole,
+];
 
 /**
  * Returns true if `userRole` is at least as privileged as `requiredRole`.

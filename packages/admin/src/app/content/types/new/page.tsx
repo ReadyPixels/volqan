@@ -193,7 +193,7 @@ export default function NewContentTypePage() {
             required
             placeholder="e.g. Blog Post, Product, Event"
             value={typeName}
-            onChange={(e) => setTypeName(e.target.value)}
+            onChange={(e: any) => setTypeName(e.target.value)}
             error={errors.name}
             hint="The display name of this content type."
           />
@@ -201,7 +201,7 @@ export default function NewContentTypePage() {
             label="Description"
             placeholder="Brief description of what this content type is for"
             value={typeDescription}
-            onChange={(e) => setTypeDescription(e.target.value)}
+            onChange={(e: any) => setTypeDescription(e.target.value)}
           />
           {typeName && (
             <div className="flex items-center gap-2 text-sm">

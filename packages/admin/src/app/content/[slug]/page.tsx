@@ -75,7 +75,7 @@ export default function ContentEntriesPage() {
       key: 'title',
       header: 'Title',
       sortable: true,
-      accessor: (row) => (
+      accessor: (row: any) => (
         <Link
           href={`/content/${slug}/${row.id}`}
           className="font-medium text-[hsl(var(--foreground))] hover:text-[hsl(var(--primary))] transition-colors"
@@ -89,7 +89,7 @@ export default function ContentEntriesPage() {
       header: 'Status',
       sortable: true,
       width: '120px',
-      accessor: (row) => (
+      accessor: (row: any) => (
         <Badge variant={STATUS_BADGE[row.status] ?? 'default'}>
           {row.status}
         </Badge>
@@ -100,7 +100,7 @@ export default function ContentEntriesPage() {
       header: 'Author',
       sortable: true,
       width: '140px',
-      accessor: (row) => (
+      accessor: (row: any) => (
         <span className="text-[hsl(var(--muted-foreground))]">{row.author}</span>
       ),
     },
@@ -108,7 +108,7 @@ export default function ContentEntriesPage() {
       key: 'updatedAt',
       header: 'Updated',
       width: '120px',
-      accessor: (row) => (
+      accessor: (row: any) => (
         <span className="text-[hsl(var(--muted-foreground))] text-xs">{row.updatedAt}</span>
       ),
     },
@@ -116,7 +116,7 @@ export default function ContentEntriesPage() {
       key: 'actions',
       header: '',
       width: '100px',
-      accessor: (row) => (
+      accessor: (row: any) => (
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <Link href={`/content/${slug}/${row.id}`}>
             <Button variant="ghost" size="icon" className="w-7 h-7" aria-label="Edit">
@@ -128,9 +128,9 @@ export default function ContentEntriesPage() {
             size="icon"
             className="w-7 h-7 text-[hsl(var(--destructive))]"
             aria-label="Delete"
-            onClick={(e) => {
+            onClick={(e: any) => {
               e.stopPropagation();
-              setData((prev) => prev.filter((e) => e.id !== row.id));
+              setData((prev) => prev.filter((e: any) => e.id !== row.id));
             }}
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -177,12 +177,12 @@ export default function ContentEntriesPage() {
       <DataTable
         data={filteredData}
         columns={columns}
-        rowKey={(r) => r.id}
+        rowKey={(r: any) => r.id}
         searchable
         searchPlaceholder={`Search ${typeName.toLowerCase()} entries...`}
         onSearch={setSearchQuery}
         selectable
-        onDeleteSelected={(ids) => setData((prev) => prev.filter((e) => !ids.includes(e.id)))}
+        onDeleteSelected={(ids: any) => setData((prev) => prev.filter((e: any) => !ids.includes(e.id)))}
         emptyMessage={`No ${typeName.toLowerCase()} entries found.`}
       />
     </div>

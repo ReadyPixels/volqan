@@ -160,7 +160,7 @@ export default function NewContentEntryPage() {
                     key={field.key}
                     field={field}
                     value={formData[field.key]}
-                    onChange={(v) => setFormData((prev) => ({ ...prev, [field.key]: v }))}
+                    onChange={(v: any) => setFormData((prev) => ({ ...prev, [field.key]: v }))}
                     error={errors[field.key]}
                   />
                 ))}
@@ -182,7 +182,7 @@ export default function NewContentEntryPage() {
                     key={field.key}
                     field={field}
                     value={formData[field.key]}
-                    onChange={(v) => setFormData((prev) => ({ ...prev, [field.key]: v }))}
+                    onChange={(v: any) => setFormData((prev) => ({ ...prev, [field.key]: v }))}
                     error={errors[field.key]}
                   />
                 ))}
