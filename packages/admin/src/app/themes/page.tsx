@@ -12,6 +12,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import { buildMarketplaceURL } from '@volqan/core';
+
+// ---------------------------------------------------------------------------
+// Deep link URL
+// ---------------------------------------------------------------------------
+
+const MARKETPLACE_URL = buildMarketplaceURL('theme');
 
 // ---------------------------------------------------------------------------
 // Mock themes
@@ -174,7 +181,7 @@ export default function ThemesPage() {
             Active: <strong>{activeTheme?.name}</strong> · {themes.length} installed
           </p>
         </div>
-        <a href="https://bazarix.dev/browse?type=theme" target="_blank" rel="noopener noreferrer">
+        <a href={MARKETPLACE_URL} target="_blank" rel="noopener noreferrer">
           <Button size="sm" className="gap-1.5">
             <ShoppingBag className="w-4 h-4" />
             Browse Themes
@@ -283,7 +290,7 @@ export default function ThemesPage() {
             ))}
 
             {/* Add more themes CTA */}
-            <a href="https://bazarix.dev/browse?type=theme" target="_blank" rel="noopener noreferrer">
+            <a href={MARKETPLACE_URL} target="_blank" rel="noopener noreferrer">
               <Card className="border-dashed cursor-pointer hover:border-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.02)] transition-colors h-full min-h-[280px] flex items-center justify-center">
                 <CardContent className="p-6 text-center">
                   <ShoppingBag className="w-8 h-8 text-[hsl(var(--muted-foreground))] mx-auto mb-2" />

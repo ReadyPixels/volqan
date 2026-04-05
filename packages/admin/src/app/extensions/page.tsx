@@ -15,6 +15,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { buildMarketplaceURL } from '@volqan/core';
+
+// ---------------------------------------------------------------------------
+// Deep link URL
+// ---------------------------------------------------------------------------
+
+const MARKETPLACE_URL = buildMarketplaceURL('extension');
 
 // ---------------------------------------------------------------------------
 // Mock data
@@ -193,7 +200,7 @@ export default function ExtensionsPage() {
             {withUpdates > 0 && ` · ${withUpdates} update${withUpdates > 1 ? 's' : ''} available`}
           </p>
         </div>
-        <a href="https://bazarix.dev/browse?type=extension" target="_blank" rel="noopener noreferrer">
+        <a href={MARKETPLACE_URL} target="_blank" rel="noopener noreferrer">
           <Button size="sm" className="gap-1.5">
             <ShoppingBag className="w-4 h-4" />
             Browse Marketplace
@@ -235,7 +242,7 @@ export default function ExtensionsPage() {
           <p className="text-xs text-[hsl(var(--muted-foreground))] mb-4">
             Browse hundreds of extensions on the Bazarix marketplace to supercharge your Volqan installation.
           </p>
-          <a href="https://bazarix.dev/browse?type=extension" target="_blank" rel="noopener noreferrer">
+          <a href={MARKETPLACE_URL} target="_blank" rel="noopener noreferrer">
             <Button size="sm" variant="outline" className="gap-1.5">
               Open Bazarix Marketplace
               <ExternalLink className="w-3.5 h-3.5" />

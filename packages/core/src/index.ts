@@ -72,6 +72,11 @@ export {
   BAZARIX_MARKETPLACE_URL,
   BAZARIX_EXTENSIONS_URL,
   BAZARIX_THEMES_URL,
+  BAZARIX_BASE_URL,
+  BAZARIX_EXTENSIONS_BROWSE_URL,
+  BAZARIX_THEMES_BROWSE_URL,
+  buildMarketplaceURL,
+  parseInstallURL,
 } from './extensions/index.js';
 
 // ---------------------------------------------------------------------------

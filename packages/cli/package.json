@@ -4,7 +4,8 @@
   "private": false,
   "type": "module",
   "bin": {
-    "create-volqan-app": "dist/index.js"
+    "create-volqan-app": "dist/index.js",
+    "volqan": "dist/volqan.js"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
