@@ -7,11 +7,14 @@
  * refresh, or revoke attribution removal entitlement.
  *
  * Supported events:
- *   customer.subscription.created  → activateLicense
- *   customer.subscription.updated  → refreshLicense
- *   customer.subscription.deleted  → revokeLicense
- *   invoice.payment_failed         → startGracePeriod (7 days)
- *   invoice.payment_succeeded      → extendLicense
+ *   checkout.session.completed         → Create subscription, send welcome email
+ *   customer.subscription.created      → activateSubscription
+ *   customer.subscription.updated      → handleRenewal or status change
+ *   customer.subscription.deleted      → handleCancellation
+ *   customer.subscription.paused       → Pause attribution removal
+ *   customer.subscription.resumed      → Restore attribution removal
+ *   invoice.payment_succeeded          → Record invoice, extend license
+ *   invoice.payment_failed             → handlePaymentFailed, 7-day grace period
  *
  * Stripe signature verification is performed on every incoming request.
  * Unverified requests are rejected with HTTP 400.
@@ -19,6 +22,15 @@
 
 import type Stripe from 'stripe';
 import { invalidateLicenseCache, seedLicenseCache, type LicenseStatus } from '../license/checker.js';
+import {
+  activateSubscription,
+  handleRenewal,
+  handlePaymentFailed,
+  handleCancellation,
+  getSubscriptionByStripeId,
+  recordInvoice,
+  type SubscriptionStore,
+} from './plans/subscription-manager.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -105,6 +117,29 @@ export interface LicenseStore {
 }
 
 // ---------------------------------------------------------------------------
+// Email notification interface (optional, non-blocking)
+// ---------------------------------------------------------------------------
+
+/**
+ * Optional email notification interface.
+ * The webhook handler calls these methods if an emailer is provided.
+ * Email failures are logged but never cause a webhook failure response.
+ */
+export interface BillingEmailer {
+  /**
+   * Send a welcome email after a new subscription is created.
+   */
+  sendWelcomeEmail(userId: string, planId: string): Promise<void>;
+
+  /**
+   * Send a payment failure warning email.
+   * @param userId    - User ID of the subscriber.
+   * @param graceDays - Number of days before attribution removal is revoked.
+   */
+  sendPaymentFailedEmail(userId: string, graceDays: number): Promise<void>;
+}
+
+// ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
@@ -115,19 +150,46 @@ const GRACE_PERIOD_DAYS = 7;
 // Webhook handler factory
 // ---------------------------------------------------------------------------
 
+export interface WebhookHandlerOptions {
+  /**
+   * Stripe SDK instance for signature verification.
+   */
+  stripe: Pick<Stripe, 'webhooks'>;
+
+  /**
+   * License store for updating license state.
+   */
+  licenseStore: LicenseStore;
+
+  /**
+   * Subscription store for managing subscription records.
+   * When provided, subscription lifecycle is fully managed.
+   */
+  subscriptionStore?: SubscriptionStore;
+
+  /**
+   * Optional email notification callbacks.
+   */
+  emailer?: BillingEmailer;
+}
+
 /**
- * Create a Stripe webhook handler bound to a specific Stripe instance and
- * license store implementation.
+ * Create a Stripe webhook handler bound to a specific Stripe instance,
+ * license store, and optional subscription store.
  *
  * @example
  * ```ts
  * // app/api/billing/stripe/route.ts  (Next.js App Router)
  * import Stripe from 'stripe';
  * import { createWebhookHandler } from '@volqan/core/billing';
- * import { prismaLicenseStore } from '@/lib/license-store';
+ * import { prismaLicenseStore, prismaSubscriptionStore } from '@/lib/stores';
  *
  * const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
- * const handler = createWebhookHandler(stripe, prismaLicenseStore);
+ * const handler = createWebhookHandler({
+ *   stripe,
+ *   licenseStore: prismaLicenseStore,
+ *   subscriptionStore: prismaSubscriptionStore,
+ * });
  *
  * export async function POST(request: Request) {
  *   const rawBody = await request.text();
@@ -140,9 +202,25 @@ const GRACE_PERIOD_DAYS = 7;
  * ```
  */
 export function createWebhookHandler(
-  stripe: Pick<Stripe, 'webhooks'>,
-  licenseStore: LicenseStore,
+  stripeOrOptions: Pick<Stripe, 'webhooks'> | WebhookHandlerOptions,
+  legacyLicenseStore?: LicenseStore,
 ) {
+  // Support both the legacy 2-arg signature and the new options object
+  let stripe: Pick<Stripe, 'webhooks'>;
+  let licenseStore: LicenseStore;
+  let subscriptionStore: SubscriptionStore | undefined;
+  let emailer: BillingEmailer | undefined;
+
+  if ('licenseStore' in stripeOrOptions) {
+    stripe = stripeOrOptions.stripe;
+    licenseStore = stripeOrOptions.licenseStore;
+    subscriptionStore = stripeOrOptions.subscriptionStore;
+    emailer = stripeOrOptions.emailer;
+  } else {
+    stripe = stripeOrOptions;
+    licenseStore = legacyLicenseStore!;
+  }
+
   return async function handleStripeWebhook(
     req: WebhookRequest,
   ): Promise<WebhookResponse> {
@@ -180,7 +258,7 @@ export function createWebhookHandler(
     // 2. Route to the appropriate handler
     // -------------------------------------------------------------------------
     try {
-      await routeStripeEvent(event, licenseStore);
+      await routeStripeEvent(event, licenseStore, subscriptionStore, emailer);
     } catch (err) {
       // Log but return 200 to prevent Stripe from retrying indefinitely for
       // business-logic errors. Fatal infrastructure errors should throw
@@ -207,12 +285,25 @@ export function createWebhookHandler(
 async function routeStripeEvent(
   event: Stripe.Event,
   store: LicenseStore,
+  subscriptionStore?: SubscriptionStore,
+  emailer?: BillingEmailer,
 ): Promise<void> {
   switch (event.type) {
+    case 'checkout.session.completed':
+      await handleCheckoutSessionCompleted(
+        event.data.object as Stripe.Checkout.Session,
+        store,
+        subscriptionStore,
+        emailer,
+      );
+      break;
+
     case 'customer.subscription.created':
       await handleSubscriptionCreated(
         event.data.object as Stripe.Subscription,
         store,
+        subscriptionStore,
+        emailer,
       );
       break;
 
@@ -220,6 +311,7 @@ async function routeStripeEvent(
       await handleSubscriptionUpdated(
         event.data.object as Stripe.Subscription,
         store,
+        subscriptionStore,
       );
       break;
 
@@ -227,6 +319,23 @@ async function routeStripeEvent(
       await handleSubscriptionDeleted(
         event.data.object as Stripe.Subscription,
         store,
+        subscriptionStore,
+      );
+      break;
+
+    case 'customer.subscription.paused':
+      await handleSubscriptionPaused(
+        event.data.object as Stripe.Subscription,
+        store,
+        subscriptionStore,
+      );
+      break;
+
+    case 'customer.subscription.resumed':
+      await handleSubscriptionResumed(
+        event.data.object as Stripe.Subscription,
+        store,
+        subscriptionStore,
       );
       break;
 
@@ -234,6 +343,8 @@ async function routeStripeEvent(
       await handleInvoicePaymentFailed(
         event.data.object as Stripe.Invoice,
         store,
+        subscriptionStore,
+        emailer,
       );
       break;
 
@@ -241,6 +352,7 @@ async function routeStripeEvent(
       await handleInvoicePaymentSucceeded(
         event.data.object as Stripe.Invoice,
         store,
+        subscriptionStore,
       );
       break;
 
@@ -255,7 +367,64 @@ async function routeStripeEvent(
 // ---------------------------------------------------------------------------
 
 /**
- * customer.subscription.created → activateLicense
+ * checkout.session.completed → Create subscription, send welcome email
+ *
+ * This is the primary entry point for new subscriptions when using
+ * Stripe Checkout. The subscription record is created here, and a
+ * welcome email is sent to the new subscriber.
+ */
+async function handleCheckoutSessionCompleted(
+  session: Stripe.Checkout.Session,
+  store: LicenseStore,
+  subscriptionStore?: SubscriptionStore,
+  emailer?: BillingEmailer,
+): Promise<void> {
+  if (session.mode !== 'subscription') return;
+
+  const stripeSubscriptionId =
+    typeof session.subscription === 'string'
+      ? session.subscription
+      : session.subscription?.id;
+
+  if (!stripeSubscriptionId) {
+    console.warn(
+      '[volqan/billing] checkout.session.completed: no subscription ID on session',
+    );
+    return;
+  }
+
+  const userId = session.metadata?.['userId'] ?? session.client_reference_id ?? '';
+  const planId = session.metadata?.['planId'] ?? 'support-yearly';
+
+  console.info(
+    `[volqan/billing] Checkout completed for user ${userId} (plan: ${planId})`,
+  );
+
+  // Activate via subscription store if available
+  if (subscriptionStore && userId) {
+    const stripeCustomerId =
+      typeof session.customer === 'string'
+        ? session.customer
+        : session.customer?.id ?? '';
+
+    await activateSubscription(subscriptionStore, userId, {
+      planId,
+      stripeSubscriptionId,
+      stripeCustomerId,
+      // These will be refreshed when customer.subscription.created fires
+      currentPeriodStart: new Date(),
+      currentPeriodEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    });
+  }
+
+  // Send welcome email (non-blocking)
+  if (emailer && userId) {
+    sendEmailSafely(() => emailer.sendWelcomeEmail(userId, planId));
+  }
+}
+
+/**
+ * customer.subscription.created → activateSubscription
  *
  * A new subscriber has purchased a Support Plan.
  * Create the license record and seed the cache with active status.
@@ -263,10 +432,14 @@ async function routeStripeEvent(
 async function handleSubscriptionCreated(
   subscription: Stripe.Subscription,
   store: LicenseStore,
+  subscriptionStore?: SubscriptionStore,
+  emailer?: BillingEmailer,
 ): Promise<void> {
   const customerId = resolveCustomerId(subscription.customer);
   const plan = resolveInterval(subscription);
   const expiresAt = resolveExpiresAt(subscription);
+  const userId = subscription.metadata?.['userId'] ?? '';
+  const planId = subscription.metadata?.['planId'] ?? `support-${plan}`;
 
   console.info(
     `[volqan/billing] Activating license for customer ${customerId} (plan: ${plan})`,
@@ -279,22 +452,46 @@ async function handleSubscriptionCreated(
     expiresAt,
   );
 
+  // Activate in subscription store if available
+  if (subscriptionStore && userId) {
+    // Check if already created by checkout.session.completed
+    const existing = await subscriptionStore
+      .getSubscriptionByStripeId(subscription.id)
+      .catch(() => null);
+
+    if (!existing) {
+      await activateSubscription(subscriptionStore, userId, {
+        planId,
+        stripeSubscriptionId: subscription.id,
+        stripeCustomerId: customerId,
+        currentPeriodStart: new Date(subscription.current_period_start * 1000),
+        currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+      });
+    }
+  }
+
   await updateLicenseCache(installationId, {
     attributionRemoved: true,
     plan,
     expiresAt: expiresAt?.toISOString() ?? null,
     licenseState: 'active',
   });
+
+  // Send welcome email if not already sent by checkout.session.completed
+  if (emailer && userId) {
+    sendEmailSafely(() => emailer.sendWelcomeEmail(userId, planId));
+  }
 }
 
 /**
- * customer.subscription.updated → refreshLicense
+ * customer.subscription.updated → handleRenewal or status change
  *
- * Subscription was modified (e.g. plan change, renewal date shift).
+ * Subscription was modified (e.g. plan change, renewal date shift, pause).
  */
 async function handleSubscriptionUpdated(
   subscription: Stripe.Subscription,
   store: LicenseStore,
+  subscriptionStore?: SubscriptionStore,
 ): Promise<void> {
   const customerId = resolveCustomerId(subscription.customer);
   const plan = resolveInterval(subscription);
@@ -312,6 +509,38 @@ async function handleSubscriptionUpdated(
     expiresAt,
   );
 
+  // Update subscription record
+  if (subscriptionStore) {
+    const periodStart = new Date(subscription.current_period_start * 1000);
+    const periodEnd = new Date(subscription.current_period_end * 1000);
+
+    if (subscription.status === 'active') {
+      await handleRenewal(
+        subscriptionStore,
+        subscription.id,
+        periodStart,
+        periodEnd,
+      ).catch((err) => {
+        console.warn(
+          `[volqan/billing] Could not update renewal dates: ${String(err)}`,
+        );
+      });
+    } else {
+      await subscriptionStore
+        .updateSubscription(subscription.id, {
+          status: mapStripeStatus(subscription.status),
+          currentPeriodStart: periodStart,
+          currentPeriodEnd: periodEnd,
+          cancelAtPeriodEnd: subscription.cancel_at_period_end,
+        })
+        .catch((err) => {
+          console.warn(
+            `[volqan/billing] Could not update subscription status: ${String(err)}`,
+          );
+        });
+    }
+  }
+
   await updateLicenseCache(installationId, {
     attributionRemoved: isActive,
     plan,
@@ -321,7 +550,7 @@ async function handleSubscriptionUpdated(
 }
 
 /**
- * customer.subscription.deleted → revokeLicense
+ * customer.subscription.deleted → handleCancellation
  *
  * Subscription has been cancelled and has expired.
  * Attribution removal entitlement is immediately revoked.
@@ -329,6 +558,7 @@ async function handleSubscriptionUpdated(
 async function handleSubscriptionDeleted(
   subscription: Stripe.Subscription,
   store: LicenseStore,
+  subscriptionStore?: SubscriptionStore,
 ): Promise<void> {
   const customerId = resolveCustomerId(subscription.customer);
 
@@ -341,6 +571,17 @@ async function handleSubscriptionDeleted(
     subscription.id,
   );
 
+  // Update subscription record
+  if (subscriptionStore) {
+    await handleCancellation(subscriptionStore, subscription.id).catch(
+      (err) => {
+        console.warn(
+          `[volqan/billing] Could not cancel subscription record: ${String(err)}`,
+        );
+      },
+    );
+  }
+
   await updateLicenseCache(installationId, {
     attributionRemoved: false,
     licenseState: 'revoked',
@@ -348,7 +589,99 @@ async function handleSubscriptionDeleted(
 }
 
 /**
- * invoice.payment_failed → startGracePeriod (7 days)
+ * customer.subscription.paused → Pause attribution removal
+ *
+ * The subscription has been paused (e.g. payment collection paused).
+ * Attribution removal is suspended until the subscription resumes.
+ */
+async function handleSubscriptionPaused(
+  subscription: Stripe.Subscription,
+  store: LicenseStore,
+  subscriptionStore?: SubscriptionStore,
+): Promise<void> {
+  const customerId = resolveCustomerId(subscription.customer);
+  const plan = resolveInterval(subscription);
+  const expiresAt = resolveExpiresAt(subscription);
+
+  console.info(
+    `[volqan/billing] Subscription paused for customer ${customerId}. Pausing attribution removal.`,
+  );
+
+  const { installationId } = await store.refreshLicense(
+    customerId,
+    subscription.id,
+    plan,
+    expiresAt,
+  );
+
+  // Update subscription record
+  if (subscriptionStore) {
+    await subscriptionStore
+      .updateSubscription(subscription.id, { status: 'paused' })
+      .catch((err) => {
+        console.warn(
+          `[volqan/billing] Could not update paused status: ${String(err)}`,
+        );
+      });
+  }
+
+  await updateLicenseCache(installationId, {
+    attributionRemoved: false,
+    plan,
+    expiresAt: expiresAt?.toISOString() ?? null,
+    licenseState: 'paused',
+  });
+}
+
+/**
+ * customer.subscription.resumed → Restore attribution removal
+ *
+ * The subscription has resumed from a paused state.
+ * Attribution removal is restored.
+ */
+async function handleSubscriptionResumed(
+  subscription: Stripe.Subscription,
+  store: LicenseStore,
+  subscriptionStore?: SubscriptionStore,
+): Promise<void> {
+  const customerId = resolveCustomerId(subscription.customer);
+  const plan = resolveInterval(subscription);
+  const expiresAt = resolveExpiresAt(subscription);
+
+  console.info(
+    `[volqan/billing] Subscription resumed for customer ${customerId}. Restoring attribution removal.`,
+  );
+
+  const { installationId } = await store.refreshLicense(
+    customerId,
+    subscription.id,
+    plan,
+    expiresAt,
+  );
+
+  // Update subscription record
+  if (subscriptionStore) {
+    const periodEnd = new Date(subscription.current_period_end * 1000);
+    const periodStart = new Date(subscription.current_period_start * 1000);
+    await handleRenewal(subscriptionStore, subscription.id, periodStart, periodEnd).catch(
+      (err) => {
+        console.warn(
+          `[volqan/billing] Could not update resumed subscription: ${String(err)}`,
+        );
+      },
+    );
+  }
+
+  await updateLicenseCache(installationId, {
+    attributionRemoved: true,
+    plan,
+    expiresAt: expiresAt?.toISOString() ?? null,
+    licenseState: 'active',
+  });
+}
+
+/**
+ * invoice.payment_failed → handlePaymentFailed, start 7-day grace period, send warning email
  *
  * Payment failed. Grant a 7-day grace period before revoking attribution
  * removal, giving the customer time to update their payment method.
@@ -356,6 +689,8 @@ async function handleSubscriptionDeleted(
 async function handleInvoicePaymentFailed(
   invoice: Stripe.Invoice,
   store: LicenseStore,
+  subscriptionStore?: SubscriptionStore,
+  emailer?: BillingEmailer,
 ): Promise<void> {
   const customerId = resolveInvoiceCustomerId(invoice);
 
@@ -369,6 +704,35 @@ async function handleInvoicePaymentFailed(
     GRACE_PERIOD_DAYS,
   );
 
+  // Update subscription status
+  const stripeSubscriptionId =
+    typeof invoice.subscription === 'string'
+      ? invoice.subscription
+      : invoice.subscription?.id;
+
+  if (subscriptionStore && stripeSubscriptionId) {
+    const sub = await subscriptionStore
+      .getSubscriptionByStripeId(stripeSubscriptionId)
+      .catch(() => null);
+
+    if (sub) {
+      await handlePaymentFailed(subscriptionStore, stripeSubscriptionId).catch(
+        (err) => {
+          console.warn(
+            `[volqan/billing] Could not mark subscription as past_due: ${String(err)}`,
+          );
+        },
+      );
+
+      // Send warning email
+      if (emailer) {
+        sendEmailSafely(() =>
+          emailer.sendPaymentFailedEmail(sub.userId, GRACE_PERIOD_DAYS),
+        );
+      }
+    }
+  }
+
   const graceExpiresAt = new Date();
   graceExpiresAt.setDate(graceExpiresAt.getDate() + GRACE_PERIOD_DAYS);
 
@@ -381,13 +745,15 @@ async function handleInvoicePaymentFailed(
 }
 
 /**
- * invoice.payment_succeeded → extendLicense
+ * invoice.payment_succeeded → Record invoice, extend license
  *
- * Successful renewal payment. Extend the license through the next period.
+ * Successful renewal payment. Extend the license through the next period
+ * and record the invoice.
  */
 async function handleInvoicePaymentSucceeded(
   invoice: Stripe.Invoice,
   store: LicenseStore,
+  subscriptionStore?: SubscriptionStore,
 ): Promise<void> {
   const customerId = resolveInvoiceCustomerId(invoice);
 
@@ -403,6 +769,42 @@ async function handleInvoicePaymentSucceeded(
     invoice.id,
     expiresAt,
   );
+
+  // Record invoice and update subscription
+  if (subscriptionStore) {
+    const stripeSubscriptionId =
+      typeof invoice.subscription === 'string'
+        ? invoice.subscription
+        : invoice.subscription?.id;
+
+    if (stripeSubscriptionId) {
+      const sub = await subscriptionStore
+        .getSubscriptionByStripeId(stripeSubscriptionId)
+        .catch(() => null);
+
+      if (sub) {
+        const items = buildInvoiceItems(invoice);
+        const serviceFee = resolveServiceFeeFromInvoice(invoice);
+        const baseAmount = (invoice.amount_paid ?? 0) - serviceFee;
+
+        await recordInvoice(subscriptionStore, sub.id, {
+          stripeInvoiceId: invoice.id,
+          amount: baseAmount,
+          serviceFee,
+          total: invoice.amount_paid ?? 0,
+          currency: invoice.currency ?? 'usd',
+          paidAt: invoice.status_transitions?.paid_at
+            ? new Date(invoice.status_transitions.paid_at * 1000)
+            : new Date(),
+          items,
+        }).catch((err) => {
+          console.warn(
+            `[volqan/billing] Could not record invoice: ${String(err)}`,
+          );
+        });
+      }
+    }
+  }
 
   await updateLicenseCache(installationId, {
     attributionRemoved: true,
@@ -432,6 +834,36 @@ async function updateLicenseCache(
     `[volqan/billing] License cache updated for installation "${installationId}": ` +
       `attributionRemoved=${status.attributionRemoved}, state=${status.licenseState ?? 'unknown'}`,
   );
+}
+
+// ---------------------------------------------------------------------------
+// Invoice helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Extract invoice line items from a Stripe Invoice.
+ */
+function buildInvoiceItems(invoice: Stripe.Invoice): Array<{
+  description: string;
+  amount: number;
+  quantity: number;
+}> {
+  return (invoice.lines?.data ?? []).map((line) => ({
+    description: line.description ?? 'Subscription',
+    amount: line.amount,
+    quantity: line.quantity ?? 1,
+  }));
+}
+
+/**
+ * Attempt to extract the Platform Service Fee amount from invoice line items.
+ * Looks for a line item with description matching "Service Fee".
+ */
+function resolveServiceFeeFromInvoice(invoice: Stripe.Invoice): number {
+  const feeLine = (invoice.lines?.data ?? []).find((line) =>
+    line.description?.toLowerCase().includes('service fee'),
+  );
+  return feeLine?.amount ?? 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -473,6 +905,29 @@ function resolveInvoiceExpiresAt(invoice: Stripe.Invoice): Date | null {
 }
 
 // ---------------------------------------------------------------------------
+// Status mapping
+// ---------------------------------------------------------------------------
+
+function mapStripeStatus(
+  stripeStatus: Stripe.Subscription['status'],
+): 'active' | 'canceled' | 'past_due' | 'trialing' | 'paused' {
+  switch (stripeStatus) {
+    case 'active':
+      return 'active';
+    case 'canceled':
+      return 'canceled';
+    case 'past_due':
+      return 'past_due';
+    case 'trialing':
+      return 'trialing';
+    case 'paused':
+      return 'paused';
+    default:
+      return 'past_due';
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Error classification
 // ---------------------------------------------------------------------------
 
@@ -497,4 +952,14 @@ function normalizeHeader(
 ): string | undefined {
   if (!value) return undefined;
   return Array.isArray(value) ? value[0] : value;
+}
+
+/**
+ * Fire-and-forget email send. Errors are logged but never bubble up
+ * to fail the webhook response.
+ */
+function sendEmailSafely(fn: () => Promise<void>): void {
+  fn().catch((err) => {
+    console.warn(`[volqan/billing] Email notification failed: ${String(err)}`);
+  });
 }

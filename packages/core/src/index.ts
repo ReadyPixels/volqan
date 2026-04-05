@@ -499,3 +499,51 @@ export type {
   ThemeManifest,
   ThemePreviewOptions,
 } from './themes/runtime/index.js';
+
+// ---------------------------------------------------------------------------
+// Page Builder
+// ---------------------------------------------------------------------------
+export type {
+  BlockCategory,
+  BlockType,
+  FieldType as PageFieldType,
+  FieldOption,
+  BlockField,
+  BlockSchema,
+  BlockStyleProps,
+  BlockAdvancedProps,
+  Block,
+  BlockDefinition,
+  PageStatus,
+  PageMeta,
+  PageSettings,
+  Page,
+  PageVersion,
+  CreatePageInput,
+  UpdatePageInput,
+  PageQueryOptions,
+  PaginatedPages,
+} from './pages/index.js';
+export { PageRepository, pageRepository } from './pages/index.js';
+
+// ---------------------------------------------------------------------------
+// AI Module
+// ---------------------------------------------------------------------------
+export type {
+  AIProviderType,
+  AIConfig,
+  AIRole,
+  AIMessage as AIMsg,
+  AIResponse,
+  StreamChunk,
+  AIProvider,
+  AIManagerOptions,
+} from './ai/index.js';
+export {
+  OpenAIProvider,
+  AnthropicProvider,
+  GeminiProvider,
+  OllamaProvider,
+  AIManager,
+  aiManager,
+} from './ai/index.js';

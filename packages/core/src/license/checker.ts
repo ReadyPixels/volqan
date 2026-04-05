@@ -63,6 +63,12 @@ export interface LicenseStatus {
    * Human-readable status returned by the API (e.g. "active", "grace_period").
    */
   licenseState?: string;
+
+  /**
+   * List of features active on this installation.
+   * Populated from the API response when attributionRemoved is true.
+   */
+  features?: string[];
 }
 
 /** Internal cache entry. */
@@ -189,10 +195,15 @@ async function safeHostname(): Promise<string> {
  *    ensuring the attribution footer is always shown when the API is
  *    unreachable — protecting the open-core license requirement.
  *
+ * @param installationIdOverride - Optional installation ID override.
+ *   When provided, uses this ID instead of auto-detecting.
+ *   Useful for multi-tenant deployments or testing.
  * @returns A LicenseStatus object.
  */
-export async function checkLicenseStatus(): Promise<LicenseStatus> {
-  const installId = await getInstallationId();
+export async function checkLicenseStatus(
+  installationIdOverride?: string,
+): Promise<LicenseStatus> {
+  const installId = installationIdOverride ?? (await getInstallationId());
   const cacheKey = `license:${installId}`;
 
   // Return cached value if still fresh
@@ -222,12 +233,22 @@ export async function checkLicenseStatus(): Promise<LicenseStatus> {
       return fallback;
     }
 
-    const status = (await response.json()) as LicenseStatus;
+    const apiResponse = (await response.json()) as {
+      valid?: boolean;
+      plan?: string;
+      expiresAt?: string;
+      attributionRemoved?: boolean;
+      features?: string[];
+      licenseState?: string;
+    };
 
-    // Defensive: ensure attributionRemoved is always a boolean
+    // Normalize the API response to the LicenseStatus shape
     const normalised: LicenseStatus = {
-      ...status,
-      attributionRemoved: Boolean(status.attributionRemoved),
+      attributionRemoved: Boolean(apiResponse.attributionRemoved),
+      plan: normalisePlan(apiResponse.plan),
+      expiresAt: apiResponse.expiresAt ?? null,
+      licenseState: apiResponse.licenseState ?? (apiResponse.valid ? 'active' : 'inactive'),
+      features: apiResponse.features ?? [],
     };
 
     licenseCache.set(cacheKey, normalised);
@@ -277,4 +298,20 @@ export async function seedLicenseCache(
 ): Promise<void> {
   const id = installId ?? (await getInstallationId());
   licenseCache.set(`license:${id}`, status, ttlMs);
+}
+
+// ---------------------------------------------------------------------------
+// Utility
+// ---------------------------------------------------------------------------
+
+/**
+ * Normalise a plan string from the API response to the LicenseStatus plan type.
+ */
+function normalisePlan(
+  plan: string | undefined,
+): 'monthly' | 'yearly' | undefined {
+  if (!plan) return undefined;
+  if (plan.includes('yearly') || plan.includes('year')) return 'yearly';
+  if (plan.includes('monthly') || plan.includes('month')) return 'monthly';
+  return undefined;
 }

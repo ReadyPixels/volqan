@@ -37,3 +37,41 @@ export type {
   WebhookResponse,
   LicenseStore,
 } from './webhook-handler.js';
+
+// Support Plans
+export {
+  buildPlans,
+  buildSupportYearlyPlan,
+  buildSupportMonthlyPlan,
+  calculatePrice,
+  createCheckoutSession,
+  createCustomerPortalSession,
+  getSubscription,
+  getSubscriptionByStripeId,
+  activateSubscription,
+  cancelSubscription,
+  reactivateSubscription,
+  handleRenewal,
+  handlePaymentFailed,
+  handleCancellation,
+  isAttributionRemoved,
+  recordInvoice,
+  getInvoiceHistory,
+  SUPPORT_PLAN_FEATURES,
+  PLAN_ID_SUPPORT_YEARLY,
+  PLAN_ID_SUPPORT_MONTHLY,
+  ALL_PLAN_IDS,
+} from './plans/index.js';
+
+export type {
+  Plan,
+  Subscription,
+  SubscriptionStatus,
+  Invoice,
+  InvoiceItem,
+  InvoiceStatus,
+  CheckoutSession,
+  CheckoutOptions,
+  SubscriptionStore,
+  PlanId,
+} from './plans/index.js';

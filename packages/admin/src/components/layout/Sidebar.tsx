@@ -22,6 +22,8 @@ import {
   ChevronDown,
   FileText,
   Database,
+  CreditCard,
+  LayoutTemplate,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -56,6 +58,12 @@ const NAV_ITEMS: NavItem[] = [
     ],
   },
   {
+    key: 'pages',
+    label: 'Pages',
+    href: '/pages',
+    icon: LayoutTemplate,
+  },
+  {
     key: 'media',
     label: 'Media',
     href: '/media',
@@ -78,6 +86,12 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Users',
     href: '/users',
     icon: Users,
+  },
+  {
+    key: 'billing',
+    label: 'Billing',
+    href: '/billing',
+    icon: CreditCard,
   },
   {
     key: 'settings',
