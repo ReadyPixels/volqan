@@ -5,9 +5,9 @@ description: The full public roadmap for Volqan from initial foundation through 
 
 # Roadmap
 
-This is the complete public roadmap for Volqan. Everything here is planned and committed to. Dates are estimates — if a phase ships early, the next one starts early. Nothing is removed from this list without a public announcement in [GitHub Discussions](https://github.com/Shaerif/volqan/discussions).
+This is the complete public roadmap for Volqan. Everything here is planned and committed to. Dates are estimates — if a phase ships early, the next one starts early. Nothing is removed from this list without a public announcement in [GitHub Discussions](https://github.com/ReadyPixels/volqan/discussions).
 
-Want to influence priorities? Support Plan holders have direct roadmap input. Community members can vote and comment in [Extension Ideas](https://github.com/Shaerif/volqan/discussions/categories/extension-ideas).
+Want to influence priorities? Support Plan holders have direct roadmap input. Community members can vote and comment in [Extension Ideas](https://github.com/ReadyPixels/volqan/discussions/categories/extension-ideas).
 
 ---
 
@@ -193,4 +193,4 @@ The following are explicitly out of scope and will not be added to this roadmap 
 
 ---
 
-*Last updated: April 2026. [Discuss this roadmap →](https://github.com/Shaerif/volqan/discussions)*
+*Last updated: April 2026. [Discuss this roadmap →](https://github.com/ReadyPixels/volqan/discussions)*

@@ -22,7 +22,7 @@ All material contributions require acceptance of the Volqan Contributor License 
 ### Initial setup
 
 ```bash
-git clone https://github.com/Shaerif/volqan.git
+git clone https://github.com/ReadyPixels/volqan.git
 cd volqan
 pnpm install
 cp .env.example .env.local

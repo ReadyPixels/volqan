@@ -9,7 +9,7 @@
 **Project Owner:** Sharif / ReadyPixels ("Licensor")
 **Contact:** sharif@readypixels.com
 **Project URL:** https://volqan.dev
-**Repository:** https://github.com/Shaerif/volqan
+**Repository:** https://github.com/ReadyPixels/volqan
 **Governing Law:** Wyoming, United States of America
 
 ---
@@ -254,7 +254,7 @@ Individual contributors indicate acceptance through GitHub pull request submissi
 **ReadyPixels / Sharif**
 **Email:** sharif@readypixels.com
 **Subject Line:** CLA — [Inquiry / Corporate Submission / Dispute]
-**Repository:** https://github.com/Shaerif/volqan
+**Repository:** https://github.com/ReadyPixels/volqan
 **Project URL:** https://volqan.dev
 
 ---

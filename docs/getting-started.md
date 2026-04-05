@@ -522,9 +522,9 @@ The **Default** theme ships with every Volqan installation. Install additional t
 - Read the [Extension API documentation](./extension-api.md) to build your own extensions
 - Read the [Theme API documentation](./theme-api.md) to build custom themes
 - Check the [Roadmap](./roadmap.md) to see what's coming
-- Join [GitHub Discussions](https://github.com/Shaerif/volqan/discussions) to ask questions and share what you build
+- Join [GitHub Discussions](https://github.com/ReadyPixels/volqan/discussions) to ask questions and share what you build
 - Consider a [Support Plan](./pricing.md#support-plans) to fund the project and remove the attribution footer
 
 ---
 
-*Having trouble? [Open a discussion](https://github.com/Shaerif/volqan/discussions/categories/q-a) or [file an issue](https://github.com/Shaerif/volqan/issues).*
+*Having trouble? [Open a discussion](https://github.com/ReadyPixels/volqan/discussions/categories/q-a) or [file an issue](https://github.com/ReadyPixels/volqan/issues).*

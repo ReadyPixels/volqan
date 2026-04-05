@@ -137,12 +137,12 @@ Want to sell on Bazarix? [Apply to become a seller →](https://bazarix.dev/sell
 
 | | |
 |---|---|
-| [GitHub Discussions](https://github.com/Shaerif/volqan/discussions) | Ask questions, share what you built, propose extension ideas |
-| [Q&A](https://github.com/Shaerif/volqan/discussions/categories/q-a) | Get help from the community and maintainer |
-| [Show and Tell](https://github.com/Shaerif/volqan/discussions/categories/show-and-tell) | Showcase projects you built with Volqan |
-| [Extension Ideas](https://github.com/Shaerif/volqan/discussions/categories/extension-ideas) | Propose and vote on extension ideas |
-| [GitHub Issues](https://github.com/Shaerif/volqan/issues) | Report bugs and request features |
-| [GitHub Sponsors](https://github.com/sponsors/Shaerif) | Support the project financially |
+| [GitHub Discussions](https://github.com/ReadyPixels/volqan/discussions) | Ask questions, share what you built, propose extension ideas |
+| [Q&A](https://github.com/ReadyPixels/volqan/discussions/categories/q-a) | Get help from the community and maintainer |
+| [Show and Tell](https://github.com/ReadyPixels/volqan/discussions/categories/show-and-tell) | Showcase projects you built with Volqan |
+| [Extension Ideas](https://github.com/ReadyPixels/volqan/discussions/categories/extension-ideas) | Propose and vote on extension ideas |
+| [GitHub Issues](https://github.com/ReadyPixels/volqan/issues) | Report bugs and request features |
+| [GitHub Sponsors](https://github.com/sponsors/ReadyPixels) | Support the project financially |
 
 ---
 
@@ -150,7 +150,7 @@ Want to sell on Bazarix? [Apply to become a seller →](https://bazarix.dev/sell
 
 Volqan is free and open source, sustained by the people who use it.
 
-**[Sponsor on GitHub →](https://github.com/sponsors/Shaerif)**
+**[Sponsor on GitHub →](https://github.com/sponsors/ReadyPixels)**
 
 If you depend on Volqan for commercial work, consider a [Support Plan](./pricing.md#support-plans). It funds continued development and gives you priority access to the maintainer.
 
@@ -158,8 +158,8 @@ If you depend on Volqan for commercial work, consider a [Support Plan](./pricing
 
 ## License
 
-Volqan is released under the [Open Core Attribution License v1.0](https://github.com/Shaerif/volqan/blob/main/LICENSE-ATTRIBUTION.md). You may use, modify, and distribute it freely. Deployments must display the "Powered by Volqan" attribution notice unless you hold an active Support Plan subscription.
+Volqan is released under the [Open Core Attribution License v1.0](https://github.com/ReadyPixels/volqan/blob/main/LICENSE-ATTRIBUTION.md). You may use, modify, and distribute it freely. Deployments must display the "Powered by Volqan" attribution notice unless you hold an active Support Plan subscription.
 
 ---
 
-*Volqan is built and maintained by [Sharif](https://github.com/Shaerif). Released April 2026.*
+*Volqan is built and maintained by [ReadyPixels](https://github.com/ReadyPixels). Released April 2026.*

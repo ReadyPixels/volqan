@@ -6,8 +6,8 @@
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22-3c873a.svg)](https://nodejs.org)
 [![pnpm](https://img.shields.io/badge/pnpm-%3E%3D9-f69220.svg)](https://pnpm.io)
 [![TypeScript](https://img.shields.io/badge/typescript-5.x-3178c6.svg)](https://www.typescriptlang.org)
-[![Discussions](https://img.shields.io/badge/community-GitHub%20Discussions-1f6feb.svg)](https://github.com/Shaerif/volqan/discussions)
-[![Sponsors](https://img.shields.io/badge/support-GitHub%20Sponsors-ea4aaa.svg)](https://github.com/sponsors/Shaerif)
+[![Discussions](https://img.shields.io/badge/community-GitHub%20Discussions-1f6feb.svg)](https://github.com/ReadyPixels/volqan/discussions)
+[![Sponsors](https://img.shields.io/badge/support-GitHub%20Sponsors-ea4aaa.svg)](https://github.com/sponsors/ReadyPixels)
 
 Volqan is a CMS, admin panel generator, visual GUI builder, and backend framework in one. It is designed to let developers move fast with schema-as-code while giving non-technical teams a polished visual workspace for building and operating modern applications.
 
@@ -149,8 +149,8 @@ volqan/
 
 - **Documentation:** [volqan.dev](https://volqan.dev)
 - **Marketplace:** [bazarix.dev](https://bazarix.dev)
-- **GitHub Discussions:** [github.com/Shaerif/volqan/discussions](https://github.com/Shaerif/volqan/discussions)
-- **Sponsors:** [github.com/sponsors/Shaerif](https://github.com/sponsors/Shaerif)
+- **GitHub Discussions:** [github.com/ReadyPixels/volqan/discussions](https://github.com/ReadyPixels/volqan/discussions)
+- **Sponsors:** [github.com/sponsors/ReadyPixels](https://github.com/sponsors/ReadyPixels)
 - **Contributing:** [CONTRIBUTING.md](./CONTRIBUTING.md)
 - **Security:** [SECURITY.md](./SECURITY.md)
 

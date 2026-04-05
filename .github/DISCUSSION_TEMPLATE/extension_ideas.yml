@@ -7,7 +7,7 @@ body:
 
         This is the community space for requesting, discussing, and up-voting ideas for new Volqan extensions and themes. Unlike a formal Extension Proposal (which goes in Issues), this is a casual space to share ideas, spark discussion, and see what the community wants most.
 
-        If you are ready to formally propose an extension you plan to build, use the [Extension Proposal issue template](https://github.com/Shaerif/volqan/issues/new?template=extension_proposal.yml) instead.
+        If you are ready to formally propose an extension you plan to build, use the [Extension Proposal issue template](https://github.com/ReadyPixels/volqan/issues/new?template=extension_proposal.yml) instead.
 
   - type: input
     id: extension_name

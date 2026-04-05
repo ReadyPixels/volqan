@@ -50,7 +50,7 @@ Changes staged for the next release are tracked here before a version number is 
 - `.github/workflows/deploy-docs.yml` — Deploy `/docs` to GitHub Pages on push to `main`
 - `.github/workflows/release.yml` — Semantic versioning and release creation workflow
 - `.github/workflows/attribution-check.yml` — Attribution license validation check
-- `.github/FUNDING.yml` — GitHub Sponsors configuration pointing to `github: Shaerif`
+- `.github/FUNDING.yml` — GitHub Sponsors configuration pointing to `github: ReadyPixels`
 
 **Legal Documents** (published to GitHub Pages via `/docs/legal/`)
 - `docs/legal/terms-of-service.md` — Full Terms of Service including attribution requirement, Platform Service Fee formula and justification, Support Plan subscription terms, Wyoming USA governing law, binding arbitration clause, and Stripe payment processor disclaimer
@@ -107,5 +107,5 @@ Changes staged for the next release are tracked here before a version number is 
 
 ---
 
-[0.0.1]: https://github.com/Shaerif/volqan/releases/tag/v0.0.1
-[Unreleased]: https://github.com/Shaerif/volqan/compare/v0.0.1...HEAD
+[0.0.1]: https://github.com/ReadyPixels/volqan/releases/tag/v0.0.1
+[Unreleased]: https://github.com/ReadyPixels/volqan/compare/v0.0.1...HEAD

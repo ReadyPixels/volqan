@@ -192,6 +192,6 @@ These will be separate products with their own pricing. The open-source version 
 
 ## Questions?
 
-- [GitHub Discussions — Q&A](https://github.com/Shaerif/volqan/discussions/categories/q-a) — public questions answered by the community and maintainer
+- [GitHub Discussions — Q&A](https://github.com/ReadyPixels/volqan/discussions/categories/q-a) — public questions answered by the community and maintainer
 - [Email the maintainer](mailto:sharif@readypixels.com) — for Support Plan holders and private inquiries
-- [GitHub Sponsors](https://github.com/sponsors/Shaerif) — alternative way to support the project without a Support Plan
+- [GitHub Sponsors](https://github.com/sponsors/ReadyPixels) — alternative way to support the project without a Support Plan

@@ -621,4 +621,4 @@ Both are non-removable and serve as the fallback if no other theme is active.
 
 ---
 
-*Theme API reference — Volqan v0.0.1 · [GitHub](https://github.com/Shaerif/volqan) · [Bazarix Marketplace](https://bazarix.dev)*
+*Theme API reference — Volqan v0.0.1 · [GitHub](https://github.com/ReadyPixels/volqan) · [Bazarix Marketplace](https://bazarix.dev)*
