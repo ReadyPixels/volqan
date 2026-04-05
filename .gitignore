@@ -1,0 +1,45 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# builds
+build/
+dist/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# env
+.env
+.env.*
+!.env.example
+
+# logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# editors
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# runtime
+.tmp/
+tmp/
+.cache/
+
+# docker
+postgres-data/
+
+# testing
+playwright-report/
+test-results/
+
+# local package artifacts
+*.tgz

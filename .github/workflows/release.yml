@@ -1,0 +1,132 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm --recursive run build --if-present
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Generate changelog from git log
+        id: changelog
+        run: |
+          # Find the previous tag to diff against
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+          if [ -z "$PREV_TAG" ]; then
+            echo "CHANGELOG=Initial release of Volqan ${{ steps.version.outputs.VERSION }}." >> "$GITHUB_OUTPUT"
+          else
+            CHANGELOG=$(git log "${PREV_TAG}..HEAD" --pretty=format:"- %s (%h)" --no-merges)
+            # Use a delimiter to support multi-line output
+            {
+              echo "CHANGELOG<<EOF"
+              echo "$CHANGELOG"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub Release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag     = context.ref.replace('refs/tags/', '');
+            const version = tag;
+            const isPrerelease = version.includes('-alpha') ||
+                                 version.includes('-beta')  ||
+                                 version.includes('-rc');
+
+            const body = [
+              `## ${version}`,
+              '',
+              '### What changed',
+              '',
+              process.env.CHANGELOG,
+              '',
+              '---',
+              '',
+              `Full documentation: https://volqan.dev`,
+              `Changelog: https://volqan.dev/changelog`,
+            ].join('\n');
+
+            await github.rest.repos.createRelease({
+              owner:            context.repo.owner,
+              repo:             context.repo.repo,
+              tag_name:         tag,
+              name:             `Volqan ${version}`,
+              body,
+              draft:            false,
+              prerelease:       isPrerelease,
+              generate_release_notes: false,
+            });
+        env:
+          CHANGELOG: ${{ steps.changelog.outputs.CHANGELOG }}
+
+  publish-packages:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    needs: release
+    timeout-minutes: 15
+    # Only publish stable releases (no pre-release tags)
+    if: ${{ !contains(github.ref_name, '-alpha') && !contains(github.ref_name, '-beta') && !contains(github.ref_name, '-rc') }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm --recursive run build --if-present
+
+      - name: Publish packages to npm
+        run: pnpm --recursive --filter "./packages/*" publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

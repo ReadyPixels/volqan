@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": true,
+    "baseUrl": ".",
+    "paths": {
+      "@volqan/core": [
+        "packages/core/src/index.ts"
+      ],
+      "@volqan/admin": [
+        "packages/admin/src/index.ts"
+      ],
+      "@volqan/cli": [
+        "packages/cli/src/index.ts"
+      ],
+      "@volqan/extension-sdk": [
+        "packages/extension-sdk/src/index.ts"
+      ],
+      "@volqan/theme-sdk": [
+        "packages/theme-sdk/src/index.ts"
+      ],
+      "@volqan/cloud-bridge": [
+        "packages/cloud-bridge/src/index.ts"
+      ],
+      "@volqan/*": [
+        "packages/*/src/index.ts"
+      ]
+    }
+  },
+  "include": [
+    "packages/**/*.ts",
+    "packages/**/*.tsx",
+    "extensions/**/*.ts",
+    "extensions/**/*.tsx",
+    "themes/**/*.ts",
+    "themes/**/*.tsx",
+    "examples/**/*.ts",
+    "examples/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".next",
+    "coverage"
+  ]
+}

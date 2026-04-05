@@ -1,0 +1,26 @@
+title: "[General] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Welcome to the Volqan General discussion category. This is the place for open community conversation — anything that doesn't fit into Q&A, Show and Tell, or Extension Ideas.
+
+        Topics can include thoughts on the project direction, general feedback, introductions, ecosystem news, or anything else Volqan-related.
+
+  - type: input
+    id: title_hint
+    attributes:
+      label: Discussion Topic
+      description: Briefly summarize what you'd like to talk about.
+      placeholder: "e.g. Thoughts on the upcoming v1.0 roadmap"
+    validations:
+      required: false
+
+  - type: textarea
+    id: body
+    attributes:
+      label: Your Message
+      description: Share your thoughts, questions, or ideas with the community.
+      placeholder: Write your message here...
+    validations:
+      required: true

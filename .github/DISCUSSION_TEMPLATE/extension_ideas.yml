@@ -1,0 +1,81 @@
+title: "[Extension Idea] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Extension and Theme Ideas
+
+        This is the community space for requesting, discussing, and up-voting ideas for new Volqan extensions and themes. Unlike a formal Extension Proposal (which goes in Issues), this is a casual space to share ideas, spark discussion, and see what the community wants most.
+
+        If you are ready to formally propose an extension you plan to build, use the [Extension Proposal issue template](https://github.com/Shaerif/volqan/issues/new?template=extension_proposal.yml) instead.
+
+  - type: input
+    id: extension_name
+    attributes:
+      label: Extension / Theme Name
+      description: What would you call this extension or theme?
+      placeholder: "e.g. Volqan Multilingual, Dark Minimal Theme, Event Calendar"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Is this an extension or a theme?
+      options:
+        - Extension — adds new functionality
+        - Theme — changes the visual design
+        - Both — visual changes with functional additions
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: what_it_should_do
+    attributes:
+      label: What Should It Do?
+      description: Describe the functionality or design this extension or theme should provide. The more detail, the more useful for anyone considering building it.
+      placeholder: |
+        This extension should add a full event calendar to Volqan, including:
+        - A calendar content type with date, time, location, and RSVP fields
+        - A public-facing calendar page with month/week/day views
+        - An iCal export endpoint
+        - Optional Google Calendar sync
+    validations:
+      required: true
+
+  - type: textarea
+    id: example_use_cases
+    attributes:
+      label: Example Use Cases
+      description: |
+        Give one or more concrete examples of who would use this and how.
+        This helps others understand the real-world value.
+      placeholder: |
+        - A local community organization managing public events
+        - A conference website selling tickets and publishing a schedule
+        - A co-working space showing room booking availability
+    validations:
+      required: true
+
+  - type: dropdown
+    id: willing_to_pay
+    attributes:
+      label: Would you pay for this on Bazarix if a developer built it?
+      description: This helps signal demand to potential builders.
+      options:
+        - "Yes — I would pay for a quality version of this"
+        - "Maybe — depends on quality and price"
+        - "No — I would only use it if it were free"
+        - "I would build it myself if the SDK is clear enough"
+    validations:
+      required: false
+
+  - type: textarea
+    id: prior_art
+    attributes:
+      label: Prior Art / References
+      description: Are there similar extensions or plugins in other ecosystems (WordPress, Strapi, Payload) that illustrate what you're looking for?
+      placeholder: "e.g. The Events Calendar for WordPress is close, but I want something native to Volqan's schema system..."
+    validations:
+      required: false

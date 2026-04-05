@@ -1,0 +1,94 @@
+name: Attribution Check
+
+on:
+  pull_request:
+    branches:
+      - main
+      - "release/*"
+      - "dev"
+
+jobs:
+  check-attribution-footer:
+    name: Verify AttributionFooter is present
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check AttributionFooter component exists
+        id: footer_component_check
+        run: |
+          echo "Checking that AttributionFooter component file is present..."
+
+          # Locate the AttributionFooter component file
+          FOOTER_FILE=$(find packages/admin/src -type f -name "AttributionFooter.tsx" 2>/dev/null | head -n 1)
+
+          if [ -z "$FOOTER_FILE" ]; then
+            echo "::error::AttributionFooter.tsx component file not found. This component is required by the Open Core Attribution License v1.0 and must not be removed."
+            exit 1
+          fi
+
+          echo "Found component file: $FOOTER_FILE"
+          echo "footer_file=$FOOTER_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Verify AttributionFooter is exported from component file
+        run: |
+          FOOTER_FILE="${{ steps.footer_component_check.outputs.footer_file }}"
+
+          if ! grep -q "AttributionFooter" "$FOOTER_FILE"; then
+            echo "::error::The file $FOOTER_FILE does not define or export an AttributionFooter component."
+            exit 1
+          fi
+
+          echo "AttributionFooter export confirmed in $FOOTER_FILE."
+
+      - name: Verify AttributionFooter is imported in admin layout files
+        run: |
+          echo "Scanning admin layout files for AttributionFooter usage..."
+
+          # Search for layout files that should include the footer
+          LAYOUT_FILES=$(find packages/admin/src -type f \( -name "layout.tsx" -o -name "layout.ts" \) 2>/dev/null)
+
+          if [ -z "$LAYOUT_FILES" ]; then
+            echo "::warning::No admin layout files found at packages/admin/src/**/layout.tsx. This may indicate a structural problem."
+            # Treat as non-fatal if the admin package structure hasn't been scaffolded yet
+            exit 0
+          fi
+
+          FOUND=0
+          for LAYOUT in $LAYOUT_FILES; do
+            if grep -q "AttributionFooter" "$LAYOUT"; then
+              echo "AttributionFooter reference found in: $LAYOUT"
+              FOUND=1
+            fi
+          done
+
+          if [ "$FOUND" -eq 0 ]; then
+            echo "::error::AttributionFooter is not referenced in any admin layout file. The attribution footer must be rendered in all admin layouts as required by the Open Core Attribution License v1.0."
+            echo ""
+            echo "Layouts checked:"
+            echo "$LAYOUT_FILES"
+            exit 1
+          fi
+
+          echo "Attribution check passed."
+
+      - name: Verify attribution text has not been tampered with
+        run: |
+          FOOTER_FILE="${{ steps.footer_component_check.outputs.footer_file }}"
+
+          # Confirm the component still renders the required "Powered by" attribution text
+          if ! grep -q "Powered by" "$FOOTER_FILE"; then
+            echo "::error::The AttributionFooter component in $FOOTER_FILE no longer contains the required 'Powered by' attribution text. This is a violation of the Open Core Attribution License v1.0."
+            exit 1
+          fi
+
+          # Confirm it links to the project URL
+          if ! grep -q "volqan.dev" "$FOOTER_FILE"; then
+            echo "::error::The AttributionFooter component in $FOOTER_FILE no longer links to https://volqan.dev. The project URL must remain in the attribution footer."
+            exit 1
+          fi
+
+          echo "Attribution text integrity verified."

@@ -1,0 +1,77 @@
+title: "[Show and Tell] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Show and Tell
+
+        Built something with Volqan? We want to see it. Share your project here — whether it's a production site, a personal experiment, an open-source template, or a commercial product. Every build inspires someone else in the community.
+
+  - type: input
+    id: project_name
+    attributes:
+      label: Project Name
+      description: What is your project called?
+      placeholder: "e.g. TechBlog Pro, Inventory Manager, OpenDirectory"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Project Description
+      description: |
+        Tell us what you built. What does it do? Who is it for? What problem does it solve?
+        Feel free to include what Volqan extensions or themes you used.
+      placeholder: |
+        A multi-author blog platform for a team of 15 writers. Built with Volqan's Blog extension and a custom theme. We use the REST API to sync posts to our newsletter platform.
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: Project URL
+      description: A live URL, GitHub link, demo, or video where people can see your project. Leave blank if the project is private.
+      placeholder: "https://yourproject.com or https://github.com/you/project"
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: |
+        Share screenshots or a screen recording of your project in action.
+        Drag and drop images directly into this text area, or paste URLs.
+      placeholder: Drop your screenshots here...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: project_type
+    attributes:
+      label: Project Type
+      description: What kind of project is this?
+      options:
+        - Personal website or portfolio
+        - Blog or publication
+        - SaaS product
+        - Internal tool or dashboard
+        - E-commerce store
+        - Community or directory
+        - Open-source template
+        - Client project
+        - Experiment / side project
+        - Other
+    validations:
+      required: false
+
+  - type: textarea
+    id: stack_notes
+    attributes:
+      label: Stack Notes
+      description: Anything interesting about how you used Volqan, any extensions or custom integrations worth mentioning?
+      placeholder: "e.g. We built a custom extension for Stripe subscriptions and used the Theme SDK to match our brand."
+    validations:
+      required: false

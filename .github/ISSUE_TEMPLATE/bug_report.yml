@@ -1,0 +1,139 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in Volqan
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to file a bug report. Please fill out all sections as completely as possible — it helps us reproduce and fix the issue faster.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Describe what went wrong...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Provide the exact steps needed to reproduce the bug.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Observe the error '...'
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: Describe what you expected...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened? Include any error messages, stack traces, or console output.
+      placeholder: Describe what actually happened...
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: "## Environment"
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: Which operating system are you running Volqan on?
+      options:
+        - Ubuntu / Debian
+        - Fedora / RHEL / CentOS
+        - Arch Linux
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+        - Windows 11
+        - Windows 10
+        - Docker (Linux container)
+        - Other (specify in additional context)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: node_version
+    attributes:
+      label: Node.js Version
+      description: Run `node --version` to check.
+      options:
+        - "22.x (LTS — recommended)"
+        - "20.x (LTS)"
+        - "18.x (LTS)"
+        - "Other (specify in additional context)"
+    validations:
+      required: true
+
+  - type: input
+    id: volqan_version
+    attributes:
+      label: Volqan Version
+      description: Run `pnpm list @volqan/core` or check your `package.json`.
+      placeholder: "e.g. 0.3.1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: database
+    attributes:
+      label: Database
+      description: Which database are you using with Volqan?
+      options:
+        - PostgreSQL
+        - MySQL
+        - SQLite
+        - Not applicable
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or Screen Recordings
+      description: |
+        If applicable, attach screenshots or recordings that illustrate the bug.
+        You can drag and drop images directly into this text area.
+      placeholder: Drag and drop images here, or paste a URL...
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Any other information that might help — Docker version, browser (if UI-related), relevant config, etc.
+      placeholder: Add any other context here...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched existing issues and this bug has not been reported before.
+          required: true
+        - label: I am using a supported Node.js version (22.x LTS recommended).
+          required: true
+        - label: I have included all information needed to reproduce this bug.
+          required: true

@@ -1,0 +1,105 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for Volqan
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting an improvement! Well-described feature requests help the maintainers and community evaluate and prioritize ideas effectively.
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Feature Description
+      description: A clear and concise description of the feature you are proposing.
+      placeholder: Describe the feature you'd like to see...
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use Case
+      description: |
+        Explain the problem you are trying to solve or the scenario where this feature would be useful.
+        Who would benefit from it, and how often would they use it?
+      placeholder: |
+        As a [type of user], I want to [do something] so that [some benefit].
+        Example: As a developer building a multi-tenant SaaS, I want per-tenant content isolation so that customers cannot see each other's data.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed Solution
+      description: |
+        How do you imagine this feature would work? Include API shapes, UI concepts, configuration options, or any other design ideas you have.
+      placeholder: Describe your ideal implementation or design...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: |
+        What workarounds or alternative approaches have you tried or considered?
+        Why are they insufficient compared to your proposed solution?
+      placeholder: Describe any alternatives you've considered and why they fall short...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: How important is this feature to you?
+      options:
+        - Critical — I cannot use Volqan without it
+        - High — It would significantly improve my workflow
+        - Medium — Nice to have
+        - Low — Just a suggestion
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which area of Volqan does this affect?
+      options:
+        - Core engine
+        - Admin UI
+        - Content modeling
+        - REST API
+        - GraphQL API
+        - Authentication / Authorization
+        - Extension engine
+        - Theme engine
+        - CLI (create-volqan-app)
+        - Docker / Self-hosting
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Screenshots, mockups, links to similar implementations in other tools, or any other relevant material.
+      placeholder: Add screenshots, links, or any other context...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched existing issues and this feature has not been requested before.
+          required: true
+        - label: This is a feature request for Volqan itself, not a question about how to use it (use Discussions > Q&A for that).
+          required: true

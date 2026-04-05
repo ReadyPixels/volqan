@@ -1,0 +1,129 @@
+name: Extension Proposal
+description: Propose a new official or community extension for the Volqan ecosystem
+title: "[Extension]: "
+labels: ["extension-proposal", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Extensions are the primary way Volqan's capabilities grow. If you have an idea for an extension — whether you plan to build it yourself or are simply suggesting it — we want to hear about it.
+
+        Extensions published to [Bazarix](https://bazarix.dev) can generate revenue for their creators. The Extension SDK is available at `@volqan/extension-sdk`.
+
+  - type: input
+    id: extension_name
+    attributes:
+      label: Extension Name
+      description: A short, descriptive name for the proposed extension. Use kebab-case for the package name.
+      placeholder: "e.g. Volqan Comments / @volqan-community/comments"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Which category best describes this extension?
+      options:
+        - Content — blog, news, wiki, documentation
+        - Commerce — e-commerce, payments, subscriptions
+        - Forms — form builder, surveys, quizzes
+        - Media — image galleries, video, podcasts
+        - SEO — meta tags, sitemaps, structured data
+        - Auth — SSO, two-factor, social login
+        - Analytics — pageviews, events, dashboards
+        - Communication — comments, notifications, chat
+        - Integrations — third-party APIs and webhooks
+        - Workflow — approvals, scheduling, versioning
+        - AI — LLM-powered features and assistants
+        - DevTools — developer utilities and debugging
+        - Theme / UI — visual customization
+        - Other (describe below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: what_it_does
+    attributes:
+      label: What Does It Do?
+      description: |
+        Describe the extension's functionality clearly. What does it add to a Volqan installation?
+        Include admin UI panels, API routes, database models, or content hooks it would introduce.
+      placeholder: |
+        This extension adds a fully-featured comment system to any Volqan content type. It includes:
+        - A threaded comment UI component for front-end pages
+        - A moderation panel in the Volqan admin
+        - Spam filtering via Akismet integration
+        - Email notifications via Volqan's SMTP adapter
+    validations:
+      required: true
+
+  - type: textarea
+    id: target_users
+    attributes:
+      label: Target Users
+      description: Who would use this extension? What kind of projects or industries does it serve?
+      placeholder: |
+        Bloggers, news sites, and community platforms that want reader engagement without embedding third-party comment services like Disqus.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: willing_to_build
+    attributes:
+      label: Are you willing to build this extension?
+      description: This is not a commitment — just an indication of intent.
+      options:
+        - "Yes — I plan to build and maintain this extension"
+        - "Yes — I can contribute but would need collaborators"
+        - "Maybe — I'm interested but unsure of my availability"
+        - "No — I'm suggesting this for someone else to build"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: distribution
+    attributes:
+      label: Intended Distribution
+      description: How do you plan to distribute this extension?
+      options:
+        - Free and open source (npm / GitHub)
+        - Paid via Bazarix marketplace
+        - Free on Bazarix marketplace
+        - Private / internal use only
+        - Not decided yet
+    validations:
+      required: false
+
+  - type: textarea
+    id: technical_notes
+    attributes:
+      label: Technical Notes
+      description: |
+        Any technical details worth noting — external APIs it depends on, database migrations required, potential conflicts with other extensions, or implementation challenges.
+      placeholder: Describe any technical considerations...
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Screenshots, mockups, links to similar extensions in other ecosystems, or any other material that helps illustrate the proposal.
+      placeholder: Add any supporting material here...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched existing extension proposals and this idea has not been proposed before.
+          required: true
+        - label: I understand that extension proposals are not guaranteed to be built by the core team.
+          required: true
+        - label: I have read the Extension SDK documentation (or plan to before building).
+          required: false

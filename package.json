@@ -1,0 +1,23 @@
+{
+  "name": "volqan",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "clean": "pnpm -r clean"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=9"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0",
+    "eslint": "^9.24.0",
+    "prettier": "^3.5.3",
+    "@types/node": "^22.14.1"
+  }
+}
