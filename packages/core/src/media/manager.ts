@@ -22,7 +22,6 @@
  */
 
 import type { PrismaClient } from '@prisma/client';
-import type { Prisma } from '@prisma/client';
 import {
   ALL_SUPPORTED_TYPES,
   DEFAULT_MAX_FILE_SIZE,
@@ -199,7 +198,7 @@ export class MediaManager {
         alt: options.alt ?? null,
         caption: options.caption ?? null,
         storageKey: uploadResult.key,
-      } as Prisma.MediaCreateInput,
+      } as Record<string, unknown>,
     });
 
     return this._recordToFile(record);
@@ -269,7 +268,7 @@ export class MediaManager {
     const perPage = Math.min(100, Math.max(1, options.perPage ?? 20));
     const skip = (page - 1) * perPage;
 
-    const where: Prisma.MediaWhereInput = {};
+    const where: Record<string, unknown> = {};
     if (options.folder !== undefined) where.folder = options.folder;
     if (options.mimeType) {
       where.mimeType = { startsWith: options.mimeType };
@@ -280,7 +279,7 @@ export class MediaManager {
 
     const sortField = options.sortBy ?? 'createdAt';
     const sortDir = options.sortDirection ?? 'desc';
-    const orderBy: Prisma.MediaOrderByWithRelationInput = { [sortField]: sortDir };
+    const orderBy: Record<string, unknown> = { [sortField]: sortDir };
 
     const [records, total] = await Promise.all([
       this.prisma.media.findMany({ where, orderBy, skip, take: perPage }),
@@ -288,7 +287,7 @@ export class MediaManager {
     ]);
 
     return {
-      data: records.map((r) => this._recordToFile(r)),
+      data: records.map((r: any) => this._recordToFile(r)),
       meta: { total, page, perPage, totalPages: Math.ceil(total / perPage) },
     };
   }
@@ -336,7 +335,7 @@ export class MediaManager {
 
     const updated = await this.prisma.media.update({
       where: { id },
-      data: { folder: sanitizedFolder } as Prisma.MediaUpdateInput,
+      data: { folder: sanitizedFolder } as Record<string, unknown>,
     });
 
     return this._recordToFile(updated);

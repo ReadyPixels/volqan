@@ -24,7 +24,7 @@ import {
   PROJECT_URL,
   PROJECT_NAME,
   type LicenseStatus,
-} from '@volqan/core/license';
+} from '@volqan/core';
 
 // ---------------------------------------------------------------------------
 // Attribution Footer (Server Component)

@@ -29,7 +29,7 @@ export function SectionBlock({ block }: { block: Block }) {
       }}
     >
       <div className="max-w-7xl mx-auto px-4">
-        {block.children?.map((child) => (
+        {block.children?.map((child: any) => (
           <ChildBlockPlaceholder key={child.id} block={child} />
         ))}
         {(!block.children || block.children.length === 0) && (
@@ -62,7 +62,7 @@ export function ContainerBlock({ block }: { block: Block }) {
         paddingRight: paddingRight || '1rem',
       }}
     >
-      {block.children?.map((child) => (
+      {block.children?.map((child: any) => (
         <ChildBlockPlaceholder key={child.id} block={child} />
       ))}
       {(!block.children || block.children.length === 0) && (

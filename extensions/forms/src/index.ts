@@ -9,6 +9,7 @@
 import type {
   VolqanExtension,
   ExtensionContext,
+  ExtensionResponse,
   RouteDefinition,
   Widget,
 } from '@volqan/core';
@@ -231,7 +232,7 @@ function buildApiRoutes(ctx: ExtensionContext): RouteDefinition[] {
       path: '/api/forms/:formId/submit',
       public: true,
       rateLimit: { maxRequests: 10, windowSeconds: 60 },
-      async handler(req) {
+      async handler(req): Promise<ExtensionResponse> {
         try {
           const { formId } = req.params;
           const body = req.body as Record<string, unknown>;

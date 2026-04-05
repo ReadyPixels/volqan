@@ -310,7 +310,7 @@ export function PageBuilder({ page, onSave, onPublish, onPreview }: PageBuilderP
                 type="text"
                 className="w-full border border-[hsl(var(--border))] rounded-md px-3 py-1.5 text-sm bg-[hsl(var(--background))]"
                 value={meta.title ?? ''}
-                onChange={(e) => setMeta((m) => ({ ...m, title: e.target.value }))}
+                onChange={(e) => setMeta((m: any) => ({ ...m, title: e.target.value }))}
                 placeholder="Page title for search engines"
               />
             </div>
@@ -320,7 +320,7 @@ export function PageBuilder({ page, onSave, onPublish, onPreview }: PageBuilderP
                 type="text"
                 className="w-full border border-[hsl(var(--border))] rounded-md px-3 py-1.5 text-sm bg-[hsl(var(--background))]"
                 value={meta.ogImage ?? ''}
-                onChange={(e) => setMeta((m) => ({ ...m, ogImage: e.target.value }))}
+                onChange={(e) => setMeta((m: any) => ({ ...m, ogImage: e.target.value }))}
                 placeholder="https://..."
               />
             </div>
@@ -329,7 +329,7 @@ export function PageBuilder({ page, onSave, onPublish, onPreview }: PageBuilderP
               <textarea
                 className="w-full border border-[hsl(var(--border))] rounded-md px-3 py-1.5 text-sm bg-[hsl(var(--background))] h-16 resize-none"
                 value={meta.description ?? ''}
-                onChange={(e) => setMeta((m) => ({ ...m, description: e.target.value }))}
+                onChange={(e) => setMeta((m: any) => ({ ...m, description: e.target.value }))}
                 placeholder="Brief description for search engines (150–160 chars)"
               />
             </div>
@@ -339,7 +339,7 @@ export function PageBuilder({ page, onSave, onPublish, onPreview }: PageBuilderP
 
       {/* Builder body: palette | canvas | settings */}
       <div className="flex flex-1 overflow-hidden">
-        <BlockPalette onAddBlock={(type) => addBlock(type)} />
+        <BlockPalette onAddBlock={(type: any) => addBlock(type)} />
 
         <BuilderCanvas
           blocks={blocks}

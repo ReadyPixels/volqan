@@ -254,10 +254,10 @@ export class ImageProcessor {
    * peer dependency — projects that don't need image processing don't pay
    * the install cost.
    */
-  private async _loadSharp(): Promise<typeof import('sharp')['default']> {
+  private async _loadSharp(): Promise<any> {
     try {
-      const sharpModule = await import('sharp');
-      return sharpModule.default ?? (sharpModule as unknown as { default: typeof import('sharp')['default'] }).default;
+      const sharpModule = await import('sharp') as any;
+      return sharpModule.default ?? sharpModule;
     } catch {
       throw new Error(
         'ImageProcessor requires the "sharp" package to be installed. ' +

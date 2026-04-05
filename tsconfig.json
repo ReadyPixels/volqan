@@ -36,6 +36,9 @@
       ],
       "@volqan/*": [
         "packages/*/src/index.ts"
+      ],
+      "@/*": [
+        "packages/admin/src/*"
       ]
     }
   },

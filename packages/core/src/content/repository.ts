@@ -8,7 +8,6 @@
  */
 
 import type { PrismaClient } from '@prisma/client';
-import type { Prisma } from '@prisma/client';
 import {
   ContentStatus,
   ContentEntryNotFoundError,
@@ -52,8 +51,8 @@ function buildPrismaWhere(
   contentTypeId: string,
   where: QueryOptions['where'],
   includeSoftDeleted = false,
-): Prisma.ContentEntryWhereInput {
-  const clause: Prisma.ContentEntryWhereInput = {
+): Record<string, unknown> {
+  const clause: Record<string, unknown> = {
     contentTypeId,
     ...(!includeSoftDeleted && { deletedAt: null }),
   };
@@ -169,14 +168,14 @@ export class ContentRepository {
         slug: entrySlug,
         status: initialStatus,
         authorId: authorId ?? null,
-        data: mutatedData as Prisma.InputJsonValue,
+        data: mutatedData as unknown,
         publishedAt: initialStatus === ContentStatus.PUBLISHED ? new Date() : null,
       },
     });
 
     const entry = this._recordToEntry(record, contentTypeSlug);
 
-    await this.hooks?.fire('afterCreate', { contentTypeSlug, entry });
+    await this.hooks?.fire('afterCreate', { contentTypeSlug, entry: entry as unknown as Record<string, unknown> });
 
     return entry;
   }
@@ -229,10 +228,10 @@ export class ContentRepository {
 
     const orderBy = options.orderBy?.map((o) => {
       if (o.field === 'createdAt' || o.field === 'updatedAt' || o.field === 'publishedAt') {
-        return { [o.field]: o.direction } as Prisma.ContentEntryOrderByWithRelationInput;
+        return { [o.field]: o.direction } as Record<string, unknown>;
       }
       // JSON field ordering is not natively supported in all Prisma versions; fall back to createdAt
-      return { createdAt: o.direction } as Prisma.ContentEntryOrderByWithRelationInput;
+      return { createdAt: o.direction } as Record<string, unknown>;
     }) ?? [{ createdAt: 'desc' as const }];
 
     const [records, total] = await Promise.all([
@@ -240,12 +239,12 @@ export class ContentRepository {
       this.prisma.contentEntry.count({ where }),
     ]);
 
-    let entries = records.map((r) => this._recordToEntry(r, contentTypeSlug));
+    let entries = records.map((r: any) => this._recordToEntry(r, contentTypeSlug));
 
     // Apply select projection
     if (options.select && options.select.length > 0) {
       const selectedFields = new Set(options.select);
-      entries = entries.map((entry) => ({
+      entries = entries.map((entry: any) => ({
         ...entry,
         data: Object.fromEntries(
           Object.entries(entry.data).filter(([k]) => selectedFields.has(k)),
@@ -286,7 +285,7 @@ export class ContentRepository {
       contentTypeSlug,
       id,
       data,
-      existing: this._recordToEntry(existing, contentTypeSlug),
+      existing: this._recordToEntry(existing, contentTypeSlug) as unknown as Record<string, unknown>,
     }) ?? data;
 
     const merged = { ...(existing.data as ContentEntryData), ...(mutatedData as ContentEntryData) };
@@ -294,11 +293,11 @@ export class ContentRepository {
 
     const record = await this.prisma.contentEntry.update({
       where: { id },
-      data: { data: merged as Prisma.InputJsonValue },
+      data: { data: merged as unknown },
     });
 
     const entry = this._recordToEntry(record, contentTypeSlug);
-    await this.hooks?.fire('afterUpdate', { contentTypeSlug, entry });
+    await this.hooks?.fire('afterUpdate', { contentTypeSlug, entry: entry as unknown as Record<string, unknown> });
     return entry;
   }
 
@@ -322,7 +321,7 @@ export class ContentRepository {
     if (!existing) throw new ContentEntryNotFoundError(id);
 
     const entry = this._recordToEntry(existing, contentTypeSlug);
-    await this.hooks?.fire('beforeDelete', { contentTypeSlug, entry });
+    await this.hooks?.fire('beforeDelete', { contentTypeSlug, entry: entry as unknown as Record<string, unknown> });
 
     if (contentType.settings.softDelete) {
       await this.prisma.contentEntry.update({
@@ -353,7 +352,7 @@ export class ContentRepository {
     if (!existing) throw new ContentEntryNotFoundError(id);
 
     const currentEntry = this._recordToEntry(existing, contentTypeSlug);
-    await this.hooks?.fire('beforePublish', { contentTypeSlug, entry: currentEntry });
+    await this.hooks?.fire('beforePublish', { contentTypeSlug, entry: currentEntry as unknown as Record<string, unknown> });
 
     const record = await this.prisma.contentEntry.update({
       where: { id },
@@ -361,7 +360,7 @@ export class ContentRepository {
     });
 
     const entry = this._recordToEntry(record, contentTypeSlug);
-    await this.hooks?.fire('afterPublish', { contentTypeSlug, entry });
+    await this.hooks?.fire('afterPublish', { contentTypeSlug, entry: entry as unknown as Record<string, unknown> });
     return entry;
   }
 
