@@ -176,21 +176,19 @@ importers:
         version: 5.9.3
 
   packages/extension-sdk:
-    dependencies:
+    devDependencies:
       '@volqan/core':
         specifier: workspace:*
         version: link:../core
-    devDependencies:
       typescript:
         specifier: ^5.9.0
         version: 5.9.3
 
   packages/theme-sdk:
-    dependencies:
+    devDependencies:
       '@volqan/core':
         specifier: workspace:*
         version: link:../core
-    devDependencies:
       typescript:
         specifier: ^5.9.0
         version: 5.9.3
