@@ -60,3 +60,14 @@ export type {
   ExtensionManagerOptions,
   LicenseValidationResult,
 } from './manager.js';
+
+// Deep link utilities
+export {
+  BAZARIX_BASE_URL,
+  BAZARIX_EXTENSIONS_BROWSE_URL,
+  BAZARIX_THEMES_BROWSE_URL,
+  buildMarketplaceURL,
+  parseInstallURL,
+} from './deep-link.js';
+
+export type { MarketplaceFilters, ParsedInstallURL } from './deep-link.js';

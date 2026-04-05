@@ -16,10 +16,12 @@
     "test": "node --test",
     "clean": "rm -rf dist"
   },
-  "dependencies": {
-    "@volqan/core": "workspace:*"
+  "dependencies": {},
+  "peerDependencies": {
+    "@volqan/core": ">=0.1.0"
   },
   "devDependencies": {
+    "@volqan/core": "workspace:*",
     "typescript": "^5.9.0"
   }
 }
