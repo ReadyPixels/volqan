@@ -78,7 +78,7 @@ function mapToAuthSession(
       email: string;
       name: string | null;
       avatar: string | null;
-      role: import('@prisma/client').UserRole;
+      role: import('../database/index.js').UserRole;
       emailVerified: Date | null;
     };
   },
@@ -312,7 +312,7 @@ export async function listUserSessions(
     orderBy: { createdAt: 'desc' },
   });
 
-  return sessions.map((s) => ({
+  return sessions.map((s: any) => ({
     id: s.id,
     token: s.token,
     expiresAt: s.expiresAt,

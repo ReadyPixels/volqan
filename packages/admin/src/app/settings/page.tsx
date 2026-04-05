@@ -164,26 +164,26 @@ export default function SettingsPage() {
             <Input
               label="Site Name"
               value={siteName}
-              onChange={(e) => setSiteName(e.target.value)}
+              onChange={(e: any) => setSiteName(e.target.value)}
               hint="Displayed in the browser tab and admin header."
             />
             <Input
               label="Site URL"
               type="url"
               value={siteUrl}
-              onChange={(e) => setSiteUrl(e.target.value)}
+              onChange={(e: any) => setSiteUrl(e.target.value)}
               hint="The public URL of your site."
             />
             <Input
               label="Site Description"
               value={siteDescription}
-              onChange={(e) => setSiteDescription(e.target.value)}
+              onChange={(e: any) => setSiteDescription(e.target.value)}
             />
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Default Locale</label>
               <select
                 value={defaultLocale}
-                onChange={(e) => setDefaultLocale(e.target.value)}
+                onChange={(e: any) => setDefaultLocale(e.target.value)}
                 className="w-full h-9 rounded-md border border-[hsl(var(--input))] bg-[hsl(var(--background))] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))]"
               >
                 <option value="en">English (en)</option>
@@ -208,21 +208,21 @@ export default function SettingsPage() {
               <Input
                 label="SMTP Host"
                 value={smtpHost}
-                onChange={(e) => setSmtpHost(e.target.value)}
+                onChange={(e: any) => setSmtpHost(e.target.value)}
                 placeholder="smtp.example.com"
               />
               <Input
                 label="SMTP Port"
                 type="number"
                 value={smtpPort}
-                onChange={(e) => setSmtpPort(e.target.value)}
+                onChange={(e: any) => setSmtpPort(e.target.value)}
                 placeholder="587"
               />
             </div>
             <Input
               label="SMTP Username"
               value={smtpUser}
-              onChange={(e) => setSmtpUser(e.target.value)}
+              onChange={(e: any) => setSmtpUser(e.target.value)}
               placeholder="your-smtp-username"
             />
             <Input
@@ -234,7 +234,7 @@ export default function SettingsPage() {
               label="From Email"
               type="email"
               value={fromEmail}
-              onChange={(e) => setFromEmail(e.target.value)}
+              onChange={(e: any) => setFromEmail(e.target.value)}
               hint="The sender address for all outbound emails."
             />
             <Button variant="outline" size="sm">Send test email</Button>

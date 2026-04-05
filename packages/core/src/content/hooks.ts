@@ -159,7 +159,7 @@ export class HookRegistry {
   ): () => void {
     const registration: HookRegistration = {
       name,
-      handler: handler as HookHandler,
+      handler: handler as unknown as HookHandler,
       priority,
     };
     this._hooks.push(registration);

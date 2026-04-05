@@ -848,7 +848,7 @@ function buildInvoiceItems(invoice: Stripe.Invoice): Array<{
   amount: number;
   quantity: number;
 }> {
-  return (invoice.lines?.data ?? []).map((line) => ({
+  return (invoice.lines?.data ?? []).map((line: any) => ({
     description: line.description ?? 'Subscription',
     amount: line.amount,
     quantity: line.quantity ?? 1,
@@ -860,7 +860,7 @@ function buildInvoiceItems(invoice: Stripe.Invoice): Array<{
  * Looks for a line item with description matching "Service Fee".
  */
 function resolveServiceFeeFromInvoice(invoice: Stripe.Invoice): number {
-  const feeLine = (invoice.lines?.data ?? []).find((line) =>
+  const feeLine = (invoice.lines?.data ?? []).find((line: any) =>
     line.description?.toLowerCase().includes('service fee'),
   );
   return feeLine?.amount ?? 0;

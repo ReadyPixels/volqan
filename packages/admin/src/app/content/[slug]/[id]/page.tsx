@@ -113,7 +113,7 @@ export default function EditContentEntryPage() {
                     key={field.key}
                     field={field}
                     value={formData[field.key]}
-                    onChange={(v) => setFormData((prev) => ({ ...prev, [field.key]: v }))}
+                    onChange={(v: any) => setFormData((prev) => ({ ...prev, [field.key]: v }))}
                     error={errors[field.key]}
                   />
                 ))}
@@ -134,7 +134,7 @@ export default function EditContentEntryPage() {
                     key={field.key}
                     field={field}
                     value={formData[field.key]}
-                    onChange={(v) => setFormData((prev) => ({ ...prev, [field.key]: v }))}
+                    onChange={(v: any) => setFormData((prev) => ({ ...prev, [field.key]: v }))}
                     error={errors[field.key]}
                   />
                 ))}

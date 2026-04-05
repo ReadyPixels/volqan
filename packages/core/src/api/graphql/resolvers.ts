@@ -120,9 +120,10 @@ export function buildResolvers(options: ResolverBuilderOptions): ResolverMap {
         return schemaBuilder.listContentTypes();
       },
 
-      getContentType: async (_parent, args: { slug: string }, _ctx: GraphQLContext) => {
+      getContentType: async (_parent, args: Record<string, unknown>, _ctx: GraphQLContext) => {
+        const { slug } = args as { slug: string };
         try {
-          return await schemaBuilder.getContentType(args.slug);
+          return await schemaBuilder.getContentType(slug);
         } catch {
           return null;
         }
@@ -134,17 +135,19 @@ export function buildResolvers(options: ResolverBuilderOptions): ResolverMap {
       },
 
       // Media
-      listMedia: async (_parent, args: { folder?: string; mimeType?: string; page?: number; perPage?: number }, _ctx: GraphQLContext) => {
+      listMedia: async (_parent, args: Record<string, unknown>, _ctx: GraphQLContext) => {
+        const { folder, mimeType, page, perPage } = args as { folder?: string; mimeType?: string; page?: number; perPage?: number };
         if (!mediaManager) return { data: [], meta: { total: 0, page: 1, perPage: 20, totalPages: 0 } };
         const mm = mediaManager as { findMany: (opts: unknown) => Promise<{ data: unknown[]; meta: unknown }> };
-        return mm.findMany({ folder: args.folder, mimeType: args.mimeType, page: args.page ?? 1, perPage: args.perPage ?? 20 });
+        return mm.findMany({ folder, mimeType, page: page ?? 1, perPage: perPage ?? 20 });
       },
 
-      getMedia: async (_parent, args: { id: string }, _ctx: GraphQLContext) => {
+      getMedia: async (_parent, args: Record<string, unknown>, _ctx: GraphQLContext) => {
+        const { id } = args as { id: string };
         if (!mediaManager) return null;
         const mm = mediaManager as { findById: (id: string) => Promise<unknown> };
         try {
-          return await mm.findById(args.id);
+          return await mm.findById(id);
         } catch {
           return null;
         }
@@ -156,14 +159,16 @@ export function buildResolvers(options: ResolverBuilderOptions): ResolverMap {
     // -----------------------------------------------------------------------
     Mutation: {
       // Auth
-      login: async (_parent, args: { email: string; password: string }, _ctx: GraphQLContext) => {
+      login: async (_parent, args: Record<string, unknown>, _ctx: GraphQLContext) => {
+        const { email, password } = args as { email: string; password: string };
         if (!authenticate) throw new Error('Authentication is not configured');
-        return authenticate(args.email, args.password);
+        return authenticate(email, password);
       },
 
-      register: async (_parent, args: { name: string; email: string; password: string }, _ctx: GraphQLContext) => {
+      register: async (_parent, args: Record<string, unknown>, _ctx: GraphQLContext) => {
+        const { name, email, password } = args as { name: string; email: string; password: string };
         if (!register) throw new Error('Registration is not configured');
-        return register(args.name, args.email, args.password);
+        return register(name, email, password);
       },
 
       logout: async (_parent, _args, ctx: GraphQLContext) => {
@@ -174,17 +179,19 @@ export function buildResolvers(options: ResolverBuilderOptions): ResolverMap {
       },
 
       // Media
-      deleteMedia: async (_parent, args: { id: string }, _ctx: GraphQLContext) => {
+      deleteMedia: async (_parent, args: Record<string, unknown>, _ctx: GraphQLContext) => {
+        const { id } = args as { id: string };
         if (!mediaManager) return false;
         const mm = mediaManager as { delete: (id: string) => Promise<void> };
-        await mm.delete(args.id);
+        await mm.delete(id);
         return true;
       },
 
-      moveMedia: async (_parent, args: { id: string; folder: string }, _ctx: GraphQLContext) => {
+      moveMedia: async (_parent, args: Record<string, unknown>, _ctx: GraphQLContext) => {
+        const { id, folder } = args as { id: string; folder: string };
         if (!mediaManager) throw new Error('Media manager is not configured');
         const mm = mediaManager as { moveToFolder: (id: string, folder: string) => Promise<unknown> };
-        return mm.moveToFolder(args.id, args.folder);
+        return mm.moveToFolder(id, folder);
       },
 
       // Content Types (admin)
@@ -211,10 +218,11 @@ export function buildResolvers(options: ResolverBuilderOptions): ResolverMap {
         });
       },
 
-      deleteContentType: async (_parent, args: { slug: string; deleteEntries?: boolean }, ctx: GraphQLContext) => {
+      deleteContentType: async (_parent, args: Record<string, unknown>, ctx: GraphQLContext) => {
+        const { slug, deleteEntries } = args as { slug: string; deleteEntries?: boolean };
         requireAuth(ctx);
         requireRole(ctx, 'admin');
-        await schemaBuilder.deleteContentType(args.slug, args.deleteEntries ?? false);
+        await schemaBuilder.deleteContentType(slug, deleteEntries ?? false);
         return true;
       },
     },
@@ -233,25 +241,27 @@ export function buildResolvers(options: ResolverBuilderOptions): ResolverMap {
     // ---------------------------
     resolvers['Query'][`list${typeName}`] = async (
       _parent: unknown,
-      args: ListQueryArgs,
+      args: Record<string, unknown>,
       _ctx: GraphQLContext,
     ) => {
+      const { filter, sort, page, perPage, fields } = args as ListQueryArgs;
       return repository.findMany(ct.slug, {
-        where: args.filter as Record<string, unknown> | undefined,
-        orderBy: parseSortString(args.sort),
-        page: args.page ?? 1,
-        perPage: args.perPage ?? 20,
-        select: args.fields?.split(',').map((f) => f.trim()),
+        where: filter as Record<string, unknown> | undefined,
+        orderBy: parseSortString(sort),
+        page: page ?? 1,
+        perPage: perPage ?? 20,
+        select: fields?.split(',').map((f) => f.trim()),
       });
     };
 
     resolvers['Query'][`get${typeName}`] = async (
       _parent: unknown,
-      args: { id: string },
+      args: Record<string, unknown>,
       _ctx: GraphQLContext,
     ) => {
+      const { id } = args as { id: string };
       try {
-        return await repository.findById(ct.slug, args.id);
+        return await repository.findById(ct.slug, id);
       } catch {
         return null;
       }
@@ -261,11 +271,12 @@ export function buildResolvers(options: ResolverBuilderOptions): ResolverMap {
     if (hasSlugField) {
       resolvers['Query'][`get${typeName}BySlug`] = async (
         _parent: unknown,
-        args: { slug: string },
+        args: Record<string, unknown>,
         _ctx: GraphQLContext,
       ) => {
+        const { slug } = args as { slug: string };
         try {
-          return await repository.findBySlug(ct.slug, args.slug);
+          return await repository.findBySlug(ct.slug, slug);
         } catch {
           return null;
         }
@@ -277,49 +288,54 @@ export function buildResolvers(options: ResolverBuilderOptions): ResolverMap {
     // ---------------------------
     resolvers['Mutation'][`create${typeName}`] = async (
       _parent: unknown,
-      args: { input: Record<string, unknown> },
+      args: Record<string, unknown>,
       ctx: GraphQLContext,
     ) => {
+      const { input } = args as { input: Record<string, unknown> };
       requireAuth(ctx);
-      return repository.create(ct.slug, args.input, ctx.user?.id);
+      return repository.create(ct.slug, input, ctx.user?.id);
     };
 
     resolvers['Mutation'][`update${typeName}`] = async (
       _parent: unknown,
-      args: { id: string; input: Record<string, unknown> },
+      args: Record<string, unknown>,
       ctx: GraphQLContext,
     ) => {
+      const { id, input } = args as { id: string; input: Record<string, unknown> };
       requireAuth(ctx);
-      return repository.update(ct.slug, args.id, args.input);
+      return repository.update(ct.slug, id, input);
     };
 
     resolvers['Mutation'][`delete${typeName}`] = async (
       _parent: unknown,
-      args: { id: string },
+      args: Record<string, unknown>,
       ctx: GraphQLContext,
     ) => {
+      const { id } = args as { id: string };
       requireAuth(ctx);
-      await repository.delete(ct.slug, args.id);
+      await repository.delete(ct.slug, id);
       return true;
     };
 
     if (ct.settings.draftable) {
       resolvers['Mutation'][`publish${typeName}`] = async (
         _parent: unknown,
-        args: { id: string },
+        args: Record<string, unknown>,
         ctx: GraphQLContext,
       ) => {
+        const { id } = args as { id: string };
         requireAuth(ctx);
-        return repository.publish(ct.slug, args.id);
+        return repository.publish(ct.slug, id);
       };
 
       resolvers['Mutation'][`unpublish${typeName}`] = async (
         _parent: unknown,
-        args: { id: string },
+        args: Record<string, unknown>,
         ctx: GraphQLContext,
       ) => {
+        const { id } = args as { id: string };
         requireAuth(ctx);
-        return repository.unpublish(ct.slug, args.id);
+        return repository.unpublish(ct.slug, id);
       };
     }
 
@@ -332,8 +348,9 @@ export function buildResolvers(options: ResolverBuilderOptions): ResolverMap {
     resolvers[typeName] = resolvers[typeName] ?? {};
     for (const field of ct.fields) {
       if (field.type === 'PASSWORD') continue; // Never expose passwords
-      resolvers[typeName][field.name] = (parent: Record<string, unknown>) => {
-        const data = parent['data'] as Record<string, unknown> | undefined;
+      resolvers[typeName][field.name] = (parent: unknown) => {
+        const p = parent as Record<string, unknown>;
+        const data = p['data'] as Record<string, unknown> | undefined;
         return data?.[field.name] ?? null;
       };
     }

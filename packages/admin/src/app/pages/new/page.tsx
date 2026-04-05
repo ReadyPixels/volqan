@@ -45,7 +45,7 @@ export default function NewPagePage() {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
-    setPage((p) => ({
+    setPage((p: any) => ({
       ...p,
       title: (data.get('title') as string) || 'Untitled Page',
       slug: (data.get('slug') as string) || 'untitled',

@@ -147,7 +147,6 @@ export type {
   Account,
   Session,
   ContentType,
-  ContentEntry,
   Media,
   Extension,
   Theme,
@@ -157,8 +156,6 @@ export type {
   Installation,
   UserRole,
   AuthProvider,
-  ContentStatus,
-  StorageProvider,
   Prisma,
 } from './database/index.js';
 
@@ -221,8 +218,6 @@ export {
   setSessionCookie,
   clearSessionCookie,
   authErrorResponse,
-  withAuth,
-  withRole,
   UnauthenticatedRedirect,
   SESSION_COOKIE_NAME,
   CSRF_COOKIE_NAME,
@@ -267,7 +262,6 @@ export type {
   DatabaseProvider,
   DatabaseConfig,
   AuthConfig,
-  CorsConfig,
   ServerConfig,
   StorageProviderName,
   LocalStorageConfig,

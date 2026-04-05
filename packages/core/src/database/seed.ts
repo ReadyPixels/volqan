@@ -141,7 +141,7 @@ async function seedDefaultSettings(): Promise<void> {
       update: {},
       create: {
         key: setting.key,
-        value: setting.value as Parameters<typeof db.setting.create>[0]['data']['value'],
+        value: setting.value as any,
         group: setting.group,
         isPublic: setting.isPublic,
       },
