@@ -386,7 +386,7 @@ const formsExtension: VolqanExtension = {
     'Official Volqan Forms extension. Drag-and-drop form builder with submission management, honeypot spam protection, email notifications, and a public API.',
   author: {
     name: 'Volqan',
-    url: 'https://volqan.dev',
+    url: 'https://volqan.link',
   },
 
   // -------------------------------------------------------------------------
@@ -536,7 +536,7 @@ const formsExtension: VolqanExtension = {
     category: 'forms',
     tags: ['forms', 'contact', 'submissions', 'builder', 'honeypot', 'spam-protection'],
     screenshotUrls: [],
-    demoUrl: 'https://demo.volqan.dev/admin/forms',
+    demoUrl: 'https://demo.volqan.link/admin/forms',
   },
 };
 

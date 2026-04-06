@@ -69,7 +69,7 @@ function ClientAttributionFooter() {
       <span>
         Powered by{' '}
         <a
-          href="https://volqan.dev"
+          href="https://volqan.link"
           target="_blank"
           rel="noopener noreferrer"
           className="attribution-footer__link"

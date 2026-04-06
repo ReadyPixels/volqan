@@ -4,7 +4,7 @@
 
 **Effective Date:** April 5, 2026
 **Last Revised:** April 5, 2026
-**Platform:** Bazarix — bazarix.dev
+**Platform:** Bazarix — bazarix.link
 **Operator:** ReadyPixels, sole proprietorship operated by Sharif ("ReadyPixels," "we," "us," or "Platform")
 **Contact:** sharif@readypixels.com
 **Governing Law:** State of Wyoming, United States of America
@@ -13,7 +13,7 @@
 
 ## 1. Agreement to Terms
 
-1.1 By creating a Buyer account on the Bazarix Marketplace ("Platform") or by completing any purchase through bazarix.dev, you ("Buyer," "you," or "your") agree to be bound by these Buyer Terms of Service ("Buyer Terms"), the Platform's Privacy Policy, and the DMCA Policy, all of which are incorporated herein by reference.
+1.1 By creating a Buyer account on the Bazarix Marketplace ("Platform") or by completing any purchase through bazarix.link, you ("Buyer," "you," or "your") agree to be bound by these Buyer Terms of Service ("Buyer Terms"), the Platform's Privacy Policy, and the DMCA Policy, all of which are incorporated herein by reference.
 
 1.2 If you are purchasing on behalf of a company, organization, or other legal entity, you represent that you have authority to bind that entity to these Buyer Terms, and references to "you" shall include that entity.
 
@@ -113,7 +113,7 @@ Total Amount Charged = Listing Price
 
 ## 7. Downloads and Access
 
-7.1 **Download Access.** Upon completing a Purchase, you will receive access to download the Digital Product through your Buyer account dashboard at bazarix.dev/dashboard/purchases.
+7.1 **Download Access.** Upon completing a Purchase, you will receive access to download the Digital Product through your Buyer account dashboard at bazarix.link/dashboard/purchases.
 
 7.2 **Download Limit.** You may download the Digital Product files up to five (5) times from the Platform's content delivery system. After five downloads of a given version, you may contact sharif@readypixels.com to request an additional download allotment, which ReadyPixels will assess at its discretion.
 
@@ -162,7 +162,7 @@ ReadyPixels will investigate your claim within ten (10) business days. If the cl
 
 9.1 **Seller-Provided Support.** All product-specific support — including installation help, configuration questions, bug reports, and feature requests relating to a specific Listing — is the responsibility of the **Seller**, not ReadyPixels. Each Listing's support terms are specified in the Listing's README or support documentation. The scope and quality of support varies by Seller and listing.
 
-9.2 **Platform-Provided Infrastructure.** ReadyPixels is responsible for providing and maintaining: (a) the Bazarix Marketplace website and Buyer account dashboard; (b) the payment processing infrastructure for completing purchases; (c) the content delivery infrastructure for downloading purchased Digital Products; (d) the license validation API (`https://bazarix.dev/api/v1/license`) used by the Volqan framework to verify purchased extension licenses; and (e) general customer service regarding billing, account access, and refund requests.
+9.2 **Platform-Provided Infrastructure.** ReadyPixels is responsible for providing and maintaining: (a) the Bazarix Marketplace website and Buyer account dashboard; (b) the payment processing infrastructure for completing purchases; (c) the content delivery infrastructure for downloading purchased Digital Products; (d) the license validation API (`https://bazarix.link/api/v1/license`) used by the Volqan framework to verify purchased extension licenses; and (e) general customer service regarding billing, account access, and refund requests.
 
 9.3 **How to Contact the Platform.** For all platform-level support (billing, account access, refund requests), contact ReadyPixels at sharif@readypixels.com.
 
@@ -243,4 +243,4 @@ ReadyPixels will investigate your claim within ten (10) business days. If the cl
 *Bazarix Marketplace — Buyer Terms of Service v1.0*
 *Effective: April 5, 2026*
 *Operator: ReadyPixels / sharif@readypixels.com*
-*Domain: bazarix.dev*
+*Domain: bazarix.link*

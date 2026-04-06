@@ -135,7 +135,7 @@ export async function createCheckoutSession(
             name: 'Service Fee',
             description:
               'Platform Service Fee — $0.50 flat + 10% of plan price. ' +
-              'See volqan.dev/terms for full fee disclosure.',
+              'See volqan.link/terms for full fee disclosure.',
           },
           unit_amount: serviceFeeCents,
           recurring: {

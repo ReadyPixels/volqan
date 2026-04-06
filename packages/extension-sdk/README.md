@@ -1,6 +1,6 @@
 # @volqan/extension-sdk
 
-Developer SDK for building [Volqan](https://volqan.dev) extensions.
+Developer SDK for building [Volqan](https://volqan.link) extensions.
 
 ## Quick Start
 
@@ -162,9 +162,9 @@ console.assert(extCtx._logs.some(l => l.level === 'info'));
 
 ## Documentation
 
-- [Getting Started](https://volqan.dev/docs/extensions/getting-started)
-- [API Reference](https://volqan.dev/docs/extensions/api-reference)
-- [Publishing to Bazarix](https://volqan.dev/docs/extensions/publishing)
+- [Getting Started](https://volqan.link/docs/extensions/getting-started)
+- [API Reference](https://volqan.link/docs/extensions/api-reference)
+- [Publishing to Bazarix](https://volqan.link/docs/extensions/publishing)
 
 ## License
 

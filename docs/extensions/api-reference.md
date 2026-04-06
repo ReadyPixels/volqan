@@ -574,7 +574,7 @@ databaseMigrations: [
 
 ## Marketplace Metadata
 
-Optional metadata for extensions distributed through the [Bazarix marketplace](https://bazarix.dev).
+Optional metadata for extensions distributed through the [Bazarix marketplace](https://bazarix.link).
 
 ```typescript
 marketplace?: {

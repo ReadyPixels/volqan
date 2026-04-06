@@ -10,7 +10,7 @@
  * ```ts
  * import { db } from '@volqan/core/database';
  *
- * const user = await db.user.findUnique({ where: { email: 'admin@volqan.dev' } });
+ * const user = await db.user.findUnique({ where: { email: 'admin@volqan.link' } });
  * ```
  */
 

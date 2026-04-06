@@ -9,13 +9,13 @@
 
 **Owner and Operator:** Sharif / ReadyPixels
 **Contact:** sharif@readypixels.com
-**Project URL:** https://volqan.dev
+**Project URL:** https://volqan.link
 
 ---
 
 ## 1. Agreement to Terms
 
-By downloading, installing, accessing, or using the Volqan framework ("Software"), any software distributed under the Volqan namespace (`@volqan/*`), the Bazarix marketplace ("Marketplace") located at https://bazarix.dev, or any associated services, APIs, documentation, or websites (collectively, the "Platform"), you ("User," "Licensee," or "you") agree to be legally bound by these Terms of Service ("Terms").
+By downloading, installing, accessing, or using the Volqan framework ("Software"), any software distributed under the Volqan namespace (`@volqan/*`), the Bazarix marketplace ("Marketplace") located at https://bazarix.link, or any associated services, APIs, documentation, or websites (collectively, the "Platform"), you ("User," "Licensee," or "you") agree to be legally bound by these Terms of Service ("Terms").
 
 If you are entering into these Terms on behalf of a company, organization, or other legal entity, you represent and warrant that you have the authority to bind that entity to these Terms, and references to "you" shall refer to that entity.
 
@@ -31,7 +31,7 @@ For purposes of these Terms, the following definitions apply:
 
 **"Software"** means the Volqan open-source application framework, including all packages published under the `@volqan/*` npm scope, the CLI tool (`npx create-volqan-app`), and all associated source code, documentation, and assets.
 
-**"Marketplace"** means the Bazarix platform accessible at https://bazarix.dev, through which approved sellers distribute extensions, themes, templates, and related products built for the Volqan framework.
+**"Marketplace"** means the Bazarix platform accessible at https://bazarix.link, through which approved sellers distribute extensions, themes, templates, and related products built for the Volqan framework.
 
 **"Extension"** means any software package designed to extend the functionality of the Software, distributed through the Marketplace or other channels.
 
@@ -39,9 +39,9 @@ For purposes of these Terms, the following definitions apply:
 
 **"Support Plan"** means a paid subscription tier that grants the licensee, among other benefits, the right to remove the Attribution Notice from their deployments of the Software.
 
-**"Attribution Notice"** means the notice reading "Powered by Volqan — https://volqan.dev" required to be displayed on all deployments of the Software absent an active Support Plan.
+**"Attribution Notice"** means the notice reading "Powered by Volqan — https://volqan.link" required to be displayed on all deployments of the Software absent an active Support Plan.
 
-**"License API"** means the licensing verification endpoint located at https://bazarix.dev/api/v1/license, which validates active Support Plan subscriptions.
+**"License API"** means the licensing verification endpoint located at https://bazarix.link/api/v1/license, which validates active Support Plan subscriptions.
 
 **"Platform Service Fee"** means the fee assessed on transactions as further described in Section 8 of these Terms.
 
@@ -59,7 +59,7 @@ The Software is licensed under the Open Core Attribution License v1.0 ("OCAL"). 
 
 **All deployments of the Software, whether modified or unmodified, must display the following notice in a location reasonably visible to end users, such as an admin panel footer, application footer, or About page:**
 
-> **"Powered by Volqan — https://volqan.dev"**
+> **"Powered by Volqan — https://volqan.link"**
 
 This notice must remain visible, unobscured, and unaltered at all times during active operation of any deployment of the Software. The notice must be rendered in a manner that is legible and reasonably prominent. Placement in source code comments, metadata, or locations inaccessible to ordinary end users does not satisfy this requirement.
 
@@ -79,7 +79,7 @@ Removal, concealment, modification, or obstruction of the Attribution Notice wit
 
 ### 3.4 Attribution Removal — Authorized Method
 
-The Attribution Notice requirement may be waived exclusively for installations holding an **active Support Plan subscription** that is validated in real time by the License API at https://bazarix.dev/api/v1/license. Attribution removal is not effective until the License API confirms an active subscription for the applicable Installation ID. Cancellation, expiration, or failure to renew a Support Plan immediately reinstates the Attribution Notice requirement.
+The Attribution Notice requirement may be waived exclusively for installations holding an **active Support Plan subscription** that is validated in real time by the License API at https://bazarix.link/api/v1/license. Attribution removal is not effective until the License API confirms an active subscription for the applicable Installation ID. Cancellation, expiration, or failure to renew a Support Plan immediately reinstates the Attribution Notice requirement.
 
 ### 3.5 Commercial Distribution Restrictions
 
@@ -98,7 +98,7 @@ ReadyPixels offers Support Plans for the Volqan framework on the following billi
 | Support Plan — Yearly | Annual (paid upfront) | Set by ReadyPixels at the time of purchase |
 | Support Plan — Monthly | Monthly (recurring) | Equal to (Annual Price ÷ 12) × 1.25 |
 
-Current pricing is displayed at https://volqan.dev/pricing and may be updated by ReadyPixels with thirty (30) days' notice to subscribers.
+Current pricing is displayed at https://volqan.link/pricing and may be updated by ReadyPixels with thirty (30) days' notice to subscribers.
 
 ### 4.2 Monthly Plan Pricing Formula
 
@@ -411,8 +411,8 @@ For questions about these Terms of Service, please contact:
 **ReadyPixels**
 **Attn:** Sharif
 **Email:** sharif@readypixels.com
-**Project:** https://volqan.dev
-**Marketplace:** https://bazarix.dev
+**Project:** https://volqan.link
+**Marketplace:** https://bazarix.link
 
 ---
 

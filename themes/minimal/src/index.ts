@@ -361,7 +361,7 @@ const minimalTheme: VolqanTheme = {
 
   marketplace: {
     category: 'dark',
-    previewUrl: 'https://demo.volqan.dev/themes/minimal',
+    previewUrl: 'https://demo.volqan.link/themes/minimal',
   },
 };
 

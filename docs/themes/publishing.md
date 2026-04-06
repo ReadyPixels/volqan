@@ -5,7 +5,7 @@ description: How to prepare and publish your Volqan theme to the Bazarix marketp
 
 # Publishing Themes
 
-This guide covers everything you need to publish your Volqan theme on the [Bazarix marketplace](https://bazarix.dev).
+This guide covers everything you need to publish your Volqan theme on the [Bazarix marketplace](https://bazarix.link).
 
 ---
 
@@ -121,7 +121,7 @@ The preview URL should:
 
 ### 1. Create a Bazarix developer account
 
-Sign up at [bazarix.dev/developers](https://bazarix.dev/developers).
+Sign up at [bazarix.link/developers](https://bazarix.link/developers).
 
 ### 2. Register your vendor namespace
 
@@ -152,7 +152,7 @@ Review typically takes 2–5 business days.
 
 ## Revenue Sharing
 
-> ⚠️ **LEGAL REVIEW NEEDED** — The following revenue sharing terms are subject to change. Consult the latest Bazarix Developer Agreement at [bazarix.dev/legal](https://bazarix.dev/legal) for current terms.
+> ⚠️ **LEGAL REVIEW NEEDED** — The following revenue sharing terms are subject to change. Consult the latest Bazarix Developer Agreement at [bazarix.link/legal](https://bazarix.link/legal) for current terms.
 
 ### Standard Split
 

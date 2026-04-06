@@ -354,10 +354,10 @@ export default function SettingsPage() {
               ))}
 
               <div className="pt-4 flex items-center gap-2">
-                <a href="https://volqan.dev/docs" target="_blank" rel="noopener noreferrer">
+                <a href="https://volqan.link/docs" target="_blank" rel="noopener noreferrer">
                   <Button variant="outline" size="sm">View Documentation</Button>
                 </a>
-                <a href="https://bazarix.dev" target="_blank" rel="noopener noreferrer">
+                <a href="https://bazarix.link" target="_blank" rel="noopener noreferrer">
                   <Button variant="outline" size="sm">Manage License</Button>
                 </a>
               </div>

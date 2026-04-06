@@ -86,8 +86,8 @@ jobs:
           fi
 
           # Confirm it links to the project URL
-          if ! grep -q "volqan.dev" "$FOOTER_FILE"; then
-            echo "::error::The AttributionFooter component in $FOOTER_FILE no longer links to https://volqan.dev. The project URL must remain in the attribution footer."
+          if ! grep -q "volqan.link" "$FOOTER_FILE"; then
+            echo "::error::The AttributionFooter component in $FOOTER_FILE no longer links to https://volqan.link. The project URL must remain in the attribution footer."
             exit 1
           fi
 

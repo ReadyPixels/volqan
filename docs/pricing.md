@@ -35,7 +35,7 @@ Everything in Volqan is yours:
 - Docker self-hosting
 - Full source code — modify anything
 
-**The only requirement of the free license:** Your deployment must display the attribution notice `"Powered by Volqan — volqan.dev"` in a location reasonably visible to administrators, such as the admin panel footer.
+**The only requirement of the free license:** Your deployment must display the attribution notice `"Powered by Volqan — volqan.link"` in a location reasonably visible to administrators, such as the admin panel footer.
 
 This requirement exists to help Volqan grow. You may remove it with a Support Plan.
 
@@ -71,7 +71,7 @@ All Support Plans include:
 
 > **Note:** Specific pricing is set by the owner at launch and displayed on the checkout page. The monthly plan is always priced at (yearly price ÷ 12) × 1.25. This 25% monthly uplift is non-negotiable — it accounts for higher payment processing overhead per transaction, churn-adjusted cash flow variance, and billing cycle administration costs.
 
-**Purchase a Support Plan → [volqan.dev/pricing](https://volqan.dev/pricing)**
+**Purchase a Support Plan → [volqan.link/pricing](https://volqan.link/pricing)**
 
 ### How Attribution Removal Works
 
@@ -79,7 +79,7 @@ When your Support Plan is active, the Volqan attribution footer is automatically
 
 1. You purchase a Support Plan. Stripe confirms the payment.
 2. The Bazarix license API records your installation ID and plan status.
-3. Your Volqan installation calls `https://bazarix.dev/api/v1/license/check` on every admin panel boot, with a 3-second timeout. The result is cached for 24 hours.
+3. Your Volqan installation calls `https://bazarix.link/api/v1/license/check` on every admin panel boot, with a 3-second timeout. The result is cached for 24 hours.
 4. If your subscription is active, `attributionRemoved: true` is returned and the footer does not render.
 5. If your subscription lapses, `attributionRemoved: false` is returned and the footer reappears automatically — no manual action required on either side.
 
@@ -97,7 +97,7 @@ See the full [Refund Policy](./legal/refund-policy.md).
 
 ## Marketplace Purchases (Bazarix)
 
-When you purchase extensions or themes from [Bazarix](https://bazarix.dev), a Platform Service Fee is applied to every transaction in addition to the listing price.
+When you purchase extensions or themes from [Bazarix](https://bazarix.link), a Platform Service Fee is applied to every transaction in addition to the listing price.
 
 ### Platform Service Fee Formula
 
@@ -164,7 +164,7 @@ Yes. A $0.50 additional surcharge applies to PayPal payments. This is disclosed 
 
 **Are there refunds for marketplace purchases?**
 
-Marketplace purchases from Bazarix are governed by the [Bazarix Buyer Terms](https://bazarix.dev/legal/buyer-terms). Generally, no refund is issued after a download, unless the listing is materially misrepresented.
+Marketplace purchases from Bazarix are governed by the [Bazarix Buyer Terms](https://bazarix.link/legal/buyer-terms). Generally, no refund is issued after a download, unless the listing is materially misrepresented.
 
 **Is there a Pro version or hosted/managed version?**
 

@@ -526,7 +526,7 @@ const warmEarthTheme: VolqanTheme = {
 
   marketplace: {
     category: 'light',
-    previewUrl: 'https://demo.volqan.dev/themes/warm-earth',
+    previewUrl: 'https://demo.volqan.link/themes/warm-earth',
   },
 };
 

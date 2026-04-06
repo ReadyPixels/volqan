@@ -8,8 +8,8 @@
 
 **Owner and Operator:** Sharif / ReadyPixels
 **Contact:** sharif@readypixels.com
-**Project URL:** https://volqan.dev
-**Marketplace URL:** https://bazarix.dev
+**Project URL:** https://volqan.link
+**Marketplace URL:** https://bazarix.link
 
 ---
 
@@ -241,7 +241,7 @@ If you have questions about any fee assessed on your account or a specific trans
 **ReadyPixels / Sharif**
 **Email:** sharif@readypixels.com
 **Subject Line:** Fee Inquiry — [Transaction Date and Amount]
-**Project URL:** https://volqan.dev
+**Project URL:** https://volqan.link
 
 ---
 

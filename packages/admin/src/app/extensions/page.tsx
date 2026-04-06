@@ -144,7 +144,7 @@ function ExtensionCard({ ext, onToggle, onUninstall }: {
             <Settings className="w-3 h-3" /> Settings
           </Button>
           {ext.marketplace && (
-            <a href={`https://bazarix.dev/extensions/${ext.id}`} target="_blank" rel="noopener noreferrer">
+            <a href={`https://bazarix.link/extensions/${ext.id}`} target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" size="sm" className="text-xs gap-1">
                 <ExternalLink className="w-3 h-3" /> Marketplace
               </Button>

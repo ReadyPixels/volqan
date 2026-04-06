@@ -8,18 +8,18 @@
 
 **Data Controller:** Sharif / ReadyPixels
 **Contact:** sharif@readypixels.com
-**Project URL:** https://volqan.dev
+**Project URL:** https://volqan.link
 
 ---
 
 ## 1. Introduction and Scope
 
-ReadyPixels ("Company," "we," "us," or "our"), operator of the Volqan framework (https://volqan.dev) and the Bazarix marketplace (https://bazarix.dev), is committed to protecting the privacy of individuals who use our Platform. This Privacy Policy explains how we collect, use, disclose, retain, and protect personal information in connection with your use of:
+ReadyPixels ("Company," "we," "us," or "our"), operator of the Volqan framework (https://volqan.link) and the Bazarix marketplace (https://bazarix.link), is committed to protecting the privacy of individuals who use our Platform. This Privacy Policy explains how we collect, use, disclose, retain, and protect personal information in connection with your use of:
 
 - The Volqan framework and all `@volqan/*` npm packages;
 - The Bazarix marketplace and its associated services;
-- The Volqan documentation site hosted at https://volqan.dev;
-- The License API at https://bazarix.dev/api/v1/license;
+- The Volqan documentation site hosted at https://volqan.link;
+- The License API at https://bazarix.link/api/v1/license;
 - Any other services operated by ReadyPixels (collectively, the "Platform").
 
 This Privacy Policy is incorporated into and forms part of our Terms of Service. By using the Platform, you agree to the collection and use of information in accordance with this Privacy Policy.
@@ -290,7 +290,7 @@ For all privacy-related inquiries, requests, or complaints, please contact:
 **ReadyPixels / Sharif**
 **Email:** sharif@readypixels.com
 **Subject Line:** Privacy Request
-**Project URL:** https://volqan.dev
+**Project URL:** https://volqan.link
 
 We will endeavor to respond to all legitimate privacy inquiries within the timeframes specified in Section 7.3.
 

@@ -4,7 +4,7 @@
 
 **Effective Date:** April 5, 2026
 **Last Revised:** April 5, 2026
-**Platform:** Bazarix — bazarix.dev
+**Platform:** Bazarix — bazarix.link
 **Operator:** ReadyPixels, sole proprietorship operated by Sharif ("ReadyPixels," "we," "us," or "Platform")
 **Contact:** sharif@readypixels.com
 **Governing Law:** State of Wyoming, United States of America
@@ -72,14 +72,14 @@ This prohibition applies to demo URLs, screenshot images, preview videos, and an
 
 ### 2.5 Circumvention of Volqan Attribution License
 
-The Volqan open-source framework is distributed under the Open Core Attribution License v1.0, which requires all deployments to display a "Powered by Volqan — volqan.dev" notice unless the operator holds an active Support Plan subscription validated by the official licensing API at bazarix.dev/api/v1/license.
+The Volqan open-source framework is distributed under the Open Core Attribution License v1.0, which requires all deployments to display a "Powered by Volqan — volqan.link" notice unless the operator holds an active Support Plan subscription validated by the official licensing API at bazarix.link/api/v1/license.
 
 Sellers must not submit any Listing that:
 
 - (a) Is designed, in whole or in part, to remove, suppress, hide, alter, or disable the Volqan attribution footer component (`AttributionFooter`) or any equivalent attribution display mechanism, without a valid subscription license from ReadyPixels.
 - (b) Replicates the functionality of the Volqan framework's attribution removal mechanism (the subscription-based license check) in a way that bypasses payment to ReadyPixels.
 - (c) Provides tooling, configuration, or instructions that enable users to achieve attribution removal in violation of the Open Core Attribution License v1.0, regardless of whether the tool itself is labeled as an "attribution removal tool."
-- (d) Intercepts, spoofs, or manipulates responses from the license validation API (`https://bazarix.dev/api/v1/license`) to produce a false `attributionRemoved: true` response.
+- (d) Intercepts, spoofs, or manipulates responses from the license validation API (`https://bazarix.link/api/v1/license`) to produce a false `attributionRemoved: true` response.
 
 Listings that replicate core Volqan framework functionality for the explicit or apparent purpose of enabling users to avoid the attribution requirement without purchasing a valid subscription constitute a material breach of this AUP and the Seller Agreement and will be treated as an intentional infringement of ReadyPixels's proprietary licensing system.
 
@@ -245,11 +245,11 @@ For all AUP-related inquiries, violation reports, and appeals:
 
 **ReadyPixels — AUP Enforcement**
 Email: sharif@readypixels.com
-Platform: bazarix.dev
+Platform: bazarix.link
 
 ---
 
 *Bazarix Marketplace — Acceptable Use Policy v1.0*
 *Effective: April 5, 2026*
 *Operator: ReadyPixels / sharif@readypixels.com*
-*Domain: bazarix.dev*
+*Domain: bazarix.link*

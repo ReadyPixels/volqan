@@ -8,8 +8,8 @@
 
 **Owner and Operator:** Sharif / ReadyPixels
 **Contact:** sharif@readypixels.com
-**Project URL:** https://volqan.dev
-**License API:** https://bazarix.dev/api/v1/license
+**Project URL:** https://volqan.link
+**License API:** https://bazarix.link/api/v1/license
 
 ---
 
@@ -29,7 +29,7 @@ This policy should be read in conjunction with the OCAL (see `LICENSE-ATTRIBUTIO
 
 All deployments of the Software must display the following notice in a form that is **visible, legible, unobscured, and accessible to end users**:
 
-> **"Powered by Volqan — https://volqan.dev"**
+> **"Powered by Volqan — https://volqan.link"**
 
 This is the complete and exact required attribution text. Abbreviations, paraphrases, alternative phrasing, or truncated versions of this notice do not satisfy the attribution requirement. The notice must be:
 
@@ -53,8 +53,8 @@ The Licensee may choose the placement location that best suits their application
 
 The Attribution Notice may be presented as:
 
-- **Plain text:** The literal string `Powered by Volqan — https://volqan.dev`
-- **Hyperlink:** The text "Powered by Volqan" linking to https://volqan.dev (with the URL remaining accessible and functional)
+- **Plain text:** The literal string `Powered by Volqan — https://volqan.link`
+- **Hyperlink:** The text "Powered by Volqan" linking to https://volqan.link (with the URL remaining accessible and functional)
 - **Styled text:** Text rendered in the application's design system, provided it meets the legibility requirements of Section 2.1
 
 The Attribution Notice may appear alongside other attribution notices (e.g., other open-source libraries or frameworks used in the application).
@@ -79,7 +79,7 @@ The following presentations do NOT constitute valid attribution and are violatio
 The Volqan framework automatically verifies license status on each server boot and periodically during operation. The framework queries the License API at:
 
 ```
-GET https://bazarix.dev/api/v1/license/check
+GET https://bazarix.link/api/v1/license/check
 Headers: X-Install-ID: [your-installation-id]
 ```
 
@@ -132,7 +132,7 @@ The right to suppress the Attribution Notice is available **exclusively** to ins
 
 To purchase a Support Plan and enable attribution removal:
 
-1. Navigate to https://volqan.dev/pricing;
+1. Navigate to https://volqan.link/pricing;
 2. Select either the **Yearly Support Plan** or **Monthly Support Plan**;
 3. Complete the checkout process. A Platform Service Fee applies (see the Fee Disclosure Policy);
 4. Upon successful payment, your Stripe Customer ID is linked to your Installation ID;
@@ -204,7 +204,7 @@ In addition to copyright remedies, unauthorized attribution removal constitutes 
 
 ReadyPixels encourages good-faith compliance. If you have inadvertently removed or failed to display the Attribution Notice:
 
-1. Immediately restore the required notice (`"Powered by Volqan — https://volqan.dev"`) to all affected deployments;
+1. Immediately restore the required notice (`"Powered by Volqan — https://volqan.link"`) to all affected deployments;
 
 2. Contact ReadyPixels at sharif@readypixels.com to notify us of the violation and its remediation;
 
@@ -224,7 +224,7 @@ If you fork the Volqan repository and create a derivative work:
 
 (b) If you deploy your fork publicly, the Attribution Notice requirement applies to your deployment;
 
-(c) If you rename the product in your fork, the required notice must still reference the original: e.g., "Powered by [Your Fork Name], based on Volqan — https://volqan.dev";
+(c) If you rename the product in your fork, the required notice must still reference the original: e.g., "Powered by [Your Fork Name], based on Volqan — https://volqan.link";
 
 (d) You may not remove, modify, or obscure the original copyright notice of ReadyPixels / Sharif;
 
@@ -253,8 +253,8 @@ For questions about attribution compliance, license verification, or to report a
 **ReadyPixels / Sharif**
 **Email:** sharif@readypixels.com
 **Subject Line:** Attribution — [Compliance / Inquiry / Violation Report]
-**License API:** https://bazarix.dev/api/v1/license
-**Support Plans:** https://volqan.dev/pricing
+**License API:** https://bazarix.link/api/v1/license
+**Support Plans:** https://volqan.link/pricing
 
 ---
 

@@ -102,7 +102,7 @@ const NAV_ITEMS: NavItem[] = [
   {
     key: 'bazarix',
     label: 'Bazarix Marketplace',
-    href: 'https://bazarix.dev',
+    href: 'https://bazarix.link',
     icon: ExternalLink,
     external: true,
   },

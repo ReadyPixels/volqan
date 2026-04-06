@@ -149,7 +149,7 @@ export function FeeBreakdown({
         The Service Fee covers platform infrastructure, payment processing, and
         ongoing maintenance of the Volqan framework. See the{' '}
         <a
-          href="https://volqan.dev/terms"
+          href="https://volqan.link/terms"
           target="_blank"
           rel="noopener noreferrer"
           className="underline hover:text-[hsl(var(--foreground))] transition-colors"

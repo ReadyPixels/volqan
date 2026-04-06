@@ -13,7 +13,7 @@ the following conditions:
    reasonably visible to end users, such as an admin panel
    footer, application footer, or About page:
 
-   "Powered by Volqan — https://volqan.dev"
+   "Powered by Volqan — https://volqan.link"
 
    This notice must remain visible, unobscured, and unaltered.
 
@@ -21,7 +21,7 @@ the following conditions:
    The attribution requirement in Condition 1 may be waived
    exclusively for installations holding an active Support Plan
    subscription validated by the official licensing API at
-   https://bazarix.dev/api/v1/license. Removal without a valid active subscription
+   https://bazarix.link/api/v1/license. Removal without a valid active subscription
    constitutes a material breach of this license.
 
 3. COMMERCIAL DISTRIBUTION
