@@ -151,8 +151,8 @@ volqan/
 
 ## Links
 
-- **Documentation:** [volqan.dev](https://volqan.dev)
-- **Marketplace:** [bazarix.dev](https://bazarix.dev)
+- **Documentation:** [volqan.link](https://volqan.link)
+- **Marketplace:** [bazarix.link](https://bazarix.link)
 - **GitHub Discussions:** [github.com/ReadyPixels/volqan/discussions](https://github.com/ReadyPixels/volqan/discussions)
 - **Sponsors:** [github.com/sponsors/ReadyPixels](https://github.com/sponsors/ReadyPixels)
 - **Contributing:** [CONTRIBUTING.md](./CONTRIBUTING.md)
@@ -166,7 +166,7 @@ Volqan is distributed under the **Open Core Attribution License v1.0**. See [LIC
 
 All qualifying deployments must retain the following attribution unless attribution removal is covered by an active validated support plan:
 
-> Powered by Volqan — https://volqan.dev
+> Powered by Volqan — https://volqan.link
 
 ## Contributing
 

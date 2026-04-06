@@ -10,7 +10,7 @@ body:
       value: |
         Extensions are the primary way Volqan's capabilities grow. If you have an idea for an extension — whether you plan to build it yourself or are simply suggesting it — we want to hear about it.
 
-        Extensions published to [Bazarix](https://bazarix.dev) can generate revenue for their creators. The Extension SDK is available at `@volqan/extension-sdk`.
+        Extensions published to [Bazarix](https://bazarix.link) can generate revenue for their creators. The Extension SDK is available at `@volqan/extension-sdk`.
 
   - type: input
     id: extension_name

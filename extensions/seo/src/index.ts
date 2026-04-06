@@ -345,7 +345,7 @@ const seoExtension: VolqanExtension = {
     'Official Volqan SEO extension. Adds meta fields, SEO scoring, XML sitemap generation, and robots.txt management to your CMS.',
   author: {
     name: 'Volqan',
-    url: 'https://volqan.dev',
+    url: 'https://volqan.link',
   },
 
   // -------------------------------------------------------------------------
@@ -432,7 +432,7 @@ const seoExtension: VolqanExtension = {
     category: 'seo',
     tags: ['seo', 'sitemap', 'meta', 'robots', 'google', 'analytics', 'score'],
     screenshotUrls: [],
-    demoUrl: 'https://demo.volqan.dev/admin/seo',
+    demoUrl: 'https://demo.volqan.link/admin/seo',
   },
 };
 

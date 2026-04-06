@@ -40,7 +40,7 @@ Every content model you define — whether in code or in the visual builder — 
 
 Volqan ships with a first-class extension engine. Extensions can register admin menu items, custom pages, dashboard widgets, API routes, GraphQL schema additions, database migrations, and content lifecycle hooks — all through a single TypeScript interface.
 
-Browse, install, and manage extensions directly from the Extension Manager in your admin panel. Community-built extensions are distributed through [Bazarix](https://bazarix.dev), the official Volqan marketplace.
+Browse, install, and manage extensions directly from the Extension Manager in your admin panel. Community-built extensions are distributed through [Bazarix](https://bazarix.link), the official Volqan marketplace.
 
 ### Theme Engine
 
@@ -125,11 +125,11 @@ Your admin panel is live at `http://localhost:3000/admin`.
 
 ## The Marketplace
 
-**[Bazarix](https://bazarix.dev)** is the official curated marketplace for Volqan extensions and themes. Every listing is reviewed before it goes live. Quality is the only filter.
+**[Bazarix](https://bazarix.link)** is the official curated marketplace for Volqan extensions and themes. Every listing is reviewed before it goes live. Quality is the only filter.
 
-Browse extensions and themes directly from your admin panel's Extension Manager, or visit [bazarix.dev](https://bazarix.dev) in your browser.
+Browse extensions and themes directly from your admin panel's Extension Manager, or visit [bazarix.link](https://bazarix.link) in your browser.
 
-Want to sell on Bazarix? [Apply to become a seller →](https://bazarix.dev/sellers/apply)
+Want to sell on Bazarix? [Apply to become a seller →](https://bazarix.link/sellers/apply)
 
 ---
 

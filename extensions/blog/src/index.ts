@@ -399,7 +399,7 @@ const blogExtension: VolqanExtension = {
     'Official Volqan blogging extension. Adds posts, categories, RSS feed, and a rich post editor to your Volqan CMS.',
   author: {
     name: 'Volqan',
-    url: 'https://volqan.dev',
+    url: 'https://volqan.link',
   },
 
   // -------------------------------------------------------------------------
@@ -530,7 +530,7 @@ const blogExtension: VolqanExtension = {
     category: 'content',
     tags: ['blog', 'posts', 'rss', 'categories', 'publishing'],
     screenshotUrls: [],
-    demoUrl: 'https://demo.volqan.dev/admin/blog',
+    demoUrl: 'https://demo.volqan.link/admin/blog',
   },
 };
 

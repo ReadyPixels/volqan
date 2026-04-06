@@ -44,7 +44,7 @@ const MORE_ITEMS = [
   { label: 'Themes', href: '/themes', icon: Palette },
   { label: 'Users', href: '/users', icon: Users },
   { label: 'Settings', href: '/settings', icon: Settings },
-  { label: 'Bazarix Marketplace', href: 'https://bazarix.dev', icon: ExternalLink, external: true },
+  { label: 'Bazarix Marketplace', href: 'https://bazarix.link', icon: ExternalLink, external: true },
 ];
 
 // ---------------------------------------------------------------------------

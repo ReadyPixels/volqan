@@ -1,6 +1,6 @@
 # @volqan/theme-sdk
 
-Developer SDK for building [Volqan](https://volqan.dev) themes.
+Developer SDK for building [Volqan](https://volqan.link) themes.
 
 ## Quick Start
 
@@ -142,9 +142,9 @@ All tokens are injected as CSS custom properties on `:root`:
 
 ## Documentation
 
-- [Getting Started](https://volqan.dev/docs/themes/getting-started)
-- [API Reference](https://volqan.dev/docs/themes/api-reference)
-- [Publishing to Bazarix](https://volqan.dev/docs/themes/publishing)
+- [Getting Started](https://volqan.link/docs/themes/getting-started)
+- [API Reference](https://volqan.link/docs/themes/api-reference)
+- [Publishing to Bazarix](https://volqan.link/docs/themes/publishing)
 
 ## License
 

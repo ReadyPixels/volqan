@@ -166,7 +166,7 @@ describe('${safeName}', () => {
     join(targetDir, 'README.md'),
     `# ${titleCase(safeName)}
 
-A [Volqan](https://volqan.dev) extension.
+A [Volqan](https://volqan.link) extension.
 
 ## Development
 
@@ -190,10 +190,10 @@ await extensionManager.enable(extension.id);
 
 ## Publishing
 
-To publish to the [Bazarix marketplace](https://bazarix.dev):
+To publish to the [Bazarix marketplace](https://bazarix.link):
 
 1. Build the extension: \`pnpm build\`
-2. Submit at [bazarix.dev/developer/submit](https://bazarix.dev/developer/submit)
+2. Submit at [bazarix.link/developer/submit](https://bazarix.link/developer/submit)
 
 ## License
 
@@ -402,7 +402,7 @@ export default defineTheme({
     join(targetDir, 'README.md'),
     `# ${titleCase(safeName)}
 
-A [Volqan](https://volqan.dev) theme.
+A [Volqan](https://volqan.link) theme.
 
 ## Development
 
@@ -434,10 +434,10 @@ loadAndApplyTheme(theme);
 
 ## Publishing
 
-To publish to the [Bazarix marketplace](https://bazarix.dev):
+To publish to the [Bazarix marketplace](https://bazarix.link):
 
 1. Build the theme: \`pnpm build\`
-2. Submit at [bazarix.dev/developer/submit](https://bazarix.dev/developer/submit)
+2. Submit at [bazarix.link/developer/submit](https://bazarix.link/developer/submit)
 
 ## License
 

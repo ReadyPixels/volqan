@@ -689,15 +689,15 @@ databaseMigrations: [
 
 ## Marketplace Metadata
 
-If you plan to distribute your extension on [Bazarix](https://bazarix.dev), include the `marketplace` field:
+If you plan to distribute your extension on [Bazarix](https://bazarix.link), include the `marketplace` field:
 
 ```typescript
 marketplace: {
   category:       'content',              // 'content' | 'seo' | 'ecommerce' | 'analytics' | 'media' | 'utilities' | 'integration'
   tags:           ['blog', 'posts', 'comments', 'rss'],
   screenshotUrls: [
-    'https://cdn.bazarix.dev/ext/acme/blog-pro/screenshot-1.png',
-    'https://cdn.bazarix.dev/ext/acme/blog-pro/screenshot-2.png',
+    'https://cdn.bazarix.link/ext/acme/blog-pro/screenshot-1.png',
+    'https://cdn.bazarix.link/ext/acme/blog-pro/screenshot-2.png',
   ],
   demoUrl:  'https://demo.acme.example.com',
   price:    29,                           // USD. 0 or omit for free
@@ -857,7 +857,7 @@ pnpm build
 # Publish to npm
 npm publish --access public
 
-# Submit to Bazarix marketplace at bazarix.dev/sellers/submit
+# Submit to Bazarix marketplace at bazarix.link/sellers/submit
 ```
 
 ---
@@ -917,9 +917,9 @@ The Extension Engine provides a layered security approach:
 1. **Interface validation** — Every extension export is validated against the `VolqanExtension` interface at load time. Invalid shapes are rejected before any code runs.
 2. **Lifecycle sandboxing** — Lifecycle hooks run in an isolated context with access limited to the `ExtensionContext` API. Direct access to system internals beyond the provided context is not available.
 3. **Database namespacing** — Extensions are expected to namespace all table names. Attempting to access core tables (`volqan_*`) from extension code raises a logged warning.
-4. **License validation** — Paid extensions have their license key validated server-side against the Bazarix API (`https://bazarix.dev/api/v1/license/validate`) on every boot. Invalid licenses disable the extension automatically.
+4. **License validation** — Paid extensions have their license key validated server-side against the Bazarix API (`https://bazarix.link/api/v1/license/validate`) on every boot. Invalid licenses disable the extension automatically.
 5. **Marketplace review** — All Bazarix listings undergo a technical review before going live. Listings are checked for obfuscated code, undisclosed network calls, SQL injection, XSS, and CSRF vulnerabilities.
 
 ---
 
-*Extension API reference — Volqan v0.0.1 · [GitHub](https://github.com/ReadyPixels/volqan) · [Bazarix Marketplace](https://bazarix.dev)*
+*Extension API reference — Volqan v0.0.1 · [GitHub](https://github.com/ReadyPixels/volqan) · [Bazarix Marketplace](https://bazarix.link)*

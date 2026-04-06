@@ -9,10 +9,10 @@
  *
  * Removing or hiding this footer without a valid license is a material
  * breach of the Open Core Attribution License v1.0.
- * See: https://volqan.dev/legal/attribution-policy
+ * See: https://volqan.link/legal/attribution-policy
  *
- * License API:  https://bazarix.dev/api/v1/license
- * Project URL:  https://volqan.dev
+ * License API:  https://bazarix.link/api/v1/license
+ * Project URL:  https://volqan.link
  * Project Name: Volqan
  */
 

@@ -4,7 +4,7 @@
 
 **Effective Date:** April 5, 2026
 **Last Revised:** April 5, 2026
-**Platform:** Bazarix — bazarix.dev
+**Platform:** Bazarix — bazarix.link
 **Operator:** ReadyPixels, sole proprietorship operated by Sharif ("ReadyPixels," "we," "us," or "Platform")
 **Contact:** sharif@readypixels.com
 **Governing Law:** State of Wyoming, United States of America
@@ -13,7 +13,7 @@
 
 ## 1. Definitions
 
-1.1 **"Agreement"** means this Seller Agreement, together with all policies incorporated by reference, including the Acceptable Use Policy, Privacy Policy, and DMCA Policy published at bazarix.dev.
+1.1 **"Agreement"** means this Seller Agreement, together with all policies incorporated by reference, including the Acceptable Use Policy, Privacy Policy, and DMCA Policy published at bazarix.link.
 
 1.2 **"Seller"** means any individual or legal entity that has registered and been approved to list and sell digital products through the Bazarix Marketplace.
 
@@ -41,7 +41,7 @@
 
 2.1 **Eligibility.** To register as a Seller, you must: (a) be at least eighteen (18) years of age or the age of majority in your jurisdiction; (b) have the legal authority to enter into binding contracts; (c) possess a valid Stripe Connect account capable of receiving international transfers; (d) not be located in a jurisdiction subject to applicable economic sanctions enforced by the United States Office of Foreign Assets Control (OFAC); and (e) not have previously been permanently banned from the Platform.
 
-2.2 **Application Process.** Becoming a Seller requires submitting an application through the Seller registration portal at bazarix.dev. Approval is at the sole discretion of ReadyPixels. The Platform may request additional verification documents, tax information, or identity verification at any time.
+2.2 **Application Process.** Becoming a Seller requires submitting an application through the Seller registration portal at bazarix.link. Approval is at the sole discretion of ReadyPixels. The Platform may request additional verification documents, tax information, or identity verification at any time.
 
 2.3 **Account Accuracy.** You represent and warrant that all registration information you provide is accurate, current, and complete. You agree to promptly update any information that changes. Providing false or misleading registration information is grounds for immediate account termination.
 
@@ -190,7 +190,7 @@ The PayPal surcharge of $0.50 applies only when the Buyer selects PayPal as thei
 
 ## 10. Prohibited Content and Conduct
 
-10.1 Sellers must comply with the Bazarix Acceptable Use Policy, available at bazarix.dev/legal/acceptable-use-policy, which is incorporated into this Agreement by reference.
+10.1 Sellers must comply with the Bazarix Acceptable Use Policy, available at bazarix.link/legal/acceptable-use-policy, which is incorporated into this Agreement by reference.
 
 10.2 Without limiting the Acceptable Use Policy, Sellers must not:
 
@@ -300,7 +300,7 @@ The PayPal surcharge of $0.50 applies only when the Buyer selects PayPal as thei
 
 ## 18. General Provisions
 
-18.1 **Entire Agreement.** This Agreement, together with the Acceptable Use Policy, Privacy Policy, DMCA Policy, and Buyer Terms of Service (all published at bazarix.dev/legal/), constitutes the entire agreement between the Seller and ReadyPixels with respect to the subject matter hereof and supersedes all prior or contemporaneous understandings, agreements, representations, or warranties.
+18.1 **Entire Agreement.** This Agreement, together with the Acceptable Use Policy, Privacy Policy, DMCA Policy, and Buyer Terms of Service (all published at bazarix.link/legal/), constitutes the entire agreement between the Seller and ReadyPixels with respect to the subject matter hereof and supersedes all prior or contemporaneous understandings, agreements, representations, or warranties.
 
 18.2 **Severability.** If any provision of this Agreement is found to be invalid, illegal, or unenforceable, the remaining provisions shall continue in full force and effect, and the invalid or unenforceable provision shall be modified to the minimum extent necessary to make it enforceable.
 
@@ -321,4 +321,4 @@ The PayPal surcharge of $0.50 applies only when the Buyer selects PayPal as thei
 *Bazarix Marketplace — Seller Agreement v1.0*
 *Effective: April 5, 2026*
 *Operator: ReadyPixels / sharif@readypixels.com*
-*Domain: bazarix.dev*
+*Domain: bazarix.link*

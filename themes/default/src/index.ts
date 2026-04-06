@@ -303,7 +303,7 @@ const defaultTheme: VolqanTheme = {
 
   marketplace: {
     category: 'light',
-    previewUrl: 'https://demo.volqan.dev/themes/default',
+    previewUrl: 'https://demo.volqan.link/themes/default',
   },
 };
 

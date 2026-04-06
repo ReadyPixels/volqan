@@ -2,7 +2,7 @@
  * @file themes/types.ts
  * @description Core type definitions for the Volqan Theme Engine.
  *
- * All themes distributed through Bazarix (https://bazarix.dev) or bundled
+ * All themes distributed through Bazarix (https://bazarix.link) or bundled
  * with Volqan must conform to the VolqanTheme interface defined here.
  */
 
@@ -47,7 +47,7 @@ export interface ComponentOverride {
  * VolqanTheme
  *
  * Every theme — whether built into Volqan or purchased through Bazarix
- * (https://bazarix.dev) — must export a default object conforming to this
+ * (https://bazarix.link) — must export a default object conforming to this
  * interface.
  *
  * The theme engine injects all tokens as CSS custom properties on the
@@ -234,7 +234,7 @@ export interface VolqanTheme {
 
   /**
    * Marketplace listing metadata.
-   * Only relevant for themes distributed through https://bazarix.dev.
+   * Only relevant for themes distributed through https://bazarix.link.
    */
   marketplace?: {
     /**

@@ -211,14 +211,14 @@ export default defineConfig({
 
   // ─── Licensing (Support Plan) ────────────────────────────────────────────────
   license: {
-    apiUrl: 'https://bazarix.dev/api/v1/license',
+    apiUrl: 'https://bazarix.link/api/v1/license',
     key:    process.env.VOLQAN_LICENSE_KEY, // Set this to remove the attribution footer
   },
 
   // ─── Extensions ─────────────────────────────────────────────────────────────
   extensions: {
     autoload:    true,        // Automatically load all installed extensions on boot
-    marketplace: 'https://bazarix.dev',
+    marketplace: 'https://bazarix.link',
   },
 });
 ```
@@ -486,7 +486,7 @@ Set a path (e.g., `/about`) and publish. The page is live immediately.
 
 Navigate to **Extensions → Browse Marketplace**.
 
-This opens [bazarix.dev](https://bazarix.dev) in your browser. Find an extension, purchase or install it for free, and follow the extension's install instructions.
+This opens [bazarix.link](https://bazarix.link) in your browser. Find an extension, purchase or install it for free, and follow the extension's install instructions.
 
 Alternatively, install a community extension directly by package name:
 

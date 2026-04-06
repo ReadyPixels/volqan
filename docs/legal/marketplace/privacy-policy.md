@@ -4,7 +4,7 @@
 
 **Effective Date:** April 5, 2026
 **Last Revised:** April 5, 2026
-**Platform:** Bazarix — bazarix.dev
+**Platform:** Bazarix — bazarix.link
 **Operator:** ReadyPixels, sole proprietorship operated by Sharif ("ReadyPixels," "we," "us," or "our")
 **Contact:** sharif@readypixels.com
 **Governing Law:** State of Wyoming, United States of America
@@ -13,9 +13,9 @@
 
 ## 1. Introduction
 
-ReadyPixels operates the Bazarix Marketplace ("Platform," "Service") at bazarix.dev — a curated digital marketplace where approved developers sell extensions, themes, templates, and tools built for the Volqan framework. This Privacy Policy explains how we collect, use, store, disclose, and protect personal information from individuals who visit the Platform, create accounts, make purchases, or register as sellers ("you," "your").
+ReadyPixels operates the Bazarix Marketplace ("Platform," "Service") at bazarix.link — a curated digital marketplace where approved developers sell extensions, themes, templates, and tools built for the Volqan framework. This Privacy Policy explains how we collect, use, store, disclose, and protect personal information from individuals who visit the Platform, create accounts, make purchases, or register as sellers ("you," "your").
 
-This Policy applies solely to the Bazarix Marketplace (bazarix.dev) and is separate from the privacy policy governing the Volqan open-source framework (volqan.dev). The two systems do not share a database or data infrastructure.
+This Policy applies solely to the Bazarix Marketplace (bazarix.link) and is separate from the privacy policy governing the Volqan open-source framework (volqan.link). The two systems do not share a database or data infrastructure.
 
 By using the Platform, you acknowledge that you have read, understood, and agree to the practices described in this Privacy Policy.
 
@@ -27,7 +27,7 @@ The data controller responsible for your personal information collected through 
 
 **ReadyPixels (operated by Sharif)**
 Email: sharif@readypixels.com
-Website: bazarix.dev
+Website: bazarix.link
 
 For GDPR purposes, ReadyPixels is the "Controller" of personal data collected on the Platform. For CCPA purposes, ReadyPixels is the "Business" to which this Policy applies.
 
@@ -303,7 +303,7 @@ For any questions, concerns, or requests relating to this Privacy Policy or the 
 
 **ReadyPixels — Privacy Inquiries**
 Email: sharif@readypixels.com
-Platform: bazarix.dev
+Platform: bazarix.link
 
 For GDPR-specific complaints, you also have the right to lodge a complaint with the data protection authority in your country of residence.
 
@@ -312,4 +312,4 @@ For GDPR-specific complaints, you also have the right to lodge a complaint with 
 *Bazarix Marketplace — Privacy Policy v1.0*
 *Effective: April 5, 2026*
 *Operator: ReadyPixels / sharif@readypixels.com*
-*Domain: bazarix.dev*
+*Domain: bazarix.link*

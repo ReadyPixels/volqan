@@ -8,7 +8,7 @@
 
 **Project Owner:** Sharif / ReadyPixels ("Licensor")
 **Contact:** sharif@readypixels.com
-**Project URL:** https://volqan.dev
+**Project URL:** https://volqan.link
 **Repository:** https://github.com/ReadyPixels/volqan
 **Governing Law:** Wyoming, United States of America
 
@@ -202,7 +202,7 @@ This Agreement constitutes the entire agreement between Licensor and Contributor
 
 ### 6.4 Amendment
 
-Licensor may revise this Agreement at any time by posting an updated version at https://volqan.dev/docs/legal/contributor-license-agreement. Continued submission of Contributions after such revision constitutes acceptance of the revised Agreement.
+Licensor may revise this Agreement at any time by posting an updated version at https://volqan.link/docs/legal/contributor-license-agreement. Continued submission of Contributions after such revision constitutes acceptance of the revised Agreement.
 
 ### 6.5 Severability
 
@@ -255,7 +255,7 @@ Individual contributors indicate acceptance through GitHub pull request submissi
 **Email:** sharif@readypixels.com
 **Subject Line:** CLA — [Inquiry / Corporate Submission / Dispute]
 **Repository:** https://github.com/ReadyPixels/volqan
-**Project URL:** https://volqan.dev
+**Project URL:** https://volqan.link
 
 ---
 

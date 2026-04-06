@@ -2,7 +2,7 @@
  * @file extensions/types.ts
  * @description Core type definitions for the Volqan Extension Engine.
  *
- * All extensions distributed through Bazarix (https://bazarix.dev) or installed
+ * All extensions distributed through Bazarix (https://bazarix.link) or installed
  * manually must conform to the VolqanExtension interface defined here.
  */
 
@@ -263,7 +263,7 @@ export interface Migration {
  * VolqanExtension
  *
  * Every extension — whether installed manually or purchased through Bazarix
- * (https://bazarix.dev) — must export a default object conforming to this
+ * (https://bazarix.link) — must export a default object conforming to this
  * interface.
  *
  * Renamed from FrameworkExtension per project naming convention.
@@ -350,7 +350,7 @@ export interface VolqanExtension {
 
   /**
    * Marketplace listing metadata.
-   * Only relevant for extensions distributed through https://bazarix.dev.
+   * Only relevant for extensions distributed through https://bazarix.link.
    */
   marketplace?: {
     /** Bazarix category slug (e.g. "content", "ecommerce", "analytics"). */

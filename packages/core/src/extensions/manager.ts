@@ -4,7 +4,7 @@
  * for a Volqan installation, including marketplace integration.
  *
  * The Extension Manager contains a deep link to the Bazarix marketplace
- * (https://bazarix.dev) where developers can purchase and publish extensions.
+ * (https://bazarix.link) where developers can purchase and publish extensions.
  */
 
 import type { VolqanExtension } from './types.js';
@@ -33,7 +33,7 @@ import {
 // ---------------------------------------------------------------------------
 
 /** Bazarix marketplace URL — the official store for Volqan extensions and themes. */
-export const BAZARIX_MARKETPLACE_URL = 'https://bazarix.dev';
+export const BAZARIX_MARKETPLACE_URL = 'https://bazarix.link';
 
 /** Deep link to browse extensions in the marketplace. */
 export const BAZARIX_EXTENSIONS_URL = `${BAZARIX_MARKETPLACE_URL}/browse?type=extension`;
@@ -306,7 +306,7 @@ export class ExtensionManager {
    * Open the Bazarix marketplace in a new browser tab.
    *
    * This is the single deep link between the Volqan framework and the Bazarix
-   * marketplace (https://bazarix.dev). The two systems share no code or database.
+   * marketplace (https://bazarix.link). The two systems share no code or database.
    *
    * This method is a no-op in non-browser (server-side) environments.
    *
@@ -365,7 +365,7 @@ export class ExtensionManager {
         headers: {
           'X-License-Key': licenseKey,
           'X-Install-ID': this.options.installationId,
-          'User-Agent': 'Volqan/1.0 (+https://volqan.dev)',
+          'User-Agent': 'Volqan/1.0 (+https://volqan.link)',
         },
         signal: AbortSignal.timeout(this.options.licenseCheckTimeoutMs),
       });

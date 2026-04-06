@@ -1,6 +1,6 @@
 /**
  * @file license/api.ts
- * @description Server-side License API handlers for https://bazarix.dev/api/v1/license
+ * @description Server-side License API handlers for https://bazarix.link/api/v1/license
  *
  * These handlers power the license check endpoint that the Volqan framework
  * calls to determine whether attribution removal is active for a given

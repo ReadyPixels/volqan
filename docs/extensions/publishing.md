@@ -5,7 +5,7 @@ description: How to prepare and publish your Volqan extension to the Bazarix mar
 
 # Publishing Extensions
 
-This guide covers everything you need to publish your Volqan extension on the [Bazarix marketplace](https://bazarix.dev).
+This guide covers everything you need to publish your Volqan extension on the [Bazarix marketplace](https://bazarix.link).
 
 ---
 
@@ -131,7 +131,7 @@ marketplace: {
 
 ### 1. Create a Bazarix developer account
 
-Sign up at [bazarix.dev/developers](https://bazarix.dev/developers) with your GitHub account.
+Sign up at [bazarix.link/developers](https://bazarix.link/developers) with your GitHub account.
 
 ### 2. Register your vendor namespace
 
@@ -198,7 +198,7 @@ Certified extensions receive a "Certified" badge on the marketplace and higher s
 
 ## Revenue Sharing
 
-> ⚠️ **LEGAL REVIEW NEEDED** — The following revenue sharing terms are subject to change. Consult the latest Bazarix Developer Agreement at [bazarix.dev/legal](https://bazarix.dev/legal) for current terms.
+> ⚠️ **LEGAL REVIEW NEEDED** — The following revenue sharing terms are subject to change. Consult the latest Bazarix Developer Agreement at [bazarix.link/legal](https://bazarix.link/legal) for current terms.
 
 ### Standard Split
 

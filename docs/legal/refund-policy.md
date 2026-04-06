@@ -8,13 +8,13 @@
 
 **Owner and Operator:** Sharif / ReadyPixels
 **Contact:** sharif@readypixels.com
-**Project URL:** https://volqan.dev
+**Project URL:** https://volqan.link
 
 ---
 
 ## 1. Overview
 
-This Refund Policy governs all purchases and subscription payments made through the Volqan framework platform (https://volqan.dev) and the Bazarix Marketplace (https://bazarix.dev), operated by ReadyPixels ("Company," "we," "us," or "our"). This policy is incorporated into and must be read in conjunction with our Terms of Service.
+This Refund Policy governs all purchases and subscription payments made through the Volqan framework platform (https://volqan.link) and the Bazarix Marketplace (https://bazarix.link), operated by ReadyPixels ("Company," "we," "us," or "our"). This policy is incorporated into and must be read in conjunction with our Terms of Service.
 
 By completing any purchase on the Platform, you ("User," "Subscriber," or "you") acknowledge that you have read, understood, and agree to this Refund Policy. Where applicable law grants you additional statutory refund rights, this policy does not limit those rights.
 
@@ -220,8 +220,8 @@ ReadyPixels reserves the right to update this Refund Policy at any time. Refund 
 
 **ReadyPixels / Sharif**
 **Email:** sharif@readypixels.com
-**Project URL:** https://volqan.dev
-**Marketplace URL:** https://bazarix.dev
+**Project URL:** https://volqan.link
+**Marketplace URL:** https://bazarix.link
 
 ---
 

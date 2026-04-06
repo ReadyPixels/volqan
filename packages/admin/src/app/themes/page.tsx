@@ -278,7 +278,7 @@ export default function ThemesPage() {
                       <Palette className="w-3.5 h-3.5" />
                     </Button>
                     {theme.marketplace && (
-                      <a href={`https://bazarix.dev/themes/${theme.id}`} target="_blank" rel="noopener noreferrer">
+                      <a href={`https://bazarix.link/themes/${theme.id}`} target="_blank" rel="noopener noreferrer">
                         <Button size="sm" variant="ghost">
                           <ExternalLink className="w-3.5 h-3.5" />
                         </Button>

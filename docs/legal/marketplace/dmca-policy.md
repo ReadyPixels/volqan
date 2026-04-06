@@ -4,7 +4,7 @@
 
 **Effective Date:** April 5, 2026
 **Last Revised:** April 5, 2026
-**Platform:** Bazarix — bazarix.dev
+**Platform:** Bazarix — bazarix.link
 **Operator:** ReadyPixels, sole proprietorship operated by Sharif ("ReadyPixels," "we," "us," or "Platform")
 **Designated DMCA Agent Contact:** sharif@readypixels.com
 **Governing Law:** State of Wyoming, United States of America
@@ -26,7 +26,7 @@ ReadyPixels has designated the following individual as its agent to receive noti
 **Designated DMCA Agent:**
 Sharif, ReadyPixels
 Email: sharif@readypixels.com
-Website: bazarix.dev
+Website: bazarix.link
 
 **Note:** This contact is exclusively for DMCA copyright infringement notices and counter-notices. All other inquiries should be directed to the same email address with an appropriate subject line, but using this contact for non-DMCA matters does not guarantee expedited handling.
 
@@ -221,4 +221,4 @@ All DMCA takedown notices and counter-notices must be sent by email to the addre
 *Bazarix Marketplace — DMCA Policy v1.0*
 *Effective: April 5, 2026*
 *Operator: ReadyPixels / sharif@readypixels.com*
-*Domain: bazarix.dev*
+*Domain: bazarix.link*

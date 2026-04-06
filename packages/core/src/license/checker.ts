@@ -3,11 +3,11 @@
  * @description License status checker for the Volqan attribution system.
  *
  * Validates the installation's active subscription against the Bazarix
- * license API (https://bazarix.dev/api/v1/license). Results are cached
+ * license API (https://bazarix.link/api/v1/license). Results are cached
  * server-side for 24 hours to avoid hammering the API on every request.
  *
- * License API:  https://bazarix.dev/api/v1/license
- * Project URL:  https://volqan.dev
+ * License API:  https://bazarix.link/api/v1/license
+ * Project URL:  https://volqan.link
  * Project Name: Volqan
  */
 
@@ -18,10 +18,10 @@ import { createHash, randomBytes } from 'crypto';
 // ---------------------------------------------------------------------------
 
 /** Bazarix license validation API base URL. */
-export const LICENSE_API_URL = 'https://bazarix.dev/api/v1/license';
+export const LICENSE_API_URL = 'https://bazarix.link/api/v1/license';
 
 /** Public project URL — used in attribution footer and error messages. */
-export const PROJECT_URL = 'https://volqan.dev';
+export const PROJECT_URL = 'https://volqan.link';
 
 /** Project name — used in attribution footer display. */
 export const PROJECT_NAME = 'Volqan';

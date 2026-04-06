@@ -480,7 +480,7 @@ export default defineExtension({
     category: 'utility',
     tags: ['hello', 'example', 'starter'],
     screenshotUrls: [],
-    demoUrl: 'https://demo.volqan.dev/admin/hello',
+    demoUrl: 'https://demo.volqan.link/admin/hello',
   },
 });
 ```

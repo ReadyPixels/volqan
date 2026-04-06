@@ -289,7 +289,7 @@ function buildReadme(
 ): string {
   return `# ${projectName}
 
-Built with [Volqan](https://volqan.dev) — the Open Core Headless CMS.
+Built with [Volqan](https://volqan.link) — the Open Core Headless CMS.
 
 ## Stack
 
@@ -312,11 +312,11 @@ Visit [http://localhost:3001](http://localhost:3001) to access the Volqan admin 
 
 ## Marketplace
 
-Browse extensions and themes at [https://bazarix.dev](https://bazarix.dev).
+Browse extensions and themes at [https://bazarix.link](https://bazarix.link).
 
 ## Documentation
 
-Full documentation at [https://volqan.dev/docs](https://volqan.dev/docs).
+Full documentation at [https://volqan.link/docs](https://volqan.link/docs).
 `;
 }
 

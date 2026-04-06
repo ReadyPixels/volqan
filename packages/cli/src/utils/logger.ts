@@ -98,7 +98,7 @@ export const logger = {
       colorize('     ╚═══╝   ╚═════╝ ╚══════╝ ╚══▀▀═╝ ╚═╝  ╚═╝╚═╝  ╚═══╝', FG.magenta, BOLD),
       '',
       colorize('   The Open Core Headless CMS', FG.gray),
-      colorize('   https://volqan.dev  ·  https://bazarix.dev', FG.gray),
+      colorize('   https://volqan.link  ·  https://bazarix.link', FG.gray),
       '',
     ];
     lines.forEach((l) => console.log(l));
@@ -126,8 +126,8 @@ export const logger = {
     console.log('  ' + colorize('Admin panel:', FG.gray) + ' http://localhost:3001');
     console.log('  ' + colorize('API:        ', FG.gray) + ' http://localhost:3000/api');
     console.log('');
-    console.log('  ' + colorize('Documentation:', FG.gray) + ' https://volqan.dev/docs');
-    console.log('  ' + colorize('Marketplace:  ', FG.gray) + ' https://bazarix.dev');
+    console.log('  ' + colorize('Documentation:', FG.gray) + ' https://volqan.link/docs');
+    console.log('  ' + colorize('Marketplace:  ', FG.gray) + ' https://bazarix.link');
     console.log('');
   },
 };

@@ -24,7 +24,7 @@ import { randomUUID } from 'node:crypto';
 // Constants
 // ---------------------------------------------------------------------------
 
-const DEFAULT_ADMIN_EMAIL = 'admin@volqan.dev';
+const DEFAULT_ADMIN_EMAIL = 'admin@volqan.link';
 const DEFAULT_ADMIN_PASSWORD = 'changeme'; // must be changed post-installation
 const DEFAULT_ADMIN_NAME = 'Volqan Admin';
 

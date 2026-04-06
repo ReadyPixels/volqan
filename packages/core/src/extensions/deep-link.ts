@@ -1,7 +1,7 @@
 /**
  * @file extensions/deep-link.ts
  * @description Deep link utilities for connecting the Volqan admin panel to the
- * Bazarix marketplace (https://bazarix.dev). Provides URL builders and parsers
+ * Bazarix marketplace (https://bazarix.link). Provides URL builders and parsers
  * for marketplace browsing and one-click install flows.
  */
 
@@ -10,7 +10,7 @@
 // ---------------------------------------------------------------------------
 
 /** Base URL for the Bazarix marketplace. */
-export const BAZARIX_BASE_URL = 'https://bazarix.dev';
+export const BAZARIX_BASE_URL = 'https://bazarix.link';
 
 /** Bazarix extensions browse page. */
 export const BAZARIX_EXTENSIONS_BROWSE_URL = `${BAZARIX_BASE_URL}/extensions`;
@@ -46,10 +46,10 @@ export interface MarketplaceFilters {
  * @example
  * ```ts
  * buildMarketplaceURL('extension');
- * // => "https://bazarix.dev/extensions?source=volqan"
+ * // => "https://bazarix.link/extensions?source=volqan"
  *
  * buildMarketplaceURL('theme', { category: 'dark' });
- * // => "https://bazarix.dev/themes?source=volqan&category=dark"
+ * // => "https://bazarix.link/themes?source=volqan&category=dark"
  * ```
  */
 export function buildMarketplaceURL(
@@ -94,17 +94,17 @@ export interface ParsedInstallURL {
 /**
  * Parse a Bazarix install deep link URL into its slug and version components.
  *
- * Expected format: `https://bazarix.dev/install/{slug}?version={version}`
+ * Expected format: `https://bazarix.link/install/{slug}?version={version}`
  *
  * @param url - The full Bazarix install URL.
  * @returns Parsed slug and version, or `null` if the URL is not a valid install link.
  *
  * @example
  * ```ts
- * parseInstallURL('https://bazarix.dev/install/acme/blog?version=2.1.0');
+ * parseInstallURL('https://bazarix.link/install/acme/blog?version=2.1.0');
  * // => { slug: 'acme/blog', version: '2.1.0' }
  *
- * parseInstallURL('https://bazarix.dev/install/acme/blog');
+ * parseInstallURL('https://bazarix.link/install/acme/blog');
  * // => { slug: 'acme/blog', version: 'latest' }
  * ```
  */

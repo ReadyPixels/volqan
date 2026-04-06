@@ -461,7 +461,7 @@ For marketplace listings, provide a `previewUrl` in the marketplace metadata:
 ```typescript
 marketplace: {
   category: 'light',
-  previewUrl: 'https://demo.volqan.dev/themes/my-theme',
+  previewUrl: 'https://demo.volqan.link/themes/my-theme',
 },
 ```
 
@@ -471,7 +471,7 @@ This URL is displayed as an interactive preview on the Bazarix marketplace listi
 
 ## Marketplace Metadata
 
-Optional metadata for themes distributed through the [Bazarix marketplace](https://bazarix.dev).
+Optional metadata for themes distributed through the [Bazarix marketplace](https://bazarix.link).
 
 ```typescript
 marketplace?: {

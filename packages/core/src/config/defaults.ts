@@ -79,7 +79,7 @@ export const DEFAULT_CONFIG: VolqanConfig = {
     host: 'localhost',
     port: 1025, // MailHog / SMTP dev server default
     secure: false,
-    from: 'Volqan <noreply@volqan.dev>',
+    from: 'Volqan <noreply@volqan.link>',
   },
 
   // ─────────────────────────────────────────────────────────────────────────

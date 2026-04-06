@@ -339,12 +339,12 @@ export default function Button({
 
 ## Marketplace Metadata
 
-If you plan to distribute your theme on [Bazarix](https://bazarix.dev), include the `marketplace` field:
+If you plan to distribute your theme on [Bazarix](https://bazarix.link), include the `marketplace` field:
 
 ```typescript
 marketplace: {
   category:   'dark',          // 'light' | 'dark' | 'colorful' | 'minimal' | 'enterprise'
-  previewUrl: 'https://cdn.bazarix.dev/theme/acme/ocean-dark/preview.png',
+  previewUrl: 'https://cdn.bazarix.link/theme/acme/ocean-dark/preview.png',
   price:      19,              // USD. 0 or omit for free
   licenseKey: undefined,       // Managed by the licensing API — never hardcode
 }
@@ -467,7 +467,7 @@ const OceanDarkTheme: VolqanTheme = {
 
   marketplace: {
     category:   'dark',
-    previewUrl: 'https://cdn.bazarix.dev/theme/acme/ocean-dark/preview.png',
+    previewUrl: 'https://cdn.bazarix.link/theme/acme/ocean-dark/preview.png',
     price:      0,    // Free theme
   },
 };
@@ -521,7 +521,7 @@ pnpm build
 # Publish to npm
 npm publish --access public
 
-# Submit to Bazarix at bazarix.dev/sellers/submit
+# Submit to Bazarix at bazarix.link/sellers/submit
 ```
 
 ---
@@ -621,4 +621,4 @@ Both are non-removable and serve as the fallback if no other theme is active.
 
 ---
 
-*Theme API reference — Volqan v0.0.1 · [GitHub](https://github.com/ReadyPixels/volqan) · [Bazarix Marketplace](https://bazarix.dev)*
+*Theme API reference — Volqan v0.0.1 · [GitHub](https://github.com/ReadyPixels/volqan) · [Bazarix Marketplace](https://bazarix.link)*

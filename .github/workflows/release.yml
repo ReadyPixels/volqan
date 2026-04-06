@@ -64,8 +64,8 @@ jobs:
               '',
               '---',
               '',
-              `Full documentation: https://volqan.dev`,
-              `Changelog: https://volqan.dev/changelog`,
+              `Full documentation: https://volqan.link`,
+              `Changelog: https://volqan.link/changelog`,
             ].join('\n');
 
             // Check if release already exists for this tag

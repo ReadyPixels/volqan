@@ -99,14 +99,14 @@ volqan/
 - **Themes** are npm packages that export a `VolqanTheme` object. They inject design tokens as CSS custom properties under the `--volqan-*` namespace.
 - **The Extension Engine** loads, validates, sandboxes, and lifecycle-manages extensions.
 - **The Theme Engine** injects theme tokens on the `<html>` element and handles component overrides.
-- **Bazarix** ([bazarix.dev](https://bazarix.dev)) is the official marketplace for distributing extensions and themes.
+- **Bazarix** ([bazarix.link](https://bazarix.link)) is the official marketplace for distributing extensions and themes.
 
 ---
 
 ## Community Resources
 
 - [GitHub Discussions](https://github.com/ReadyPixels/volqan/discussions) — Ask questions and share ideas
-- [Bazarix Marketplace](https://bazarix.dev) — Browse and publish extensions and themes
+- [Bazarix Marketplace](https://bazarix.link) — Browse and publish extensions and themes
 - [Changelog](changelog.md) — Version history and release notes
 - [Roadmap](roadmap.md) — Upcoming features and planned work
 
