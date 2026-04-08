@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Volqan — Build Anything. Own Everything. The open-source framework that is a CMS, admin panel, visual page builder, and backend application platform.">
+  <title>Volqan — Build Anything. Own Everything.</title>
+  <link rel="icon" type="image/png" href="./logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-tertiary: #1a1a24;
+      --bg-card: #16161f;
+      --bg-card-hover: #1e1e2a;
+      --text-primary: #ffffff;
+      --text-secondary: #a1a1b5;
+      --text-muted: #6b6b7d;
+      --accent-primary: #6366f1;
+      --accent-secondary: #818cf8;
+      --accent-purple: #a855f7;
+      --accent-cyan: #22d3ee;
+      --accent-green: #10b981;
+      --border-color: #2a2a38;
+      --gradient-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #22d3ee 100%);
+      --gradient-bg: linear-gradient(180deg, #0a0a0f 0%, #12121a 100%);
+      --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+      --shadow-glow: 0 0 60px rgba(99, 102, 241, 0.3);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.3s ease;
+      --transition-slow: 0.5s ease;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Background Pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(168, 85, 247, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 0% 100%, rgba(34, 211, 238, 0.08) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Grid Pattern Overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    a {
+      color: var(--accent-secondary);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    a:hover {
+      color: var(--text-primary);
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 1rem 2rem;
+      background: rgba(10, 10, 15, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
+      animation: slideDown 0.6s ease forwards;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .nav-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+
+    .nav-logo img {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: color var(--transition-fast);
+    }
+
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      animation: fadeInUp 0.8s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-logo {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 2rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-glow);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 50px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-tagline {
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-description {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      line-height: 1.7;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.75rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all var(--transition-normal);
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: var(--text-primary);
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-secondary);
+    }
+
+    /* Code Block */
+    .code-block {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      text-align: left;
+      max-width: 500px;
+      margin: 0 auto;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .code-block::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .code-block::after {
+      content: '● ● ●';
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--text-muted);
+    }
+
+    .code-content {
+      margin-top: 1rem;
+      color: var(--accent-secondary);
+      font-size: 0.9rem;
+    }
+
+    .code-content .prompt {
+      color: var(--text-muted);
+    }
+
+    .code-content .command {
+      color: var(--accent-cyan);
+    }
+
+    /* Section Styles */
+    .section {
+      padding: 6rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-header h2 {
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: all var(--transition-normal);
+      animation: fadeInUp 0.6s ease forwards;
+      animation-delay: calc(var(--index, 0) * 0.1s);
+      opacity: 0;
+    }
+
+    .feature-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-primary);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-card);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient-primary);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+      font-size: 1.5rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Tech Stack Table */
+    .tech-table {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .tech-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .tech-table th,
+    .tech-table td {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .tech-table th {
+      background: var(--bg-tertiary);
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tech-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tech-table td:first-child {
+      font-weight: 500;
+    }
+
+    .tech-table td:last-child {
+      color: var(--text-secondary);
+    }
+
+    /* Documentation Sections */
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .docs-card {
+      display: block;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      transition: all var(--transition-normal);
+    }
+
+    .docs-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-primary);
+    }
+
+    .docs-card h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .docs-card h3::after {
+      content: '→';
+      margin-left: auto;
+      transition: transform var(--transition-fast);
+    }
+
+    .docs-card:hover h3::after {
+      transform: translateX(4px);
+    }
+
+    .docs-card p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* Community Links */
+    .community-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .community-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      transition: all var(--transition-normal);
+      color: var(--text-primary);
+    }
+
+    .community-link:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-primary);
+    }
+
+    .community-icon {
+      font-size: 1.25rem;
+    }
+
+    .community-link span {
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 3rem 2rem;
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .footer-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .footer-logo {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .footer p {
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .footer a {
+      color: var(--accent-secondary);
+    }
+
+    /* Why Volqan */
+    .why-section {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .why-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .why-text h2 {
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    .why-text p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    .why-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .why-graphic {
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 1;
+      background: var(--gradient-primary);
+      border-radius: var(--radius-xl);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .why-graphic::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: rotate 10s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .why-graphic h3 {
+      font-size: 2rem;
+      font-weight: 700;
+      position: relative;
+    }
+
+    .why-graphic ul {
+      list-style: none;
+      margin-top: 1.5rem;
+      text-align: left;
+      position: relative;
+    }
+
+    .why-graphic li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+      color: var(--text-secondary);
+    }
+
+    .why-graphic li::before {
+      content: '✓';
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    /* Marketplace */
+    .marketplace-section {
+      background: var(--gradient-primary);
+      border-radius: var(--radius-xl);
+      padding: 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .marketplace-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.3);
+    }
+
+    .marketplace-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .marketplace-section h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .marketplace-section p {
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 1.5rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 6rem 1.5rem 3rem;
+      }
+
+      .section {
+        padding: 4rem 1.5rem;
+      }
+
+      .why-content {
+        grid-template-columns: 1fr;
+      }
+
+      .tech-table {
+        overflow-x: auto;
+      }
+
+      .features-grid,
+      .docs-grid,
+      .community-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Utility Classes */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Focus Styles for Accessibility */
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--accent-secondary);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-content">
+      <a href="/" class="nav-logo" aria-label="Volqan Home">
+        <img src="./logo.png" alt="Volqan Logo" width="36" height="36">
+        <span>Volqan</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#tech-stack">Tech Stack</a></li>
+        <li><a href="#docs">Docs</a></li>
+        <li><a href="#community">Community</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-content">
+        <img src="./logo.png" alt="Volqan Logo" class="hero-logo" width="120" height="120">
+        <div class="hero-badge">
+          <span>Open Source</span>
+          <span>v1.0 Released</span>
+        </div>
+        <h1 id="hero-title">Volqan</h1>
+        <p class="hero-tagline">Build Anything. Own Everything.</p>
+        <p class="hero-description">
+          The open-source application framework that is a CMS, an admin panel, a visual page builder, and a backend application platform — all in one. Ship free. Stay free. Own every byte.
+        </p>
+        <div class="hero-cta">
+          <a href="./getting-started.md" class="btn btn-primary" aria-label="Get started with Volqan">
+            Get Started
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <a href="https://github.com/ReadyPixels/volqan" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            GitHub
+          </a>
+        </div>
+        <div class="code-block">
+          <div class="code-content">
+            <p><span class="prompt">$</span> <span class="command">npx create-volqan-app my-project</span></p>
+            <p><span class="prompt">$</span> <span class="command">cd my-project && pnpm dev</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Volqan Section -->
+    <section class="section why-section" aria-labelledby="why-title">
+      <div class="why-content">
+        <div class="why-text">
+          <h2 id="why-title">Why Volqan?</h2>
+          <p>
+            Most frameworks make you choose. You either get a CMS or a backend framework or a page builder — never all three, never without a vendor lock-in. Volqan removes that choice.
+          </p>
+          <br>
+          <p>
+            You define your data. Volqan generates the admin panel, the REST API, the GraphQL API, the forms, and the content management interface — automatically. Then you ship it with a single Docker command and walk away.
+          </p>
+        </div>
+        <div class="why-visual">
+          <div class="why-graphic">
+            <h3>One Stack</h3>
+            <ul>
+              <li>CMS</li>
+              <li>Admin Panel</li>
+              <li>Page Builder</li>
+              <li>Backend API</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features" aria-labelledby="features-title">
+      <div class="section-header">
+        <h2 id="features-title">Core Features</h2>
+        <p>Everything you need to build powerful applications without the complexity.</p>
+      </div>
+      <div class="features-grid">
+        <article class="feature-card" style="--index: 0">
+          <div class="feature-icon" aria-hidden="true">⚙️</div>
+          <h3>Two Usage Modes</h3>
+          <p>Developer Mode for code-first control or Visual Mode for point-and-click building. One engine powers both — switch anytime.</p>
+        </article>
+        <article class="feature-card" style="--index: 1">
+          <div class="feature-icon" aria-hidden="true">🔗</div>
+          <h3>Auto-Generated APIs</h3>
+          <p>Every content model instantly becomes a full REST API and GraphQL API. No routes to write, no resolvers to maintain.</p>
+        </article>
+        <article class="feature-card" style="--index: 2">
+          <div class="feature-icon" aria-hidden="true">🧩</div>
+          <h3>Extension Engine</h3>
+          <p>First-class extension system. Add admin menu items, custom pages, dashboard widgets, API routes, and more — all through TypeScript.</p>
+        </article>
+        <article class="feature-card" style="--index: 3">
+          <div class="feature-icon" aria-hidden="true">🎨</div>
+          <h3>Theme Engine</h3>
+          <p>Full design token system. Swap themes instantly. Every color, font, spacing, and animation is configurable.</p>
+        </article>
+        <article class="feature-card" style="--index: 4">
+          <div class="feature-icon" aria-hidden="true">🤖</div>
+          <h3>Embedded AI Assistant</h3>
+          <p>AI lives inside your admin panel. Connect to OpenAI, Claude, Gemini, or run locally with Ollama.</p>
+        </article>
+        <article class="feature-card" style="--index: 5">
+          <div class="feature-icon" aria-hidden="true">✨</div>
+          <h3>Beautiful by Default</h3>
+          <p>Built with shadcn/ui and Tailwind CSS v4. Premium SaaS look and feel out of the box.</p>
+        </article>
+        <article class="feature-card" style="--index: 6">
+          <div class="feature-icon" aria-hidden="true">🐳</div>
+          <h3>Self-Hosted Forever</h3>
+          <p>Docker-first. One command starts everything. No usage limits, no per-seat pricing, no vendor lock-in.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="section" id="tech-stack" aria-labelledby="tech-title">
+      <div class="section-header">
+        <h2 id="tech-title">Tech Stack</h2>
+        <p>Modern, battle-tested technologies you already know.</p>
+      </div>
+      <div class="tech-table" role="table" aria-label="Technology stack">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Layer</th>
+              <th scope="col">Technology</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Runtime</td><td>Node.js 22 LTS</td></tr>
+            <tr><td>Language</td><td>TypeScript 5.x</td></tr>
+            <tr><td>App Framework</td><td>Next.js 15 with App Router</td></tr>
+            <tr><td>ORM</td><td>Prisma</td></tr>
+            <tr><td>Databases</td><td>PostgreSQL (default), MySQL, SQLite</td></tr>
+            <tr><td>Admin UI</td><td>shadcn/ui + Tailwind CSS v4</td></tr>
+            <tr><td>Auth</td><td>Built-in JWT + OAuth (Google, GitHub)</td></tr>
+            <tr><td>APIs</td><td>Auto-generated REST + GraphQL</td></tr>
+            <tr><td>File Storage</td><td>Local filesystem + S3-compatible adapter</td></tr>
+            <tr><td>Search</td><td>Built-in full-text search</td></tr>
+            <tr><td>Email</td><td>Nodemailer with SMTP adapter</td></tr>
+            <tr><td>Deployment</td><td>Docker + Docker Compose</td></tr>
+            <tr><td>Package Manager</td><td>pnpm workspaces</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Marketplace Section -->
+    <section class="section" aria-labelledby="marketplace-title">
+      <div class="section-header">
+        <h2 id="marketplace-title">The Marketplace</h2>
+      </div>
+      <div class="marketplace-section">
+        <div class="marketplace-content">
+          <h2>Bazarix</h2>
+          <p>The official curated marketplace for Volqan extensions and themes. Every listing is quality-reviewed.</p>
+          <a href="https://bazarix.link" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+            Browse Extensions
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section class="section" id="docs" aria-labelledby="docs-title">
+      <div class="section-header">
+        <h2 id="docs-title">Documentation</h2>
+        <p>Everything you need to get started and go production.</p>
+      </div>
+      <div class="docs-grid">
+        <a href="./getting-started.md" class="docs-card">
+          <h3>Getting Started</h3>
+          <p>Install, configure, and launch your first Volqan project</p>
+        </a>
+        <a href="./extension-api.md" class="docs-card">
+          <h3>Extension API</h3>
+          <p>Build extensions that add features to any Volqan installation</p>
+        </a>
+        <a href="./theme-api.md" class="docs-card">
+          <h3>Theme API</h3>
+          <p>Build and publish themes for the Volqan admin panel</p>
+        </a>
+        <a href="./pricing.md" class="docs-card">
+          <h3>Pricing</h3>
+          <p>Free tier, Support Plans, and the Platform Service Fee explained</p>
+        </a>
+        <a href="./roadmap.md" class="docs-card">
+          <h3>Roadmap</h3>
+          <p>What's built, what's coming, and when</p>
+        </a>
+        <a href="./changelog.md" class="docs-card">
+          <h3>Changelog</h3>
+          <p>Version history and release notes</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- Legal Section -->
+    <section class="section" aria-labelledby="legal-title">
+      <div class="section-header">
+        <h2 id="legal-title">Legal</h2>
+      </div>
+      <div class="docs-grid">
+        <a href="./legal/terms-of-service.md" class="docs-card">
+          <h3>Terms of Service</h3>
+          <p>Usage terms for the Volqan framework</p>
+        </a>
+        <a href="./legal/privacy-policy.md" class="docs-card">
+          <h3>Privacy Policy</h3>
+          <p>What data is collected and how it is used</p>
+        </a>
+        <a href="./legal/refund-policy.md" class="docs-card">
+          <h3>Refund Policy</h3>
+          <p>Refund eligibility for Support Plans</p>
+        </a>
+        <a href="./legal/attribution-policy.md" class="docs-card">
+          <h3>Attribution Policy</h3>
+          <p>How the attribution requirement works</p>
+        </a>
+        <a href="./legal/fee-disclosure.md" class="docs-card">
+          <h3>Fee Disclosure</h3>
+          <p>Full Platform Service Fee formula and examples</p>
+        </a>
+        <a href="./legal/contributor-license-agreement.md" class="docs-card">
+          <h3>Contributor License</h3>
+          <p>IP terms for contributors</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- Community Section -->
+    <section class="section" id="community" aria-labelledby="community-title">
+      <div class="section-header">
+        <h2 id="community-title">Community</h2>
+        <p>Join thousands of developers building with Volqan.</p>
+      </div>
+      <div class="community-grid">
+        <a href="https://github.com/ReadyPixels/volqan/discussions" class="community-link" target="_blank" rel="noopener noreferrer">
+          <span class="community-icon" aria-hidden="true">💬</span>
+          <span>GitHub Discussions</span>
+        </a>
+        <a href="https://github.com/ReadyPixels/volqan/discussions/categories/q-a" class="community-link" target="_blank" rel="noopener noreferrer">
+          <span class="community-icon" aria-hidden="true">❓</span>
+          <span>Q&A</span>
+        </a>
+        <a href="https://github.com/ReadyPixels/volqan/discussions/categories/show-and-tell" class="community-link" target="_blank" rel="noopener noreferrer">
+          <span class="community-icon" aria-hidden="true">🚀</span>
+          <span>Show and Tell</span>
+        </a>
+        <a href="https://github.com/ReadyPixels/volqan/issues" class="community-link" target="_blank" rel="noopener noreferrer">
+          <span class="community-icon" aria-hidden="true">🐛</span>
+          <span>GitHub Issues</span>
+        </a>
+        <a href="https://github.com/sponsors/ReadyPixels" class="community-link" target="_blank" rel="noopener noreferrer">
+          <span class="community-icon" aria-hidden="true">❤️</span>
+          <span>Sponsor</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- License Section -->
+    <section class="section" aria-labelledby="license-title">
+      <div class="section-header">
+        <h2 id="license-title">License</h2>
+        <p style="max-width: 700px; margin: 0 auto;">
+          Volqan is released under the <a href="https://github.com/ReadyPixels/volqan/blob/main/LICENSE-ATTRIBUTION.md">Open Core Attribution License v1.0</a>. You may use, modify, and distribute it freely. Deployments must display the "Powered by Volqan" attribution notice unless you hold an active Support Plan subscription.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <img src="./logo.png" alt="" width="24" height="24" style="vertical-align: middle; margin-right: 0.5rem;">
+        Volqan
+      </div>
+      <p>Built and maintained by <a href="https://github.com/ReadyPixels">ReadyPixels</a></p>
+      <p>© 2026 Volqan. Released April 2026.</p>
+    </div>
+  </footer>
+</body>
+</html>
