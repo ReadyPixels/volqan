@@ -57,7 +57,7 @@ function getJwtSecret(): string {
     console.warn(
       '[volqan:jwt] ⚠  JWT_SECRET is not set — using insecure development fallback.',
     );
-    return 'volqan-dev-secret-do-not-use-in-production-please-set-jwt-secret';
+    return 'volqan.link-secret-do-not-use-in-production-please-set-jwt-secret';
   }
 
   if (process.env['NODE_ENV'] === 'production' && secret.length < 32) {
