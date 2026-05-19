@@ -43,3 +43,7 @@ test-results/
 
 # local package artifacts
 *.tgz
+
+.playwright-mcp
+.kilo
+dogfood-output

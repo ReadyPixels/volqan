@@ -19,6 +19,49 @@ Versions with neither label are stable.
 
 Changes staged for the next release are tracked here before a version number is assigned.
 
+### Added — Admin Panel (`packages/admin`)
+
+**Dashboard**
+- Stats cards with live sparkline trend charts for Content Entries, Media Files, Active Extensions, and Users
+- Content Activity bar chart showing entries created over the last 30 days with hover tooltips
+- Recent Content feed showing latest entries across all content types with author avatars and status badges
+- Recent Activity timeline showing user actions across the site
+- Quick Actions grid with one-click links to common tasks (New Content, New Page, Upload Media, Install Extension, Manage Types, Settings)
+- Storage Usage widget showing breakdown by file type (Images, Videos, Documents, Audio) with upgrade prompt
+- System Health widget showing real-time status of Database, Cache, Extensions, and API Gateway
+
+**Layout & Navigation**
+- Collapsible sidebar with icon-only collapsed state and smooth transition
+- Top bar with breadcrumb navigation, search button (⌘K), theme toggle, notification bell, and user menu
+- Notification panel showing recent site events with timestamps
+- User menu with Profile, Settings, and Sign out options
+- Responsive mobile header and navigation components
+- `Powered by Volqan` attribution footer on all pages
+
+**Theme System**
+- Light / Dark / System theme switching via `ThemeProvider`
+- Theme preference persisted to `localStorage`
+- Full CSS custom property token set for both light and dark modes injected on `<html>`
+- Fixed Tailwind v4 dark mode — added `@variant dark (&:where(.dark, .dark *))` to `globals.css` so `dark:` utility classes are controlled by the `.dark` class rather than the OS media query
+
+**Pages**
+- `/` — Dashboard with all widgets above
+- `/content` — Content type overview grid with entry counts and field counts
+- `/content/types` — Content Types manager with field schema viewer and Browse/Add Entry actions
+- `/pages` — Visual page builder list with status badges (Published, Draft, Scheduled, Archived) and block counts
+- `/media` — Media Library with folder tree, file grid, drag-and-drop upload zone, and search
+- `/extensions` — Installed extensions list with enable/disable toggles, update banners, settings and uninstall actions, and Bazarix Marketplace deep link
+- `/themes` — Theme manager with installed theme cards, active indicator, Activate button, and Token Editor tab; Bazarix Themes deep link
+- `/users` — Team members table with role badges, status, last-seen timestamps, and invite user action
+- `/billing` — Subscription plan display, Support Plan upgrade cards (Yearly / Monthly), and attribution removal status
+- `/settings` — Tabbed settings panel: General, Email (SMTP), Storage, API Keys, Installation Info
+
+**Bug Fixes**
+- Resolved webpack build error (`Can't resolve 'child_process'`) caused by `@volqan/core` barrel import pulling `sharp` (a Node.js-only native module) into the browser bundle — fixed by inlining marketplace URLs in `extensions/page.tsx` and `themes/page.tsx` and adding `sharp: false` / `detect-libc: false` webpack aliases for client builds in `next.config.ts`
+- Fixed React hydration mismatch on the dashboard — `ContentChart` was calling `Math.random()` and `new Date()` at module scope, producing different values on server and client; moved data generation into `useState` + `useEffect` so it only runs after hydration
+- Added `public/favicon.svg` (Volqan logo) and wired it via `metadata.icons` in `app/layout.tsx` to resolve the 404 on `/favicon.ico`
+- Fixed stat card percentage badges invisible in light mode — root cause was Tailwind v4 defaulting `dark:` variants to `@media (prefers-color-scheme: dark)` regardless of the `.dark` class on `<html>`
+
 ---
 
 ## [0.0.1] — April 2026
