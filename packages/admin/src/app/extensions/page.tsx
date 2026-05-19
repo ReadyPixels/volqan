@@ -15,13 +15,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { buildMarketplaceURL } from '@volqan/core';
-
 // ---------------------------------------------------------------------------
 // Deep link URL
 // ---------------------------------------------------------------------------
 
-const MARKETPLACE_URL = buildMarketplaceURL('extension');
+const MARKETPLACE_URL = `https://bazarix.link/extensions?source=volqan`;
 
 // ---------------------------------------------------------------------------
 // Mock data

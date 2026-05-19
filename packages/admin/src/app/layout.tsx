@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   },
   description: 'Volqan Headless CMS Administration Panel',
   robots: { index: false, follow: false },
+  icons: { icon: '/favicon.svg' },
 };
 
 export default function RootLayout({
