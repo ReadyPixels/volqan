@@ -19,7 +19,6 @@ function generateData(days: number) {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    // Simulate realistic content creation with weekend dips
     const dow = d.getDay();
     const base = dow === 0 || dow === 6 ? 1 : 5;
     const count = Math.max(0, Math.floor(base + Math.random() * 8 - 1));
@@ -27,8 +26,6 @@ function generateData(days: number) {
   }
   return data;
 }
-
-const DATA = generateData(30);
 
 // ---------------------------------------------------------------------------
 // SVG bar chart
@@ -42,13 +39,19 @@ const CHART_HEIGHT = SVG_HEIGHT - PADDING.top - PADDING.bottom;
 
 export function ContentChart() {
   const [hovered, setHovered] = React.useState<number | null>(null);
+  const [data, setData] = React.useState<Array<{ date: string; count: number }>>([]);
 
-  const maxCount = Math.max(...DATA.map((d) => d.count), 1);
-  const barWidth = CHART_WIDTH / DATA.length;
+  React.useEffect(() => {
+    setData(generateData(30));
+  }, []);
+
+  const DATA = data;
+  const maxCount = DATA.length > 0 ? Math.max(...DATA.map((d) => d.count), 1) : 1;
+  const barWidth = DATA.length > 0 ? CHART_WIDTH / DATA.length : 0;
   const barGap = barWidth * 0.25;
 
   const total = DATA.reduce((s, d) => s + d.count, 0);
-  const avg = Math.round(total / DATA.length);
+  const avg = DATA.length > 0 ? Math.round(total / DATA.length) : 0;
 
   // X-axis labels: show every 5th
   const xLabels = DATA.filter((_, i) => i % 5 === 0 || i === DATA.length - 1);
