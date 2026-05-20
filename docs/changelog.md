@@ -19,7 +19,39 @@ Versions with neither label are stable.
 
 Changes staged for the next release are tracked here before a version number is assigned.
 
-### Added — Admin Panel (`packages/admin`)
+### Security
+
+**Admin Panel (`packages/admin`)**
+- Fixed XSS vulnerability in `HtmlBlock` and `RichTextBlock` page builder components — raw HTML from block props was passed directly to `dangerouslySetInnerHTML`; replaced with an allowlist-based `sanitizeHtml()` function that strips disallowed tags and removes all `on*` event handler and `javascript:` attributes
+- Fixed XSS vulnerability in `AIMessage` markdown renderer — user-supplied content was regex-substituted then passed to `dangerouslySetInnerHTML` without escaping, allowing injected HTML and `javascript:` link URIs; input is now HTML-escaped before pattern matching and link `href` values are validated to `http`/`https` only
+- Fixed `rel="noopener noreferrer"` missing `noreferrer` on AI-generated external links (previously only `noopener`), which allowed target pages to read the `Referer` header
+- Fixed open redirect in billing checkout — `window.location.href` was set directly from an unvalidated API response URL; now validates the URL is `https:` and the hostname ends with `.stripe.com` before redirecting
+- Restricted `images.remotePatterns` in `next.config.ts` — replaced the overly broad `**.cloudflare.com` wildcard (matches any Cloudflare subdomain) with the specific `imagedelivery.net` hostname
+- Added HTTP security response headers to all routes via `next.config.ts`: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `X-XSS-Protection: 1; mode=block`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+
+---
+
+## [Post-0.0.1 Development] — April–May 2026
+
+> Work completed after the initial public release but before the first runnable version tag. Documents the full implementation of the admin panel, core runtime, SDKs, CLI, and developer ecosystem built in preparation for `v0.1.0-alpha`.
+
+---
+
+### Added — Admin Panel (`packages/admin`) — Phase 1
+
+**Layout & Navigation**
+- Collapsible sidebar with icon-only collapsed state and smooth CSS transition
+- Top bar with breadcrumb navigation, search button (⌘K), theme toggle, notification bell, and user menu
+- Notification panel showing recent site events with timestamps
+- User menu with Profile, Settings, and Sign out options
+- Responsive mobile header and slide-out navigation components
+- `Powered by Volqan` attribution footer on all pages
+
+**Theme System**
+- Light / Dark / System theme switching via `ThemeProvider`
+- Theme preference persisted to `localStorage`
+- Full CSS custom property token set for both light and dark modes injected on `<html>`
+- Fixed Tailwind v4 dark mode — added `@variant dark (&:where(.dark, .dark *))` to `globals.css` so `dark:` utility classes are controlled by the `.dark` class rather than the OS media query
 
 **Dashboard**
 - Stats cards with live sparkline trend charts for Content Entries, Media Files, Active Extensions, and Users
@@ -30,37 +62,197 @@ Changes staged for the next release are tracked here before a version number is 
 - Storage Usage widget showing breakdown by file type (Images, Videos, Documents, Audio) with upgrade prompt
 - System Health widget showing real-time status of Database, Cache, Extensions, and API Gateway
 
-**Layout & Navigation**
-- Collapsible sidebar with icon-only collapsed state and smooth transition
-- Top bar with breadcrumb navigation, search button (⌘K), theme toggle, notification bell, and user menu
-- Notification panel showing recent site events with timestamps
-- User menu with Profile, Settings, and Sign out options
-- Responsive mobile header and navigation components
-- `Powered by Volqan` attribution footer on all pages
-
-**Theme System**
-- Light / Dark / System theme switching via `ThemeProvider`
-- Theme preference persisted to `localStorage`
-- Full CSS custom property token set for both light and dark modes injected on `<html>`
-- Fixed Tailwind v4 dark mode — added `@variant dark (&:where(.dark, .dark *))` to `globals.css` so `dark:` utility classes are controlled by the `.dark` class rather than the OS media query
-
 **Pages**
 - `/` — Dashboard with all widgets above
 - `/content` — Content type overview grid with entry counts and field counts
 - `/content/types` — Content Types manager with field schema viewer and Browse/Add Entry actions
+- `/content/types/new` — Schema builder for creating new content types with field editor
+- `/content/[slug]` — Entry list view per content type with status badges and pagination
+- `/content/[slug]/new` — Entry creation form driven by content type schema
+- `/content/[slug]/[id]` — Entry edit form with field validation and auto-save
 - `/pages` — Visual page builder list with status badges (Published, Draft, Scheduled, Archived) and block counts
+- `/pages/new` — Page creation with block picker
+- `/pages/[id]` — Full drag-and-drop page builder with live preview panel
 - `/media` — Media Library with folder tree, file grid, drag-and-drop upload zone, and search
 - `/extensions` — Installed extensions list with enable/disable toggles, update banners, settings and uninstall actions, and Bazarix Marketplace deep link
 - `/themes` — Theme manager with installed theme cards, active indicator, Activate button, and Token Editor tab; Bazarix Themes deep link
 - `/users` — Team members table with role badges, status, last-seen timestamps, and invite user action
 - `/billing` — Subscription plan display, Support Plan upgrade cards (Yearly / Monthly), and attribution removal status
+- `/billing/checkout` — Checkout flow with plan selector, fee breakdown (Platform Service Fee displayed pre-payment per ToS), and Stripe redirect
 - `/settings` — Tabbed settings panel: General, Email (SMTP), Storage, API Keys, Installation Info
 
-**Bug Fixes**
-- Resolved webpack build error (`Can't resolve 'child_process'`) caused by `@volqan/core` barrel import pulling `sharp` (a Node.js-only native module) into the browser bundle — fixed by inlining marketplace URLs in `extensions/page.tsx` and `themes/page.tsx` and adding `sharp: false` / `detect-libc: false` webpack aliases for client builds in `next.config.ts`
+**UI Component Library**
+- `button`, `card`, `input`, `badge`, `avatar`, `dialog`, `dropdown-menu`, `tabs`, `toast`, `data-table`, `form-field` — shadcn/ui-style component set with full dark mode support
+
+**Visual Page Builder**
+- 28-block drag-and-drop page builder with live side-by-side preview
+- Block categories: Layout (`section`, `container`, `grid-2col`, `grid-3col`, `grid-4col`, `spacer`, `divider`), Content (`heading`, `paragraph`, `rich-text`, `image`, `video`, `button`, `link`), Data (`content-list`, `content-grid`, `content-detail`), Forms (`contact-form`, `newsletter`, `custom-form`), Navigation (`navbar`, `footer`, `breadcrumb`, `sidebar-nav`), Media (`hero`, `gallery`, `carousel`, `banner`), Advanced (`html`, `code`, `embed`, `map`)
+- Block property editor with real-time style and prop updates
+- Block palette with category tabs and drag-to-canvas interaction
+- `BlockSettings` panel: text, color, spacing, border, and advanced class/ID overrides
+
+**AI Assistant**
+- Embedded AI panel with swappable LLM provider configuration
+- Provider support: OpenAI, Claude (Anthropic), Gemini, Ollama (local)
+- Chat interface with markdown rendering (bold, italic, code blocks, lists, headers, links)
+- Prompt suggestions for common CMS tasks
+
+**Billing UI**
+- `FeeBreakdown` component — full Platform Service Fee formula display ($0.50 + 10%) required pre-checkout per ToS
+- `InvoiceTable`, `PlanCard`, `SubscriptionStatus` components
+- Checkout page with plan toggle (Yearly / Monthly with 25% monthly uplift), feature list, and Stripe redirect guard
+
+**Bug Fixes — Admin Panel**
+- Resolved webpack build error (`Can't resolve 'child_process'`) caused by `@volqan/core` barrel import pulling `sharp` (a Node.js-only native module) into the browser bundle — fixed by inlining marketplace URLs in `extensions/page.tsx` and `themes/page.tsx` and adding `sharp: false` / `detect-libc: false` webpack aliases for client builds in `next.config.ts`; removed `transpilePackages: ['@volqan/core']` which was the root cause of core being traversed by webpack
 - Fixed React hydration mismatch on the dashboard — `ContentChart` was calling `Math.random()` and `new Date()` at module scope, producing different values on server and client; moved data generation into `useState` + `useEffect` so it only runs after hydration
-- Added `public/favicon.svg` (Volqan logo) and wired it via `metadata.icons` in `app/layout.tsx` to resolve the 404 on `/favicon.ico`
+- Added `public/favicon.svg` (Volqan logo — orange-to-red gradient M/volcano mark with flame and sparks) and wired it via `metadata.icons` in `app/layout.tsx` to resolve the 404 on `/favicon.ico`
 - Fixed stat card percentage badges invisible in light mode — root cause was Tailwind v4 defaulting `dark:` variants to `@media (prefers-color-scheme: dark)` regardless of the `.dark` class on `<html>`
+
+---
+
+### Added — Core Runtime (`packages/core`) — Phase 1 & 2
+
+**Extension Runtime**
+- `sandbox.ts` — timeout-guarded extension execution with structured `SandboxError`
+- `context-factory.ts` — per-extension isolated config, event bus, and registration API
+- `lifecycle.ts` — install / uninstall / enable / disable / boot lifecycle with persistence adapter
+- `registry.ts` — directory scanning and in-memory extension registry
+
+**Theme Runtime**
+- `applicator.ts` — CSS token flattening, stylesheet generation, DOM injection, and hot-swap
+- `registry.ts` — directory scanning and active theme management
+- `preview.ts` — temporary theme preview with auto-restore and diff
+
+**AI Manager (`packages/core/src/ai`)**
+- `AIManager` with pluggable provider interface
+- Providers: OpenAI (`gpt-4o`), Anthropic Claude (`claude-3-5-sonnet`), Google Gemini, Ollama (local models)
+- Streaming and non-streaming chat completion support
+- Unified `AIMessage` and `AIStreamChunk` types
+
+**Billing (`packages/core/src/billing`)**
+- `plans.ts` — Support Plan definitions (Yearly $48/yr, Monthly $5/mo with 25% uplift)
+- `checkout.ts` — Stripe Checkout Session creation with pre-populated fee metadata
+- `subscription-manager.ts` — subscription CRUD, status queries, renewal tracking
+- `webhook-handler.ts` — handles 8 Stripe webhook event types: `checkout.session.completed`, `customer.subscription.created/updated/deleted`, `invoice.payment_succeeded/failed`, `customer.updated`, `payment_intent.payment_failed`
+- `fee-calculator.ts` — Platform Service Fee: `$0.50 + 10%` of plan price
+
+**License & Installation (`packages/core/src/license`)**
+- `api.ts` — Bazarix license API client: check, activate, deactivate endpoints
+- `checker.ts` — License verification with caching and grace period
+- `installation.ts` — Installation ID generation, registration, and tracking
+- `api-constants.ts` — Bazarix API base URL and endpoint paths
+
+**Pages Repository (`packages/core/src/pages`)**
+- `repository.ts` — CRUD operations for page records
+- `types.ts` — `VolqanPage`, `PageBlock`, `PageStatus`, and builder type definitions
+
+**Deep Link Integration (`packages/core/src/extensions`)**
+- `deep-link.ts` — `buildMarketplaceURL()`, `buildThemeURL()`, `parseInstallURL()` helpers for Bazarix deep links
+- Browse Marketplace / Browse Themes buttons wired in admin Extensions and Themes pages
+
+---
+
+### Added — CLI (`packages/cli`) — Phase 1 & 3
+
+**`create-volqan-app` scaffolding**
+- Interactive prompts (readline, zero external dependencies)
+- Database adapter selection: PostgreSQL, MySQL, SQLite
+- Auth provider selection: JWT, NextAuth, Clerk
+- Generates: `package.json`, `tsconfig.json`, `.env`, `volqan.config.ts`, Prisma schema
+- Colored ANSI logger, automated `pnpm install` + `prisma migrate dev` on scaffold completion
+
+**`volqan create` sub-commands (Phase 3)**
+- `volqan create extension <name>` — scaffolds a complete extension project with `defineExtension()` boilerplate, package.json, tsconfig, and README
+- `volqan create theme <name>` — scaffolds a complete theme project with `defineTheme()` boilerplate, token definitions, and README
+
+---
+
+### Added — Extension SDK (`packages/extension-sdk`) — Phase 3
+
+- `VolqanExtensionBase` abstract class with typed lifecycle hook stubs
+- `defineExtension()` functional API for declaring extensions without subclassing
+- Registration helpers: `registerRoute`, `registerAdminPage`, `registerContentType`, `registerAPIEndpoint`
+- `hooks.ts` — `useExtensionConfig`, `useExtensionEvents`, `useContentHook` React hooks
+- `testing.ts` — `createTestContext()` and `mockVolqanApp()` test utilities
+- Full TypeScript types with JSDoc for all public surface area
+- `README.md` with quick-start guide and API overview
+
+---
+
+### Added — Theme SDK (`packages/theme-sdk`) — Phase 3
+
+- `VolqanThemeBase` abstract class with slot override system
+- `defineTheme()` functional API with typed CSS token definitions
+- Component override system: register custom React components per slot
+- `createPreviewContext()` — SSR-safe theme preview context for marketplace screenshots
+- `README.md` with quick-start guide and token reference
+
+---
+
+### Added — Official Extensions — Phase 2
+
+**Blog (`extensions/blog`)**
+- Post editor with rich text, featured image, SEO fields, categories, and tags
+- Post list with bulk actions, status filters (Published / Draft / Scheduled)
+- RSS feed generator (`rss.ts`) — valid RSS 2.0 output with per-post metadata
+- `VolqanExtension` integration: `onBoot` registers content type and API routes
+
+**SEO (`extensions/seo`)**
+- Meta analyzer with per-field scoring (title length, description length, keyword density)
+- Sitemap generator — dynamic XML sitemap from content entries and pages
+- `robots.txt` builder with allow/disallow rule editor
+- `SEOPanel` React component embeds into content entry edit forms
+
+**Forms (`extensions/forms`)**
+- Visual form builder with drag-and-drop field ordering
+- Field types: text, email, phone, textarea, select, checkbox, radio, file upload, date
+- `FormRenderer` — runtime form rendering with client-side validation
+- Submission handler with storage adapter and webhook forwarding
+
+---
+
+### Added — Official Themes — Phase 2
+
+**Default Theme (`themes/default`)**
+- Blue/light professional design with Inter typeface
+- Full CSS custom property token set wired to `volqan-color-*` variables
+- Component overrides for card, button, input, navbar, and footer
+
+**Minimal Theme (`themes/minimal`)**
+- Dark/emerald modern aesthetic with JetBrains Mono accent
+- High-contrast dark tokens, subtle animations, condensed spacing
+
+---
+
+### Added — Docker & Infrastructure — Phase 1
+
+- Multi-stage `Dockerfile` (deps → build → runner) with non-root user for security
+- `docker-compose.yml` — development setup with hot-reload volume mounts and PostgreSQL healthcheck
+- `docker-compose.prod.yml` — production setup with restart policies, resource limits (`mem_limit: 512m`), and a `pg-backup` service with daily backup rotation
+
+---
+
+### Added — Developer Documentation — Phase 3
+
+- `docs/developer-guide.md` — developer hub linking all SDK and API docs
+- `docs/extensions/getting-started.md` — prerequisites, install, first extension walkthrough
+- `docs/extensions/api-reference.md` — full `VolqanExtension` interface, `ExtensionContext` API, all lifecycle hooks, admin UI integration, API routes, GraphQL, content hooks, migrations
+- `docs/extensions/publishing.md` — Bazarix Marketplace submission, review process, versioning
+- `docs/extensions/examples.md` — annotated real-world extension examples (blog, payments, analytics)
+- `docs/themes/getting-started.md` — theme scaffolding, token system, first theme walkthrough
+- `docs/themes/api-reference.md` — `VolqanTheme` interface, design token system, component overrides
+- `docs/themes/publishing.md` — theme submission guide and preview requirements
+
+---
+
+### Changed
+
+- Replaced all `volqan.dev` / `bazarix.dev` domain references with `volqan.link` / `bazarix.link` across CLI templates, core auth constants, and documentation
+- Added Volqan logo (`logo.png`) to repository root and updated `README.md` header
+- Updated `packages/admin/tsconfig.json` — stricter compiler options, formatted consistently
+- `packages/core/src/auth/jwt.ts` — updated issuer constant from `volqan.dev` to `volqan.link`
+
+---
 
 ---
 
