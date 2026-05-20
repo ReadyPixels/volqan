@@ -13,9 +13,32 @@ import { cn } from '@/lib/utils';
 // Simple markdown renderer (no external deps)
 // ---------------------------------------------------------------------------
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function safeHref(url: string): string {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol === 'https:' || parsed.protocol === 'http:') return url;
+  } catch {
+    // relative or malformed — allow relative paths only
+    if (!url.includes(':')) return url;
+  }
+  return '#';
+}
+
 function renderMarkdown(text: string): string {
-  return text
-    // Code blocks
+  // Escape the raw text first, then selectively re-introduce safe HTML tags.
+  // This prevents XSS from injected HTML in the content before pattern matching.
+  const escaped = escapeHtml(text);
+  return escaped
+    // Code blocks (content already escaped)
     .replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre class="bg-[hsl(var(--muted))] rounded-md p-3 text-xs overflow-x-auto my-2 font-mono"><code>$2</code></pre>')
     // Inline code
     .replace(/`([^`]+)`/g, '<code class="bg-[hsl(var(--muted))] px-1 py-0.5 rounded text-xs font-mono">$1</code>')
@@ -23,8 +46,11 @@ function renderMarkdown(text: string): string {
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     // Italic
     .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-    // Links
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-[hsl(var(--primary))] hover:underline" target="_blank" rel="noopener">$1</a>')
+    // Links — href validated to http/https only
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label, href) => {
+      const safeUrl = safeHref(href);
+      return `<a href="${escapeHtml(safeUrl)}" class="text-[hsl(var(--primary))] hover:underline" target="_blank" rel="noopener noreferrer">${label}</a>`;
+    })
     // Unordered lists
     .replace(/^- (.+)$/gm, '<li class="ml-4 list-disc">$1</li>')
     // Ordered lists

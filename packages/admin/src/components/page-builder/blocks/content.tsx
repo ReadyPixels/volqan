@@ -9,6 +9,34 @@ import * as React from 'react';
 import type { Block } from '@/types/page-builder';
 import { cn } from '@/lib/utils';
 
+// Allowlist-based HTML sanitizer for rich text content.
+// Strips all tags not in the safe set and removes event handler / javascript: attributes.
+const SAFE_TAGS = new Set([
+  'p', 'br', 'b', 'i', 'strong', 'em', 'u', 's', 'del',
+  'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+  'ul', 'ol', 'li', 'blockquote', 'pre', 'code',
+  'a', 'img', 'figure', 'figcaption',
+  'table', 'thead', 'tbody', 'tr', 'th', 'td',
+  'div', 'span',
+]);
+
+export function sanitizeHtml(html: string): string {
+  // Remove event-handler attributes (on*) and javascript: hrefs/srcs across all tags.
+  return html
+    .replace(/<([a-zA-Z][a-zA-Z0-9]*)((?:\s[^>]*)?)\s*\/?>/g, (_match, tag, attrs) => {
+      const lowerTag = tag.toLowerCase();
+      if (!SAFE_TAGS.has(lowerTag)) return '';
+      const safeAttrs = (attrs as string)
+        .replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|\S+)/gi, '')
+        .replace(/\s+(?:href|src|action)\s*=\s*["']?\s*javascript:[^"'\s>]*/gi, '');
+      return `<${lowerTag}${safeAttrs}>`;
+    })
+    .replace(/<\/([a-zA-Z][a-zA-Z0-9]*)>/g, (_match, tag) => {
+      const lowerTag = tag.toLowerCase();
+      return SAFE_TAGS.has(lowerTag) ? `</${lowerTag}>` : '';
+    });
+}
+
 // ---------------------------------------------------------------------------
 // Heading
 // ---------------------------------------------------------------------------
@@ -89,7 +117,7 @@ export function RichTextBlock({ block }: { block: Block }) {
         marginTop: block.style?.marginTop,
         marginBottom: block.style?.marginBottom,
       }}
-      dangerouslySetInnerHTML={{ __html: html }}
+      dangerouslySetInnerHTML={{ __html: sanitizeHtml(html) }}
     />
   );
 }

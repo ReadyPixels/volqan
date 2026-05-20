@@ -24,6 +24,7 @@ import {
   VideoBlock,
   ButtonBlock,
   LinkBlock,
+  sanitizeHtml,
 } from './blocks/content';
 import {
   ContentListBlock,
@@ -220,7 +221,7 @@ function HtmlBlock({ block }: { block: Block }) {
   return (
     <div
       className="w-full"
-      dangerouslySetInnerHTML={{ __html: props.html ?? '' }}
+      dangerouslySetInnerHTML={{ __html: sanitizeHtml(props.html ?? '') }}
     />
   );
 }
