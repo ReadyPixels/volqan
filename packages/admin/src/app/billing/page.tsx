@@ -19,27 +19,7 @@ import { PlanCard } from '@/components/billing/PlanCard';
 import { InvoiceTable } from '@/components/billing/InvoiceTable';
 import { FeeBreakdown } from '@/components/billing/FeeBreakdown';
 import type { InvoiceRow } from '@/components/billing/InvoiceTable';
-import type { SubscriptionStatusType } from '@/components/billing/SubscriptionStatus';
-
-// ---------------------------------------------------------------------------
-// Mock data — replace with real API calls
-// ---------------------------------------------------------------------------
-
-// These values would normally come from your backend API:
-//   GET /api/billing/subscription
-//   GET /api/billing/invoices
-
-const MOCK_SUBSCRIPTION = {
-  status: 'active' as SubscriptionStatusType,
-  planId: 'support-yearly',
-  planName: 'Support Plan — Yearly',
-  planPriceCents: 4800,           // $48.00/year — owner-configured
-  monthlyPriceCents: 500,         // (4800 / 12) * 1.25 = 500
-  nextBillingDate: 'May 5, 2027',
-  cancelAtPeriodEnd: false,
-  attributionRemoved: true,
-  billingPortalUrl: '',
-};
+import { MOCK_SUBSCRIPTION } from '@/lib/mock-subscription';
 
 const MOCK_INVOICES: InvoiceRow[] = [
   {
@@ -154,7 +134,7 @@ export default function BillingPage() {
             Support Plans
           </h2>
           <p className="text-sm text-[hsl(var(--muted-foreground))] mt-0.5">
-            All plans include the same features. Choose yearly to save 17%.
+            All plans include the same features. Choose yearly to save 20%.
           </p>
         </div>
 
@@ -171,7 +151,7 @@ export default function BillingPage() {
               subscription.planId === 'support-yearly'
             }
             recommended
-            savingsBadge="Save 17% vs monthly"
+            savingsBadge="Save 20% vs monthly"
             onSelect={() => handleUpgrade('support-yearly')}
           />
 

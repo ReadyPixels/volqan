@@ -13,15 +13,24 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 // Mock data: last 30 days
 // ---------------------------------------------------------------------------
 
+// Deterministic pseudo-random seeded by day index — same values on every render.
+function seededCount(seed: number, isWeekend: boolean): number {
+  const base = isWeekend ? 1 : 5;
+  const noise = ((seed * 1103515245 + 12345) & 0x7fffffff) % 8;
+  return Math.max(0, base + noise - 1);
+}
+
 function generateData(days: number) {
   const data: Array<{ date: string; count: number }> = [];
+  // Anchor to a fixed reference date (May 20 2026) so totals never change.
+  const anchor = new Date('2026-05-20T00:00:00');
   for (let i = days - 1; i >= 0; i--) {
-    const d = new Date();
+    const d = new Date(anchor);
     d.setDate(d.getDate() - i);
     const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const dow = d.getDay();
-    const base = dow === 0 || dow === 6 ? 1 : 5;
-    const count = Math.max(0, Math.floor(base + Math.random() * 8 - 1));
+    const isWeekend = dow === 0 || dow === 6;
+    const count = seededCount(days - i, isWeekend);
     data.push({ date: label, count });
   }
   return data;

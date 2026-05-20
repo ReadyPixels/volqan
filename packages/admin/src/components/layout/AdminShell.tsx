@@ -13,6 +13,7 @@ import { ThemeProvider } from './ThemeProvider';
 import { MobileNav } from './MobileNav';
 import { MobileHeader } from './MobileHeader';
 import { AIAssistant } from '../ai/AIAssistant';
+import { MOCK_SUBSCRIPTION } from '@/lib/mock-subscription';
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = React.useState(false);
@@ -40,10 +41,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <div className="p-4 md:p-6">{children}</div>
           </main>
 
-          {/* Attribution footer (desktop only) */}
-          <div className="hidden md:block">
-            <ClientAttributionFooter />
-          </div>
+          {/* Attribution footer (desktop only — hidden when attribution removal is active) */}
+          {!MOCK_SUBSCRIPTION.attributionRemoved && (
+            <div className="hidden md:block">
+              <ClientAttributionFooter />
+            </div>
+          )}
         </div>
       </div>
 
