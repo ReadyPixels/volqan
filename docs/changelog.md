@@ -19,6 +19,22 @@ Versions with neither label are stable.
 
 Changes staged for the next release are tracked here before a version number is assigned.
 
+### Fixed — May 20, 2026, 4:50 PM
+
+**VOLQ-001** · Billing: Corrected yearly plan savings badge from "Save 17% vs monthly" to "Save 20% vs monthly". The correct calculation is $5/mo × 12 = $60/yr vs $48/yr → 20% savings. Updated both the `savingsBadge` prop and the introductory paragraph in `packages/admin/src/app/billing/page.tsx`.
+
+**VOLQ-002** · Attribution footer now correctly hidden when attribution removal is active. Extracted `MOCK_SUBSCRIPTION` into `packages/admin/src/lib/mock-subscription.ts` as a shared module. `AdminShell` now reads `attributionRemoved` from this module and conditionally omits `<ClientAttributionFooter />`. Both `AdminShell` and `BillingPage` now use the same source of truth.
+
+**VOLQ-003** · ContentChart total count is now deterministic across page loads. Replaced `Math.random()` in `generateData()` with a seeded integer hash (`(seed * 1103515245 + 12345) & 0x7fffffff`) anchored to a fixed reference date (May 20, 2026), eliminating the jarring per-load variation (was: 186–214; now: always 195).
+
+**VOLQ-004** · "View Live Site" Quick Action no longer links to the admin root (`/`). Now links to `https://example.com` (the default mock site URL from Settings). Will resolve to the user-configured Site URL once the Settings API is wired.
+
+**VOLQ-005** · `docs/roadmap.md` updated to accurately reflect the current build state. Phase 1 items that have been implemented are now marked ✅; items with UI-only or partial implementation are marked 🔄; Phase 2 built items (page builder, AI assistant, dark mode, mobile, official extensions, Stripe UI) are now ✅; Phase 3 SDK items are 🔄 (built, not yet published). Last-updated date corrected from April 2026 to May 20, 2026.
+
+### Added — May 20, 2026, 4:50 PM
+
+**VOLQ-000** · Created `docs/Tasks.md` — project-level task tracker with VOLQ-NNN IDs, acceptance criteria, and priority order aligned to the public roadmap. Covers bug fixes VOLQ-001 through VOLQ-005, Phase 1 blockers (auth, database), and planned Phase 2/3 milestones.
+
 ### Security
 
 **Admin Panel (`packages/admin`)**

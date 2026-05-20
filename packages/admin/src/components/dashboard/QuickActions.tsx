@@ -110,9 +110,9 @@ export function QuickActions() {
           })}
         </div>
 
-        {/* View site link */}
+        {/* View site link — URL comes from Settings > Site URL (mock: https://example.com) */}
         <a
-          href="/"
+          href="https://example.com"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 mt-3 py-2 rounded-lg border border-[hsl(var(--border))] text-sm text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--foreground))] transition-colors"
