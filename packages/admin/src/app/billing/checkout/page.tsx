@@ -107,7 +107,12 @@ export default function CheckoutPage() {
         throw new Error('No checkout URL returned from server.');
       }
 
-      // Redirect to Stripe Checkout
+      // Validate URL is a legitimate Stripe checkout domain before redirecting.
+      const checkoutUrl = new URL(data.url);
+      if (checkoutUrl.protocol !== 'https:' || !checkoutUrl.hostname.endsWith('.stripe.com')) {
+        throw new Error('Invalid checkout URL returned from server.');
+      }
+
       window.location.href = data.url;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
