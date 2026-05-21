@@ -125,9 +125,18 @@ Work items are tracked with VOLQ-NNN identifiers. Status: **Open** → **In Prog
 
 ### VOLQ-008 — Analytics overview widget missing from dashboard
 
-**Status:** 🔴 Open  
+**Status:** ✅ Done — May 21, 2026, 4:22 PM  
 **Priority:** Phase 2 planned  
-**Description:** The roadmap commits to an analytics overview widget showing page views, API requests, and user activity. The dashboard currently has Stats, ContentChart, QuickActions, StorageUsage, and SystemHealth widgets but no analytics traffic widget.  
+**Description:** The roadmap commits to an analytics overview widget showing page views, API requests, and user activity. The dashboard currently has Stats, ContentChart, QuickActions, StorageUsage, and SystemHealth widgets but no analytics traffic widget.
+
+**Implementation plan:**
+1. `packages/admin/src/components/dashboard/AnalyticsWidget.tsx` — `'use client'` card with:
+   - Three metric tiles: Page Views (30-day total + % change), API Requests (30-day), Active Users (daily unique)
+   - 30-day sparkline for page views using the same pure-SVG approach as StatsCards
+   - Deterministic mock data (seeded by day index, anchored to May 20 2026)
+   - Footer note: "Connect a provider in Settings → Analytics"
+2. Import and place `<AnalyticsWidget />` in `packages/admin/src/app/page.tsx` between `<ContentChart />` and the main grid
+
 **Acceptance criteria:**
 - A new `AnalyticsWidget` component exists on the dashboard
 - Shows page views (mock data acceptable for pre-launch), API requests count, and user activity sparkline
