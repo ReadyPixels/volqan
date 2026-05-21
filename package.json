@@ -10,6 +10,12 @@
     "test": "pnpm -r test",
     "clean": "pnpm -r clean"
   },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.14",
+      "@types/react-dom": "19.2.3"
+    }
+  },
   "engines": {
     "node": ">=22",
     "pnpm": ">=9"

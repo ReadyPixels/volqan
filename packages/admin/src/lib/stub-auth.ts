@@ -24,17 +24,17 @@ async function importKey(secret: string): Promise<CryptoKey> {
   );
 }
 
-function b64urlEncode(buf: ArrayBuffer): string {
+function b64urlEncode(buf: ArrayBuffer | Uint8Array): string {
   return btoa(String.fromCharCode(...new Uint8Array(buf)))
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=+$/, '');
 }
 
-function b64urlDecode(s: string): Uint8Array {
+function b64urlDecode(s: string): Uint8Array<ArrayBuffer> {
   const padded = s.replace(/-/g, '+').replace(/_/g, '/');
   const raw = atob(padded + '=='.slice((padded.length + 2) % 4 || 4));
-  return Uint8Array.from(raw, (c) => c.charCodeAt(0));
+  return new Uint8Array(Array.from(raw, (c) => c.charCodeAt(0)));
 }
 
 // ---------------------------------------------------------------------------
