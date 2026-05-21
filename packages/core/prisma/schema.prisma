@@ -3,6 +3,9 @@
 // =============================================================================
 // Supports: PostgreSQL (default), MySQL, SQLite
 // Datasource uses env("DATABASE_URL") for flexibility across environments.
+//
+// SQLite dev mode: enums are stored as String; Json fields are stored as String
+// (serialized JSON). Switch provider to "postgresql" for production.
 // =============================================================================
 
 generator client {
@@ -10,40 +13,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
-}
-
-// ---------------------------------------------------------------------------
-// Enums
-// ---------------------------------------------------------------------------
-
-/// User roles that govern RBAC permissions across the system
-enum UserRole {
-  SUPER_ADMIN
-  ADMIN
-  EDITOR
-  VIEWER
-}
-
-/// OAuth / credential provider identifiers
-enum AuthProvider {
-  google
-  github
-  credentials
-}
-
-/// Lifecycle status for content entries
-enum ContentStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
-/// Where uploaded media files are persisted
-enum StorageProvider {
-  LOCAL
-  S3
 }
 
 // ---------------------------------------------------------------------------
@@ -58,7 +29,8 @@ model User {
   password      String?
   name          String?
   avatar        String?
-  role          UserRole  @default(VIEWER)
+  /// UserRole: SUPER_ADMIN | ADMIN | EDITOR | VIEWER
+  role          String    @default("VIEWER")
   emailVerified DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -84,7 +56,8 @@ model User {
 model Account {
   id                String       @id @default(cuid())
   userId            String
-  provider          AuthProvider
+  /// AuthProvider: google | github | credentials
+  provider          String
   providerAccountId String
   /// OAuth access token (encrypted at application layer)
   accessToken       String?
@@ -128,17 +101,17 @@ model Session {
 // ---------------------------------------------------------------------------
 
 /// Defines a dynamic content type (like a CMS collection). Fields and settings
-/// are stored as JSON, allowing runtime schema definition without migrations.
+/// are stored as JSON strings, allowing runtime schema definition without migrations.
 model ContentType {
   id          String   @id @default(cuid())
   name        String
   /// URL-safe slug used to identify the content type in routes and APIs
   slug        String   @unique
   description String?
-  /// Field definitions: array of { name, type, required, ... }
-  fields      Json     @default("[]")
-  /// Settings for display, API access, ordering, etc.
-  settings    Json     @default("{}")
+  /// Field definitions: JSON string — array of { name, type, required, ... }
+  fields      String   @default("[]")
+  /// Settings for display, API access, ordering, etc. (JSON string)
+  settings    String   @default("{}")
   /// System content types are protected and cannot be deleted by users
   isSystem    Boolean  @default(false)
   createdAt   DateTime @default(now())
@@ -155,19 +128,20 @@ model ContentType {
 // ContentEntry
 // ---------------------------------------------------------------------------
 
-/// A single entry of a content type. Data is stored as JSON for flexibility.
+/// A single entry of a content type. Data is stored as a JSON string.
 model ContentEntry {
-  id            String        @id @default(cuid())
+  id            String   @id @default(cuid())
   contentTypeId String
-  /// The actual field values as a JSON object
-  data          Json          @default("{}")
-  status        ContentStatus @default(DRAFT)
+  /// The actual field values as a JSON string object
+  data          String   @default("{}")
+  /// ContentStatus: DRAFT | PUBLISHED | ARCHIVED
+  status        String   @default("DRAFT")
   /// URL slug for this entry (unique per content type)
   slug          String?
   authorId      String?
   publishedAt   DateTime?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   contentType ContentType @relation(fields: [contentTypeId], references: [id], onDelete: Cascade)
   author      User?       @relation(fields: [authorId], references: [id], onDelete: SetNull)
@@ -186,7 +160,7 @@ model ContentEntry {
 
 /// Uploaded media assets. Supports local filesystem and S3-compatible storage.
 model Media {
-  id              String          @id @default(cuid())
+  id              String   @id @default(cuid())
   filename        String
   originalName    String
   mimeType        String
@@ -195,9 +169,10 @@ model Media {
   url             String
   alt             String?
   folder          String?
-  storageProvider StorageProvider @default(LOCAL)
+  /// StorageProvider: LOCAL | S3
+  storageProvider String   @default("LOCAL")
   uploadedById    String?
-  createdAt       DateTime        @default(now())
+  createdAt       DateTime @default(now())
 
   uploadedBy User? @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
 
@@ -219,8 +194,8 @@ model Extension {
   name        String
   version     String
   enabled     Boolean  @default(false)
-  /// Extension-specific configuration stored as JSON
-  settings    Json     @default("{}")
+  /// Extension-specific configuration stored as JSON string
+  settings    String   @default("{}")
   installedAt DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -240,8 +215,8 @@ model Theme {
   name        String
   version     String
   active      Boolean  @default(false)
-  /// CSS design tokens and theme variables as JSON
-  tokens      Json     @default("{}")
+  /// CSS design tokens and theme variables as JSON string
+  tokens      String   @default("{}")
   installedAt DateTime @default(now())
 
   @@index([active])
@@ -257,8 +232,8 @@ model Setting {
   id        String   @id @default(cuid())
   /// Dot-notation key, e.g. "site.name" or "email.smtp.host"
   key       String   @unique
-  /// Value stored as JSON to support any primitive or object
-  value     Json
+  /// Value stored as JSON string to support any primitive or object
+  value     String
   /// Logical grouping for settings UI
   group     String   @default("general")
   /// Whether this setting can be read by unauthenticated requests
@@ -280,8 +255,8 @@ model ApiKey {
   name        String
   /// bcrypt hash of the actual key; the plain key is shown only once on creation
   key         String    @unique
-  /// Array of allowed permission scopes, e.g. ["content:read", "media:write"]
-  permissions Json      @default("[]")
+  /// Array of allowed permission scopes as JSON string
+  permissions String    @default("[]")
   userId      String?
   lastUsedAt  DateTime?
   expiresAt   DateTime?
@@ -308,8 +283,8 @@ model AuditLog {
   resource   String
   /// ID of the affected resource
   resourceId String?
-  /// Additional context (before/after snapshots, metadata)
-  details    Json?
+  /// Additional context (before/after snapshots, metadata) as JSON string
+  details    String?
   ipAddress  String?
   createdAt  DateTime @default(now())
 
