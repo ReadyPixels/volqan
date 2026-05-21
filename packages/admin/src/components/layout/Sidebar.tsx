@@ -280,6 +280,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               ) : (
                 <Link
                   href={item.href}
+                  aria-current={active ? 'page' : undefined}
                   className={cn(
                     'flex items-center gap-3 px-2 py-2 rounded-md text-sm font-medium',
                     'transition-colors duration-150 group relative',
@@ -309,6 +310,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                       <Link
                         key={child.key}
                         href={child.href}
+                        aria-current={childActive ? 'page' : undefined}
                         className={cn(
                           'flex items-center gap-2 px-2 py-1.5 rounded-md text-xs font-medium',
                           'transition-colors duration-150',

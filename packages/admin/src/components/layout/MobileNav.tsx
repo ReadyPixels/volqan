@@ -72,6 +72,7 @@ export function MobileNav() {
               <Link
                 key={tab.key}
                 href={tab.href}
+                aria-current={active ? 'page' : undefined}
                 className={cn(
                   'flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors',
                   active
@@ -155,6 +156,7 @@ export function MobileNav() {
                   <Link
                     key={item.label}
                     href={item.href}
+                    aria-current={active ? 'page' : undefined}
                     onClick={() => setMoreOpen(false)}
                     className={cn(
                       'flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-colors',

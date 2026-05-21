@@ -85,7 +85,7 @@ export function QuickActions() {
           {QUICK_ACTIONS.map((action) => {
             const Icon = action.icon;
             return (
-              <Link key={action.label} href={action.href}>
+              <Link key={action.label} href={action.href} aria-label={`${action.label} — ${action.description}`}>
                 <div
                   className={cn(
                     'flex flex-col gap-2 p-3 rounded-xl border transition-all duration-150 cursor-pointer',
@@ -94,7 +94,7 @@ export function QuickActions() {
                   )}
                 >
                   <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', action.color, 'bg-white/60 dark:bg-black/20')}>
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-4 h-4" aria-hidden="true" />
                   </div>
                   <div>
                     <p className={cn('text-xs font-semibold leading-tight', action.color)}>
@@ -117,7 +117,7 @@ export function QuickActions() {
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 mt-3 py-2 rounded-lg border border-[hsl(var(--border))] text-sm text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--foreground))] transition-colors"
         >
-          <Eye className="w-4 h-4" />
+          <Eye className="w-4 h-4" aria-hidden="true" />
           View Live Site
         </a>
       </CardContent>
