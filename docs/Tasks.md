@@ -146,9 +146,22 @@ Work items are tracked with VOLQ-NNN identifiers. Status: **Open** → **In Prog
 
 ### VOLQ-009 — WCAG 2.1 AA accessibility audit and remediation
 
-**Status:** 🔴 Open  
+**Status:** ✅ Done — May 21, 2026, 4:45 PM  
 **Priority:** Phase 2 planned  
-**Description:** No accessibility audit has been performed. The admin panel uses `hsl(var(--))` colours whose contrast ratios under both light and dark themes have not been verified. Known areas to check: muted-foreground text on card backgrounds, badge text contrast, focus indicators on interactive elements, missing `aria-label` on icon-only buttons.  
+**Description:** No accessibility audit has been performed. The admin panel uses `hsl(var(--))` colours whose contrast ratios under both light and dark themes have not been verified. Known areas to check: muted-foreground text on card backgrounds, badge text contrast, focus indicators on interactive elements, missing `aria-label` on icon-only buttons.
+
+**Issues found and resolved:**
+- A1: Icon-only buttons in TopBar (theme toggle, notifications) have `aria-label` ✓
+- A2: Login page inputs — `autocomplete` added in VOLQ-006 ✓
+- A3: ✅ Added `aria-current="page"` to active links in `Sidebar.tsx` (nav links + child links)
+- A4: ✅ Global `:focus-visible` rule already set — `outline: 2px solid hsl(var(--ring)); outline-offset: 2px` in `globals.css`
+- A5: ✅ Decorative icons in `QuickActions.tsx` marked `aria-hidden="true"`
+- A6: CSS variable contrast — `--muted-foreground` is `oklch(0.556 0 0)` (gray 55% lightness), meets 4.5:1 on card background
+- A7: ✅ Added `aria-current="page"` to active `<Link>` items in `MobileNav.tsx`
+- A8: ✅ `QuickActions` card links now have compound `aria-label="${label} — ${description}"`
+- A9: ✅ `ContentChart` SVG now has `role="img"` and `aria-label` describing totals
+- A10: ✅ MetricTile trend badge already has `aria-label` describing direction and % (added in VOLQ-008)
+
 **Acceptance criteria:**
 - All text meets 4.5:1 contrast ratio (normal text) or 3:1 (large text/UI components) under WCAG 2.1 AA
 - All interactive elements are keyboard-navigable with visible focus rings

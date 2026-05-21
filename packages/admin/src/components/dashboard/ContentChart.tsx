@@ -85,6 +85,8 @@ export function ContentChart() {
             viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
             className="w-full"
             style={{ height: SVG_HEIGHT }}
+            role="img"
+            aria-label={`Bar chart: ${total} content entries created over the last 30 days, averaging ${avg} per day`}
           >
             {/* Y-axis gridlines */}
             {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {

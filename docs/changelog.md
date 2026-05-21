@@ -19,6 +19,12 @@ Versions with neither label are stable.
 
 Changes staged for the next release are tracked here before a version number is assigned.
 
+### Fixed — May 21, 2026, 4:45 PM
+
+**VOLQ-009** · WCAG 2.1 AA accessibility audit and remediation. Audited all admin UI pages. Fixed: (A3) added `aria-current="page"` to active nav links in `Sidebar.tsx` (top-level and child links); (A7) added `aria-current="page"` to active links in `MobileNav.tsx` bottom nav and "More" overlay; (A8) added compound `aria-label="${label} — ${description}"` to all QuickActions card links; (A9) added `role="img"` and descriptive `aria-label` to the ContentChart SVG; (A5) added `aria-hidden="true"` to decorative icons in QuickActions. Confirmed: global `:focus-visible` rule is set in `globals.css` (2px outline, 2px offset); MetricTile trend badges already have `aria-label` with direction description from VOLQ-008. Browser-verified: `aria-current`, SVG roles, and `aria-label` all present in DOM.
+
+---
+
 ### Added — May 21, 2026, 4:22 PM
 
 **VOLQ-008** · Added `AnalyticsWidget` to the admin dashboard. The widget shows three metrics — Page Views, API Requests, and Peak Active Users — each in a tile with a 30-day sparkline (pure SVG, no library), trend percentage vs. the previous 30 days, and a coloured icon. Data is deterministic mock values seeded by day index anchored to May 20 2026 (same approach as ContentChart). The widget is placed between the ContentChart and the main dashboard grid. A "Mock data" chip and "Settings → Analytics" link signal to operators that the data will be replaced by a real provider (Plausible, GA4, or internal) once configured. All data is computed at module init time — no `useEffect`, no `Math.random()`.
