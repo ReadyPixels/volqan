@@ -11,6 +11,7 @@ import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { ContentChart } from '@/components/dashboard/ContentChart';
 import { StorageUsage } from '@/components/dashboard/StorageUsage';
 import { SystemHealth } from '@/components/dashboard/SystemHealth';
+import { AnalyticsWidget } from '@/components/dashboard/AnalyticsWidget';
 
 export default function DashboardPage() {
   return (
@@ -36,6 +37,9 @@ export default function DashboardPage() {
 
       {/* Content chart */}
       <ContentChart />
+
+      {/* Analytics overview */}
+      <AnalyticsWidget />
 
       {/* Main grid: recent content + sidebar */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

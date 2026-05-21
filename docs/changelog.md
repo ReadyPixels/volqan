@@ -19,6 +19,12 @@ Versions with neither label are stable.
 
 Changes staged for the next release are tracked here before a version number is assigned.
 
+### Added — May 21, 2026, 4:22 PM
+
+**VOLQ-008** · Added `AnalyticsWidget` to the admin dashboard. The widget shows three metrics — Page Views, API Requests, and Peak Active Users — each in a tile with a 30-day sparkline (pure SVG, no library), trend percentage vs. the previous 30 days, and a coloured icon. Data is deterministic mock values seeded by day index anchored to May 20 2026 (same approach as ContentChart). The widget is placed between the ContentChart and the main dashboard grid. A "Mock data" chip and "Settings → Analytics" link signal to operators that the data will be replaced by a real provider (Plausible, GA4, or internal) once configured. All data is computed at module init time — no `useEffect`, no `Math.random()`.
+
+---
+
 ### Added — May 21, 2026, 9:57 AM
 
 **VOLQ-007** · Wired real SQLite database for local development. Converted `packages/core/prisma/schema.prisma` provider from `postgresql` to `sqlite` (enums and Json fields replaced with `String` for SQLite compatibility; comments preserve valid values). Created `packages/core/.env` (`DATABASE_URL=file:./prisma/dev.db`) and `packages/admin/.env.local` (`DATABASE_URL=file:C:/...absolute path.../dev.db` — absolute path required because Next.js detects the monorepo root as the workspace root). Ran `prisma db push` (creates `packages/core/prisma/dev.db`, 258KB) and `prisma db seed` (creates admin user `admin@volqan.link` and 8 default settings). Created `packages/admin/src/lib/db.ts` — dev-singleton PrismaClient using the workspace's hoisted `@prisma/client`. Created `packages/admin/src/app/api/content-types/route.ts` — GET (list with entry count) and POST (create with slug uniqueness check). Updated `packages/admin/src/app/content/types/page.tsx` to fetch from `/api/content-types` instead of mock data (shows loading state, empty state, and real records). Updated `packages/admin/src/app/content/types/new/page.tsx` to POST to the API on save (slug derived from name). Browser-verified: created "Article" content type; survived full page refresh.
