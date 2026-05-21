@@ -100,7 +100,7 @@ Work items are tracked with VOLQ-NNN identifiers. Status: **Open** → **In Prog
 
 ### VOLQ-007 — All data is mock / hardcoded — no real database integration
 
-**Status:** 🔵 In Progress  
+**Status:** ✅ Done — May 21, 2026, 9:57 AM  
 **Priority:** P0 — v0.1.0-alpha blocker  
 **Description:** Every page uses hardcoded mock data. Content types, entries, media files, users, extensions, pages, billing, and system health are all static fixtures. The Prisma schema exists in `packages/core/prisma/schema.prisma` but is not wired to any admin API routes.
 

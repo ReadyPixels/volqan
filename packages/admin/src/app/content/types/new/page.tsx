@@ -154,9 +154,32 @@ export default function NewContentTypePage() {
       return;
     }
     setSaving(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setSaving(false);
-    router.push('/content/types');
+    try {
+      const slug = typeName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const res = await fetch('/api/content-types', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: typeName.trim(),
+          slug,
+          description: typeDescription.trim() || undefined,
+          fields: fields.map(({ name, type, required, description }) => ({
+            name,
+            type,
+            required,
+            description,
+          })),
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setErrors({ name: (data as { error?: string }).error ?? 'Failed to save' });
+        return;
+      }
+      router.push('/content/types');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (

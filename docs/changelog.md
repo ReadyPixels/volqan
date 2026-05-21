@@ -19,6 +19,12 @@ Versions with neither label are stable.
 
 Changes staged for the next release are tracked here before a version number is assigned.
 
+### Added — May 21, 2026, 9:57 AM
+
+**VOLQ-007** · Wired real SQLite database for local development. Converted `packages/core/prisma/schema.prisma` provider from `postgresql` to `sqlite` (enums and Json fields replaced with `String` for SQLite compatibility; comments preserve valid values). Created `packages/core/.env` (`DATABASE_URL=file:./prisma/dev.db`) and `packages/admin/.env.local` (`DATABASE_URL=file:C:/...absolute path.../dev.db` — absolute path required because Next.js detects the monorepo root as the workspace root). Ran `prisma db push` (creates `packages/core/prisma/dev.db`, 258KB) and `prisma db seed` (creates admin user `admin@volqan.link` and 8 default settings). Created `packages/admin/src/lib/db.ts` — dev-singleton PrismaClient using the workspace's hoisted `@prisma/client`. Created `packages/admin/src/app/api/content-types/route.ts` — GET (list with entry count) and POST (create with slug uniqueness check). Updated `packages/admin/src/app/content/types/page.tsx` to fetch from `/api/content-types` instead of mock data (shows loading state, empty state, and real records). Updated `packages/admin/src/app/content/types/new/page.tsx` to POST to the API on save (slug derived from name). Browser-verified: created "Article" content type; survived full page refresh.
+
+---
+
 ### Added — May 21, 2026, 9:33 AM
 
 **VOLQ-006** · Implemented stateless HMAC-SHA256 stub authentication for the admin panel. Created `packages/admin/src/lib/stub-auth.ts` (Web Crypto API, Edge-compatible token sign/verify), `packages/admin/src/app/api/auth/login/route.ts` (POST: validates `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars, sets `volqan_session` httpOnly cookie), `packages/admin/src/app/api/auth/logout/route.ts` (POST: clears cookie), `packages/admin/src/app/(auth)/login/page.tsx` (email + password form with inline error state), and `packages/admin/src/middleware.ts` (Next.js Edge middleware: reads and verifies `volqan_session`, redirects to `/login` if missing or invalid, excludes `/login` and `/api/auth/` from protection). The `AdminShell` is updated to detect the `/login` pathname via `usePathname()` and render a clean full-page centered layout without the sidebar or topbar. The top bar "Sign out" button now calls `POST /api/auth/logout` and redirects to `/login`. Default credentials: `admin@volqan.link` / `changeme` (overridable via `ADMIN_EMAIL` and `ADMIN_PASSWORD` env vars).
