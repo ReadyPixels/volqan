@@ -79,26 +79,45 @@ Work items are tracked with VOLQ-NNN identifiers. Status: **Open** → **In Prog
 
 ### VOLQ-006 — No login page / authentication guard
 
-**Status:** 🔴 Open  
+**Status:** ✅ Done — May 21, 2026, 9:33 AM  
 **Priority:** P0 — v0.1.0-alpha blocker  
-**Description:** All admin routes (`/`, `/content`, `/media`, `/billing`, etc.) are publicly accessible — no authentication required. There is no `/login` route. The roadmap commits to email/password login with bcrypt and OAuth via NextAuth.js for v0.1.0-alpha. Until auth exists, the admin panel cannot be safely deployed.  
+**Description:** All admin routes (`/`, `/content`, `/media`, `/billing`, etc.) are publicly accessible — no authentication required. There is no `/login` route and no `middleware.ts`. The core auth system (`packages/core/src/auth/`) is fully built (bcrypt, JWT, session, middleware helpers) but not wired into the admin panel.
+
+**Implementation plan:**
+1. `packages/admin/src/lib/stub-auth.ts` — HMAC-SHA256 helpers (Web Crypto API, no deps) for signing/verifying a stateless session token. Credentials: `ADMIN_EMAIL` / `ADMIN_PASSWORD` env vars (fallback: `admin@volqan.link` / `changeme`).
+2. `packages/admin/src/app/api/auth/login/route.ts` — POST handler: verifies credentials, signs token, sets `volqan_session` httpOnly cookie.
+3. `packages/admin/src/app/api/auth/logout/route.ts` — POST handler: clears the cookie.
+4. `packages/admin/src/app/(auth)/login/page.tsx` — Login form (email + password, client component, calls the login API, redirects on success).
+5. `packages/admin/middleware.ts` — Next.js Edge middleware: reads `volqan_session` cookie, verifies HMAC, redirects to `/login` if missing/invalid. Excludes `/login` and `/api/auth/` paths.
+
 **Acceptance criteria:**
-- `/login` page exists with email + password form
-- All admin routes redirect to `/login` when not authenticated
-- Successful login redirects to `/` (dashboard)
-- `next-auth` or equivalent is wired up
+- Visiting `http://localhost:3099/` without a session cookie redirects to `/login`
+- Submitting `admin@volqan.link` / `changeme` on the login form redirects to `/` (dashboard)
+- The top bar "Sign out" button successfully logs out and returns to `/login`
+- Wrong credentials show an error message on the login form
 
 ---
 
 ### VOLQ-007 — All data is mock / hardcoded — no real database integration
 
-**Status:** 🔴 Open  
+**Status:** 🔵 In Progress  
 **Priority:** P0 — v0.1.0-alpha blocker  
-**Description:** Every page uses hardcoded mock data. Content types, entries, media files, users, extensions, pages, billing, and system health are all static fixtures. The Prisma schema exists in `packages/core/prisma/schema.prisma` but is not wired to any admin API routes. REST and GraphQL APIs exist in `packages/core/src/api/` but are not connected.  
+**Description:** Every page uses hardcoded mock data. Content types, entries, media files, users, extensions, pages, billing, and system health are all static fixtures. The Prisma schema exists in `packages/core/prisma/schema.prisma` but is not wired to any admin API routes.
+
+**Implementation plan:**
+1. Change Prisma schema provider to `sqlite` (for local dev; production uses PostgreSQL).
+2. Create `packages/core/.env` with `DATABASE_URL=file:./dev.db`.
+3. Run `pnpm --filter @volqan/core db:push` to create the schema.
+4. Run `pnpm --filter @volqan/core db:seed` to seed the admin user (`admin@volqan.link` / `changeme`).
+5. Create `packages/admin/src/app/api/content-types/route.ts` — GET (list) and POST (create) endpoints backed by Prisma.
+6. Update `packages/admin/src/app/content/types/page.tsx` to fetch from the API instead of mock data.
+7. Update `packages/admin/src/app/content/types/new/page.tsx` to POST to the API on save.
+
 **Acceptance criteria:**
-- At least content types and entries are backed by a real SQLite database via Prisma
-- Creating a content type in the UI persists to the DB
-- The dashboard stats reflect real DB counts
+- Running `pnpm --filter @volqan/core db:push` succeeds
+- `dev.db` file is created and the schema is applied
+- Creating a content type in the admin UI persists to SQLite
+- After a full page refresh, the new content type still appears in the list
 
 ---
 

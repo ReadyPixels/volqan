@@ -19,6 +19,12 @@ Versions with neither label are stable.
 
 Changes staged for the next release are tracked here before a version number is assigned.
 
+### Added — May 21, 2026, 9:33 AM
+
+**VOLQ-006** · Implemented stateless HMAC-SHA256 stub authentication for the admin panel. Created `packages/admin/src/lib/stub-auth.ts` (Web Crypto API, Edge-compatible token sign/verify), `packages/admin/src/app/api/auth/login/route.ts` (POST: validates `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars, sets `volqan_session` httpOnly cookie), `packages/admin/src/app/api/auth/logout/route.ts` (POST: clears cookie), `packages/admin/src/app/(auth)/login/page.tsx` (email + password form with inline error state), and `packages/admin/src/middleware.ts` (Next.js Edge middleware: reads and verifies `volqan_session`, redirects to `/login` if missing or invalid, excludes `/login` and `/api/auth/` from protection). The `AdminShell` is updated to detect the `/login` pathname via `usePathname()` and render a clean full-page centered layout without the sidebar or topbar. The top bar "Sign out" button now calls `POST /api/auth/logout` and redirects to `/login`. Default credentials: `admin@volqan.link` / `changeme` (overridable via `ADMIN_EMAIL` and `ADMIN_PASSWORD` env vars).
+
+---
+
 ### Fixed — May 20, 2026, 4:50 PM
 
 **VOLQ-001** · Billing: Corrected yearly plan savings badge from "Save 17% vs monthly" to "Save 20% vs monthly". The correct calculation is $5/mo × 12 = $60/yr vs $48/yr → 20% savings. Updated both the `savingsBadge` prop and the introductory paragraph in `packages/admin/src/app/billing/page.tsx`.

@@ -7,6 +7,7 @@
  */
 
 import * as React from 'react';
+import { usePathname } from 'next/navigation';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { ThemeProvider } from './ThemeProvider';
@@ -16,7 +17,18 @@ import { AIAssistant } from '../ai/AIAssistant';
 import { MOCK_SUBSCRIPTION } from '@/lib/mock-subscription';
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const [collapsed, setCollapsed] = React.useState(false);
+
+  if (pathname === '/login') {
+    return (
+      <ThemeProvider defaultTheme="system">
+        <div className="min-h-screen flex items-center justify-center bg-[hsl(var(--background))]">
+          {children}
+        </div>
+      </ThemeProvider>
+    );
+  }
 
   return (
     <ThemeProvider defaultTheme="system">

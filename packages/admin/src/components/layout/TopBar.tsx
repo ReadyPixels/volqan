@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Search,
   Bell,
@@ -82,7 +82,13 @@ interface TopBarProps {
 
 export function TopBar({ className }: TopBarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
+
+  async function handleSignOut() {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/login');
+  }
   const breadcrumbs = getBreadcrumbs(pathname);
 
   const [searchOpen, setSearchOpen] = React.useState(false);
@@ -303,7 +309,7 @@ export function TopBar({ className }: TopBarProps) {
             <div className="border-t border-[hsl(var(--border))] mt-1 pt-1">
               <button
                 className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-[hsl(var(--destructive))] hover:bg-[hsl(var(--accent))] transition-colors"
-                onClick={() => setUserOpen(false)}
+                onClick={() => { setUserOpen(false); handleSignOut(); }}
               >
                 <LogOut className="w-3.5 h-3.5" /> Sign out
               </button>
