@@ -5,7 +5,7 @@
  * Replace with a real API call / context provider before v0.1.0-alpha.
  */
 export const MOCK_SUBSCRIPTION = {
-  status: 'active' as const,
+  status: 'active' as 'active' | 'none' | 'canceled' | 'past_due',
   planId: 'support-yearly',
   planName: 'Support Plan — Yearly',
   planPriceCents: 4800,

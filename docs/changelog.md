@@ -17,7 +17,15 @@ Versions with neither label are stable.
 
 ## [Unreleased]
 
-Changes staged for the next release are tracked here before a version number is assigned.
+---
+
+## [0.1.0-alpha] — May 21, 2026
+
+First public alpha release of Volqan. Core admin panel with authentication, SQLite database, content modeling, and full dashboard UI.
+
+### Added — May 21, 2026, 5:05 PM
+
+**VOLQ-010** · v0.1.0-alpha release prep. Bumped `@volqan/admin` version to `0.1.0-alpha`. Fixed all TypeScript build errors blocking `pnpm build`: (1) changed `module`/`moduleResolution` in `tsconfig.json` from `NodeNext` to `ESNext`/`bundler` so `next/navigation` and path aliases resolve correctly under strict type checking; (2) widened `MOCK_SUBSCRIPTION.status` type from `'active' as const` to the full union `'active' | 'none' | 'canceled' | 'past_due'`; (3) fixed `stub-auth.ts` — `b64urlEncode` now accepts `ArrayBuffer | Uint8Array`, `b64urlDecode` returns `Uint8Array<ArrayBuffer>` using `new Uint8Array(Array.from(...))` to avoid SharedArrayBuffer type mismatch with TypeScript 5.9; (4) wrapped `billing/checkout/page.tsx` in a `React.Suspense` boundary to satisfy Next.js `useSearchParams()` prerender requirement; (5) added `pnpm.overrides` to root `package.json` to pin `@types/react` and `@types/react-dom` to v19, eliminating the dual-version `ReactPortal.children` incompatibility. Build now produces 22 routes with zero errors. Updated `roadmap.md` to mark Phase 1 items complete (auth, database, v0.1.0-alpha) and Phase 2 items (analytics widget, WCAG audit) as ✅.
 
 ### Fixed — May 21, 2026, 4:45 PM
 

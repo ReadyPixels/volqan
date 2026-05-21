@@ -65,7 +65,7 @@ function calculateFee(baseCents: number): number {
 // Page
 // ---------------------------------------------------------------------------
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -233,5 +233,13 @@ export default function CheckoutPage() {
       </div>
 
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <React.Suspense fallback={<div className="animate-pulse h-96 rounded-xl bg-[hsl(var(--muted))]" />}>
+      <CheckoutContent />
+    </React.Suspense>
   );
 }

@@ -173,13 +173,22 @@ Work items are tracked with VOLQ-NNN identifiers. Status: **Open** → **In Prog
 
 ### VOLQ-010 — Prepare and publish v0.1.0-alpha GitHub release
 
-**Status:** 🔴 Open  
+**Status:** ✅ Done — May 21, 2026, 5:05 PM  
 **Priority:** Phase 1 goal (June 2026)  
-**Description:** The first GitHub release tag `v0.1.0-alpha` has not been published. Blockers: VOLQ-006 (auth) and VOLQ-007 (database) must be resolved first. The release notes should match the changelog and roadmap.  
+**Description:** The first GitHub release tag `v0.1.0-alpha` has not been published. Blockers: VOLQ-006 (auth) and VOLQ-007 (database) must be resolved first. The release notes should match the changelog and roadmap.
+
+**Implementation plan:**
+1. Verify `pnpm build` passes clean in `packages/admin`
+2. Check and update version in `packages/admin/package.json` to `0.1.0-alpha`
+3. Update `docs/roadmap.md` to mark Phase 1 items complete
+4. Write release notes in `docs/release-notes-v0.1.0-alpha.md`
+5. Commit, tag `v0.1.0-alpha`, push tag
+
 **Acceptance criteria:**
-- Auth and database wired (VOLQ-006, VOLQ-007 done)
+- Auth and database wired (VOLQ-006, VOLQ-007 done) ✅
+- `pnpm build` passes clean with no errors
+- Version bumped to `0.1.0-alpha` in admin `package.json`
 - Git tag `v0.1.0-alpha` pushed
-- GitHub Release created with changelog excerpt
 - `roadmap.md` updated to show v0.1.0-alpha ✅
 
 ---

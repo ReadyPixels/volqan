@@ -52,8 +52,8 @@ The foundational application layer. Everything needed for a functional, self-hos
 
 | Status | Item |
 |---|---|
-| 🔄 | Database layer with Prisma supporting PostgreSQL, MySQL, and SQLite — schema written, not yet wired to admin UI |
-| 🔄 | Authentication — email/password login with bcrypt password hashing — no login page yet |
+| ✅ | Database layer with Prisma — SQLite for dev, PostgreSQL for production; wired to admin UI |
+| ✅ | Authentication — HMAC-SHA256 stateless session tokens; login page, middleware, logout |
 | 🔄 | OAuth — Google and GitHub social login via NextAuth.js — not yet implemented |
 | 🔄 | Role-based access control (super admin, admin, editor, viewer) — UI shows roles, no enforcement yet |
 | ✅ | Content modeling GUI — visual schema builder with field type library |
@@ -67,7 +67,7 @@ The foundational application layer. Everything needed for a functional, self-hos
 | ✅ | Attribution footer — license check with 24-hour cache, graceful fallback to display |
 | ✅ | Docker image and Docker Compose stack for one-command self-hosting |
 | ✅ | CLI: `npx create-volqan-app` with interactive setup wizard |
-| 📋 | First GitHub release: **v0.1.0-alpha** |
+| ✅ | First GitHub release: **v0.1.0-alpha** |
 
 ---
 
@@ -80,11 +80,11 @@ The polish phase. Make the product genuinely beautiful, accessible, and AI-power
 |---|---|
 | ✅ | Visual drag-and-drop page builder with composable block system |
 | ✅ | Dashboard widgets — content counts, activity feed, quick actions |
-| 📋 | Analytics overview widget — page views, API requests, user activity |
+| ✅ | Analytics overview widget — page views, API requests, user activity |
 | ✅ | Embedded AI assistant panel with swappable LLM provider (OpenAI, Anthropic, Gemini, Ollama) |
 | ✅ | Dark and light mode with instant theme switcher in admin header |
 | ✅ | Fully responsive mobile admin panel — usable on tablet and phone |
-| 📋 | WCAG 2.1 AA accessibility audit and remediation across all admin UI |
+| ✅ | WCAG 2.1 AA accessibility audit and remediation across all admin UI |
 | ✅ | Official first-party extension: **Blog** (posts, categories, tags, RSS) |
 | ✅ | Official first-party extension: **SEO** (meta tags, Open Graph, sitemap) |
 | ✅ | Official first-party extension: **Forms** (form builder, submissions, email notifications) |
@@ -193,4 +193,4 @@ The following are explicitly out of scope and will not be added to this roadmap 
 
 ---
 
-*Last updated: May 20, 2026. [Discuss this roadmap →](https://github.com/ReadyPixels/volqan/discussions)*
+*Last updated: May 21, 2026. [Discuss this roadmap →](https://github.com/ReadyPixels/volqan/discussions)*
