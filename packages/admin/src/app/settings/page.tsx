@@ -105,35 +105,92 @@ function ApiKeyRow({ name, value, onRevoke }: { name: string; value: string; onR
 // Page component
 // ---------------------------------------------------------------------------
 
+interface ApiKey { id: string; name: string; prefix: string; scopes: string[]; createdAt: string; key?: string; }
+
 export default function SettingsPage() {
   const [saving, setSaving] = React.useState<Record<string, boolean>>({});
-
-  const handleSave = async (group: string) => {
-    setSaving((s) => ({ ...s, [group]: true }));
-    await new Promise((r) => setTimeout(r, 700));
-    setSaving((s) => ({ ...s, [group]: false }));
-  };
+  const [loaded, setLoaded] = React.useState(false);
 
   // General settings state
-  const [siteName, setSiteName] = React.useState('My Volqan Site');
-  const [siteUrl, setSiteUrl] = React.useState('https://example.com');
-  const [siteDescription, setSiteDescription] = React.useState('Powered by Volqan CMS');
+  const [siteName, setSiteName] = React.useState('');
+  const [siteUrl, setSiteUrl] = React.useState('');
+  const [siteDescription, setSiteDescription] = React.useState('');
   const [defaultLocale, setDefaultLocale] = React.useState('en');
 
   // Email settings state
-  const [smtpHost, setSmtpHost] = React.useState('smtp.mailgun.org');
+  const [smtpHost, setSmtpHost] = React.useState('');
   const [smtpPort, setSmtpPort] = React.useState('587');
   const [smtpUser, setSmtpUser] = React.useState('');
-  const [fromEmail, setFromEmail] = React.useState('noreply@example.com');
+  const [fromEmail, setFromEmail] = React.useState('');
 
   // Storage settings
   const [storageProvider, setStorageProvider] = React.useState('local');
 
   // API keys
-  const [apiKeys] = React.useState([
-    { name: 'Production API Key', value: 'vq_live_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6' },
-    { name: 'Development API Key', value: 'vq_dev_z9y8x7w6v5u4t3s2r1q0p9o8n7m6l5k4' },
-  ]);
+  const [apiKeys, setApiKeys] = React.useState<ApiKey[]>([]);
+  const [newKeyName, setNewKeyName] = React.useState('');
+  const [creatingKey, setCreatingKey] = React.useState(false);
+  const [newKeyValue, setNewKeyValue] = React.useState<string | null>(null);
+
+  // Load settings + API keys on mount
+  React.useEffect(() => {
+    Promise.all([
+      fetch('/api/settings').then((r) => r.json() as Promise<{ data?: Record<string, string> }>),
+      fetch('/api/settings/api-keys').then((r) => r.json() as Promise<{ data?: ApiKey[] }>),
+    ]).then(([settingsRes, keysRes]) => {
+      const s = settingsRes.data ?? {};
+      if (s['site.name']) setSiteName(s['site.name']);
+      if (s['site.url']) setSiteUrl(s['site.url']);
+      if (s['site.description']) setSiteDescription(s['site.description']);
+      if (s['site.locale']) setDefaultLocale(s['site.locale']);
+      if (s['email.smtp.host']) setSmtpHost(s['email.smtp.host']);
+      if (s['email.smtp.port']) setSmtpPort(s['email.smtp.port']);
+      if (s['email.smtp.user']) setSmtpUser(s['email.smtp.user']);
+      if (s['email.from']) setFromEmail(s['email.from']);
+      if (s['storage.provider']) setStorageProvider(s['storage.provider']);
+      setApiKeys(keysRes.data ?? []);
+      setLoaded(true);
+    }).catch(() => setLoaded(true));
+  }, []);
+
+  const handleSave = async (group: string, data: Record<string, string>) => {
+    setSaving((s) => ({ ...s, [group]: true }));
+    try {
+      await fetch('/api/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+    } finally {
+      setSaving((s) => ({ ...s, [group]: false }));
+    }
+  };
+
+  const handleCreateKey = async () => {
+    if (!newKeyName) return;
+    setCreatingKey(true);
+    try {
+      const res = await fetch('/api/settings/api-keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newKeyName }),
+      });
+      const data = (await res.json()) as { data?: ApiKey };
+      if (data.data) {
+        setApiKeys((prev) => [data.data!, ...prev]);
+        setNewKeyValue(data.data.key ?? null);
+        setNewKeyName('');
+      }
+    } finally {
+      setCreatingKey(false);
+    }
+  };
+
+  const handleRevokeKey = async (id: string) => {
+    if (!confirm('Revoke this API key? This cannot be undone.')) return;
+    await fetch(`/api/settings/api-keys/${id}`, { method: 'DELETE' });
+    setApiKeys((prev) => prev.filter((k) => k.id !== id));
+  };
 
   return (
     <div className="space-y-6 animate-fade-in max-w-3xl">
@@ -158,7 +215,7 @@ export default function SettingsPage() {
           <SettingSection
             title="General Settings"
             description="Basic site configuration and metadata."
-            onSave={() => handleSave('general')}
+            onSave={() => handleSave('general', { 'site.name': siteName, 'site.url': siteUrl, 'site.description': siteDescription, 'site.locale': defaultLocale })}
             saving={saving.general}
           >
             <Input
@@ -201,7 +258,7 @@ export default function SettingsPage() {
           <SettingSection
             title="Email Configuration"
             description="Configure SMTP settings for outbound emails."
-            onSave={() => handleSave('email')}
+            onSave={() => handleSave('email', { 'email.smtp.host': smtpHost, 'email.smtp.port': smtpPort, 'email.smtp.user': smtpUser, 'email.from': fromEmail })}
             saving={saving.email}
           >
             <div className="grid grid-cols-2 gap-4">
@@ -246,7 +303,7 @@ export default function SettingsPage() {
           <SettingSection
             title="Storage Provider"
             description="Configure where uploaded media files are stored."
-            onSave={() => handleSave('storage')}
+            onSave={() => handleSave('storage', { 'storage.provider': storageProvider })}
             saving={saving.storage}
           >
             <div className="grid grid-cols-3 gap-3">
@@ -299,24 +356,41 @@ export default function SettingsPage() {
         <TabsContent value="api">
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex items-start justify-between gap-4">
                 <div>
                   <CardTitle>API Keys</CardTitle>
                   <CardDescription>Manage API keys for external integrations.</CardDescription>
                 </div>
-                <Button size="sm" variant="outline">
-                  <Key className="w-4 h-4" />
-                  Generate Key
-                </Button>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Input
+                    placeholder="Key name…"
+                    value={newKeyName}
+                    onChange={(e: any) => setNewKeyName(e.target.value)}
+                    className="w-40"
+                  />
+                  <Button size="sm" variant="outline" loading={creatingKey} onClick={handleCreateKey} disabled={!newKeyName}>
+                    <Key className="w-4 h-4" /> Generate
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
+              {newKeyValue && (
+                <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800 text-sm">
+                  <p className="font-medium text-emerald-700 dark:text-emerald-300 mb-1">Key created — copy it now</p>
+                  <code className="text-xs font-mono break-all">{newKeyValue}</code>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">This key will not be shown again.</p>
+                </div>
+              )}
+              {apiKeys.length === 0 && loaded && (
+                <p className="text-sm text-[hsl(var(--muted-foreground))] py-2">No API keys yet.</p>
+              )}
               {apiKeys.map((key) => (
                 <ApiKeyRow
-                  key={key.name}
+                  key={key.id}
                   name={key.name}
-                  value={key.value}
-                  onRevoke={() => alert('Key revoked')}
+                  value={`vq_${key.prefix}${'•'.repeat(24)}`}
+                  onRevoke={() => handleRevokeKey(key.id)}
                 />
               ))}
               <div className="p-3 rounded-lg bg-[hsl(var(--muted)/0.3)] text-xs text-[hsl(var(--muted-foreground))]">

@@ -52,22 +52,25 @@ The foundational application layer. Everything needed for a functional, self-hos
 
 | Status | Item |
 |---|---|
-| 📋 | Database layer with Prisma supporting PostgreSQL, MySQL, and SQLite |
-| 📋 | Authentication — email/password login with bcrypt password hashing |
-| 📋 | OAuth — Google and GitHub social login via NextAuth.js |
-| 📋 | Role-based access control (super admin, admin, editor, viewer) |
-| 📋 | Content modeling GUI — visual schema builder with field type library |
-| 📋 | Auto-generated CRUD admin panels from schema definitions |
-| 📋 | Auto-generated REST API — full CRUD endpoints with filtering, sorting, pagination |
-| 📋 | Auto-generated GraphQL API — queries, mutations, and subscriptions |
-| 📋 | Media manager — local filesystem storage with drag-and-drop upload |
-| 📋 | S3-compatible storage adapter for media (Cloudflare R2, AWS S3, MinIO) |
-| 📋 | Extension engine — load, validate, enable, disable, configure, and lifecycle-manage extensions |
-| 📋 | Theme engine — token injection, CSS custom properties, live preview switcher |
-| 📋 | Attribution footer — license check with 24-hour cache, graceful fallback to display |
-| 📋 | Docker image and Docker Compose stack for one-command self-hosting |
-| 📋 | CLI: `npx create-volqan-app` with interactive setup wizard |
-| 📋 | First GitHub release: **v0.1.0-alpha** |
+| ✅ | Database layer with Prisma supporting PostgreSQL, MySQL, and SQLite |
+| ✅ | Authentication — email/password login with bcrypt password hashing |
+| ✅ | OAuth — Google and GitHub social login (custom OAuth 2.0 implementation) |
+| ✅ | Role-based access control (super admin, admin, editor, viewer) |
+| ✅ | Content modeling GUI — visual schema builder with 16+ field types |
+| ✅ | Auto-generated CRUD admin panels from schema definitions |
+| ✅ | Auto-generated REST API — full CRUD endpoints with filtering, sorting, pagination |
+| ✅ | Auto-generated GraphQL API — queries, mutations, and subscriptions |
+| ✅ | Media manager — local filesystem storage with drag-and-drop upload |
+| ✅ | S3-compatible storage adapter for media (Cloudflare R2, AWS S3, MinIO) |
+| ✅ | Extension engine — load, validate, enable, disable, configure, and lifecycle-manage extensions |
+| ✅ | Theme engine — token injection, CSS custom properties, live preview switcher |
+| ✅ | Attribution footer — license check with 24-hour cache, graceful fallback to display |
+| ✅ | Docker image and Docker Compose stack for one-command self-hosting |
+| ✅ | CLI: `npx create-volqan-app` with interactive setup wizard |
+| ✅ | Admin API routes: auth, content, media, users, settings, billing, health |
+| ✅ | Next.js middleware for session-based route protection |
+| ✅ | Login page with email/password form |
+| 🔄 | First GitHub release: **v0.1.0-alpha** |
 
 ---
 
@@ -78,22 +81,22 @@ The polish phase. Make the product genuinely beautiful, accessible, and AI-power
 
 | Status | Item |
 |---|---|
-| 📋 | Visual drag-and-drop page builder with composable block system |
-| 📋 | Dashboard widgets — content counts, activity feed, quick actions |
+| ✅ | Visual drag-and-drop page builder with composable block system (28 block types) |
+| ✅ | Dashboard widgets — content counts, activity feed, quick actions |
 | 📋 | Analytics overview widget — page views, API requests, user activity |
-| 📋 | Embedded AI assistant panel with swappable LLM provider (OpenAI, Anthropic, Gemini, Ollama) |
-| 📋 | Dark and light mode with instant theme switcher in admin header |
-| 📋 | Fully responsive mobile admin panel — usable on tablet and phone |
+| ✅ | Embedded AI assistant panel with swappable LLM provider (OpenAI, Anthropic, Gemini, Ollama) |
+| ✅ | Dark and light mode with instant theme switcher in admin header |
+| ✅ | Fully responsive mobile admin panel — usable on tablet and phone |
 | 📋 | WCAG 2.1 AA accessibility audit and remediation across all admin UI |
-| 📋 | Official first-party extension: **Blog** (posts, categories, tags, RSS) |
-| 📋 | Official first-party extension: **SEO** (meta tags, Open Graph, sitemap) |
-| 📋 | Official first-party extension: **Forms** (form builder, submissions, email notifications) |
-| 📋 | Official first-party theme: **Default** (current shadcn/ui base) |
-| 📋 | Official first-party theme: **Minimal** (stripped-back, high-density) |
-| 📋 | Stripe integration for Support Plan subscriptions (yearly and monthly) |
-| 📋 | Licensing API for attribution removal validation (Bazarix backend) |
-| 📋 | Stripe webhook handler — activate, refresh, revoke, grace period on payment events |
-| 📋 | Complete documentation on GitHub Pages |
+| ✅ | Official first-party extension: **Blog** (posts, categories, tags, RSS) |
+| ✅ | Official first-party extension: **SEO** (meta tags, Open Graph, sitemap) |
+| ✅ | Official first-party extension: **Forms** (form builder, submissions, email notifications) |
+| ✅ | Official first-party theme: **Default** (current shadcn/ui base) |
+| ✅ | Official first-party theme: **Minimal** (stripped-back, high-density) |
+| ✅ | Stripe integration for Support Plan subscriptions (yearly and monthly) |
+| ✅ | Licensing API for attribution removal validation (Bazarix backend) |
+| ✅ | Stripe webhook handler — activate, refresh, revoke, grace period on payment events |
+| 🔄 | Complete documentation on GitHub Pages |
 | 📋 | **v0.5.0-beta** release |
 | 📋 | Soft Product Hunt launch |
 
@@ -106,11 +109,11 @@ Open the ecosystem. Launch the marketplace. Reach v1.0.
 
 | Status | Item |
 |---|---|
-| 📋 | Extension SDK (`@volqan/extension-sdk`) published to npm |
-| 📋 | Theme SDK (`@volqan/theme-sdk`) published to npm |
-| 📋 | CLI command: `npx create-volqan-app --extension my-extension` scaffolding |
-| 📋 | Full developer documentation for building and publishing extensions |
-| 📋 | Full developer documentation for building and publishing themes |
+| ✅ | Extension SDK (`@volqan/extension-sdk`) — built, pending npm publish |
+| ✅ | Theme SDK (`@volqan/theme-sdk`) — built, pending npm publish |
+| ✅ | CLI command: `volqan create extension/theme` scaffolding |
+| ✅ | Full developer documentation for building and publishing extensions |
+| ✅ | Full developer documentation for building and publishing themes |
 | 📋 | Bazarix marketplace platform launched (private beta for approved sellers) |
 | 📋 | Extension Manager deep link to Bazarix marketplace live in admin panel |
 | 📋 | Seller onboarding and approval workflow in Bazarix |
@@ -193,4 +196,4 @@ The following are explicitly out of scope and will not be added to this roadmap 
 
 ---
 
-*Last updated: April 2026. [Discuss this roadmap →](https://github.com/ReadyPixels/volqan/discussions)*
+*Last updated: May 2026. [Discuss this roadmap →](https://github.com/ReadyPixels/volqan/discussions)*

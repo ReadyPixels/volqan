@@ -47,3 +47,8 @@ test-results/
 .playwright-mcp
 .kilo
 dogfood-output
+
+# docs archive
+docs/archive/
+
+@CLAUDE.md

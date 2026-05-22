@@ -303,7 +303,11 @@ export function TopBar({ className }: TopBarProps) {
             <div className="border-t border-[hsl(var(--border))] mt-1 pt-1">
               <button
                 className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-[hsl(var(--destructive))] hover:bg-[hsl(var(--accent))] transition-colors"
-                onClick={() => setUserOpen(false)}
+                onClick={async () => {
+                  setUserOpen(false);
+                  await fetch('/api/auth/logout', { method: 'POST' }).catch(() => null);
+                  window.location.href = '/login';
+                }}
               >
                 <LogOut className="w-3.5 h-3.5" /> Sign out
               </button>

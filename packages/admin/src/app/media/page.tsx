@@ -177,12 +177,35 @@ function PreviewModal({ file, onClose }: PreviewModalProps) {
 // Page component
 // ---------------------------------------------------------------------------
 
+const activeFolder = 'All Files'; // placeholder for folder nav
+
 export default function MediaPage() {
   const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid');
   const [selectedFolder, setSelectedFolder] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [preview, setPreview] = React.useState<MediaFile | null>(null);
-  const [files, setFiles] = React.useState(MEDIA_FILES);
+  const [mediaFiles, setMediaFiles] = React.useState<MediaFile[]>(MEDIA_FILES);
+  const files = mediaFiles;
+
+  // Load real media on mount
+  React.useEffect(() => {
+    fetch('/api/media?perPage=100')
+      .then((r) => r.json())
+      .then((data: { data?: Array<{ id: string; originalName: string; mimeType: string; size: number; url: string; folder: string; createdAt: string }> }) => {
+        if (data.data && data.data.length > 0) {
+          setMediaFiles(data.data.map((f) => ({
+            id: f.id,
+            name: f.originalName,
+            type: f.mimeType.startsWith('image/') ? 'image' : f.mimeType.startsWith('video/') ? 'video' : 'document',
+            size: f.size > 1048576 ? `${(f.size / 1048576).toFixed(1)} MB` : `${Math.round(f.size / 1024)} KB`,
+            folder: f.folder === '/' ? 'Images' : f.folder.replace(/^\//, ''),
+            url: f.url,
+            createdAt: new Date(f.createdAt).toLocaleDateString(),
+          })));
+        }
+      })
+      .catch(() => null);
+  }, []);
 
   const filtered = files.filter((f) => {
     const matchFolder = selectedFolder === null || f.folder === selectedFolder;
@@ -223,7 +246,25 @@ export default function MediaPage() {
       </div>
 
       {/* Upload zone */}
-      <UploadDropzone onDrop={(fl) => console.log('Upload:', fl)} />
+      <UploadDropzone onDrop={async (fl) => {
+        for (const file of Array.from(fl)) {
+          const fd = new FormData();
+          fd.append('file', file);
+          fd.append('folder', selectedFolder ? `/${selectedFolder.toLowerCase()}` : '/');
+          await fetch('/api/media', { method: 'POST', body: fd });
+        }
+        const res = await fetch('/api/media?perPage=100');
+        const data = (await res.json()) as { data?: Array<{ id: string; originalName: string; mimeType: string; size: number; url: string; folder: string; createdAt: string }> };
+        if (data.data) {
+          setMediaFiles(data.data.map((f) => ({
+            id: f.id, name: f.originalName,
+            type: f.mimeType.startsWith('image/') ? 'image' : f.mimeType.startsWith('video/') ? 'video' : 'document',
+            size: f.size > 1048576 ? `${(f.size / 1048576).toFixed(1)} MB` : `${Math.round(f.size / 1024)} KB`,
+            folder: f.folder === '/' ? 'Images' : f.folder.replace(/^\//, ''),
+            url: f.url, createdAt: new Date(f.createdAt).toLocaleDateString(),
+          })));
+        }
+      }} />
 
       <div className="flex gap-6">
         {/* Sidebar folders */}
