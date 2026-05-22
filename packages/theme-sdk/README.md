@@ -140,6 +140,21 @@ All tokens are injected as CSS custom properties on `:root`:
 | `createComponentOverrides(entries)` | Create a map of component overrides |
 | `createPreviewContext(theme)` | Create a preview context for CSS generation |
 
+## Publishing
+
+```bash
+# Build the package
+pnpm build
+
+# Dry-run to verify what will be published
+pnpm publish --dry-run --access public
+
+# Publish to npm (requires NPM_TOKEN in environment)
+pnpm publish --access public
+```
+
+The `files` field in `package.json` ensures only `dist/` and `README.md` are published.
+
 ## Documentation
 
 - [Getting Started](https://volqan.link/docs/themes/getting-started)

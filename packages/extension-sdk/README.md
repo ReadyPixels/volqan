@@ -160,6 +160,21 @@ console.assert(extCtx._logs.some(l => l.level === 'info'));
 | `createTestContext()` | Create a mock ExtensionContext for testing |
 | `mockVolqanApp()` | Create a mock Volqan app for integration testing |
 
+## Publishing
+
+```bash
+# Build the package
+pnpm build
+
+# Dry-run to verify what will be published
+pnpm publish --dry-run --access public
+
+# Publish to npm (requires NPM_TOKEN in environment)
+pnpm publish --access public
+```
+
+The `files` field in `package.json` ensures only `dist/` and `README.md` are published.
+
 ## Documentation
 
 - [Getting Started](https://volqan.link/docs/extensions/getting-started)
