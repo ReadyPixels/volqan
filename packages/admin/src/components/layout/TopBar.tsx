@@ -85,6 +85,15 @@ export function TopBar({ className }: TopBarProps) {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
 
+  const [user, setUser] = React.useState<{ email: string; name: string } | null>(null);
+
+  React.useEffect(() => {
+    fetch('/api/auth/me')
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (data?.email) setUser(data); })
+      .catch(() => {});
+  }, []);
+
   async function handleSignOut() {
     await fetch('/api/auth/logout', { method: 'POST' });
     router.push('/login');
@@ -278,9 +287,9 @@ export function TopBar({ className }: TopBarProps) {
           aria-label="User menu"
         >
           <div className="w-6 h-6 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center flex-shrink-0">
-            <span className="text-[10px] font-semibold text-white">A</span>
+            <span className="text-[10px] font-semibold text-white">{(user?.name ?? 'A')[0].toUpperCase()}</span>
           </div>
-          <span className="hidden sm:inline text-sm font-medium text-[hsl(var(--foreground))]">Admin</span>
+          <span className="hidden sm:inline text-sm font-medium text-[hsl(var(--foreground))]">{user?.name ?? 'Admin'}</span>
         </button>
 
         {userOpen && (
@@ -289,8 +298,8 @@ export function TopBar({ className }: TopBarProps) {
             'bg-[hsl(var(--popover))] shadow-lg z-50 animate-fade-in py-1',
           )}>
             <div className="px-3 py-2 border-b border-[hsl(var(--border))]">
-              <p className="text-xs font-semibold text-[hsl(var(--popover-foreground))]">Admin User</p>
-              <p className="text-[11px] text-[hsl(var(--muted-foreground))] truncate">admin@example.com</p>
+              <p className="text-xs font-semibold text-[hsl(var(--popover-foreground))]">{user?.name ?? 'Admin'}</p>
+              <p className="text-[11px] text-[hsl(var(--muted-foreground))] truncate">{user?.email ?? '…'}</p>
             </div>
             <Link
               href="/profile"

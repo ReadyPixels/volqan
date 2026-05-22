@@ -243,4 +243,25 @@ Work items are tracked with VOLQ-NNN identifiers. Status: **Open** → **In Prog
 
 ---
 
-*Last updated: May 20, 2026. Bugs VOLQ-001 through VOLQ-005 found during browser testing session.*
+## Supervisor Pass — May 22, 2026
+
+### VOLQ-014 — Button component passes `asChild` prop to native DOM element
+
+**Status:** ✅ Done — May 22, 2026, 9:55 AM  
+**File:** `packages/admin/src/components/ui/button.tsx:52`  
+**Description:** `ButtonProps` includes an `asChild?: boolean` field, but it was spread via `{...props}` onto the native `<button>` element, causing a React warning: "React does not recognize the `asChild` prop on a DOM element."  
+**Fix:** Destructure `asChild` out of props (as `_asChild`) before spreading.  
+**Acceptance criteria:** No React prop warning about `asChild` in the browser console.
+
+---
+
+### VOLQ-013 — TopBar user menu shows hardcoded "Admin User" / "admin@example.com"
+
+**Status:** ✅ Done — May 22, 2026, 9:58 AM  
+**File:** `packages/admin/src/components/layout/TopBar.tsx:293–294`  
+**Description:** The user menu dropdown hardcodes `"Admin User"` and `"admin@example.com"`. The real admin email comes from the `ADMIN_EMAIL` env var (default `admin@volqan.link`). These should reflect the actual authenticated user.  
+**Acceptance criteria:** The user menu shows the real admin email (from env var via `/api/auth/me`) and a derived display name, not the hardcoded example values.
+
+---
+
+*Last updated: May 22, 2026. Supervisor pass in progress.*

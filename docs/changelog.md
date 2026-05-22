@@ -17,6 +17,12 @@ Versions with neither label are stable.
 
 ## [Unreleased]
 
+### Fixed — May 22, 2026
+
+**VOLQ-013** · TopBar user menu displayed hardcoded "Admin User" / "admin@example.com" instead of the real authenticated user. Added `GET /api/auth/me` route that reads and verifies the `volqan_session` cookie and returns the admin email + derived display name. `TopBar` now fetches `/api/auth/me` on mount and renders the real values.
+
+**VOLQ-014** · `Button` component spread `asChild` prop onto the native `<button>` DOM element, causing a React "unrecognized prop" warning. Fixed by destructuring `asChild` out of props before spreading.
+
 ---
 
 ## [0.5.0-beta] — May 21, 2026
