@@ -264,4 +264,28 @@ Work items are tracked with VOLQ-NNN identifiers. Status: **Open** → **In Prog
 
 ---
 
-*Last updated: May 22, 2026. Supervisor pass in progress.*
+### VOLQ-015 — Wire dashboard StatsCards to real Prisma data
+
+**Status:** ✅ Done — May 22, 2026, 10:12 AM  
+**Priority:** Phase 2 polish  
+**Description:** All four dashboard stat cards (Content Entries, Media Files, Active Extensions, Users) show hardcoded mock values (1,248 / 3,841 / 7 / 24). The DB has live records (ContentType, User, ContentEntry, Media, Extension tables). The current value on each card should come from a real Prisma count query.  
+
+**Implementation plan:**
+1. `packages/admin/src/app/api/dashboard/stats/route.ts` — GET endpoint querying Prisma for `contentTypes`, `contentEntries`, `users`, `media`, and `extensions` (enabled) counts.
+2. Update `StatsCards.tsx` to fetch `/api/dashboard/stats` on mount and display real counts; keep sparklines as decorative mock trend data.
+
+**Acceptance criteria:**
+- Dashboard shows real DB counts for Content Types, Content Entries, Users
+- After creating a new content type, the count increments on next page load
+- No console errors on the dashboard
+
+---
+
+### VOLQ-016 — Mark documentation complete; verify GitHub Pages coverage
+
+**Status:** ✅ Done — May 22, 2026, 10:05 AM  
+**Description:** Audit confirmed all documentation pages referenced in `docs/developer-guide.md` exist: `extensions/getting-started.md`, `extensions/api-reference.md`, `extensions/examples.md`, `extensions/publishing.md`, `themes/getting-started.md`, `themes/api-reference.md`, `themes/publishing.md`. GitHub Pages deploy workflow is configured at `.github/workflows/deploy-docs.yml`. Roadmap updated.
+
+---
+
+*Last updated: May 22, 2026.*

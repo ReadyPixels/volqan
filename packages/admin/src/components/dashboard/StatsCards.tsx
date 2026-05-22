@@ -78,14 +78,22 @@ function Sparkline({ data, color, className }: SparklineProps) {
 }
 
 // ---------------------------------------------------------------------------
-// Stats data
+// Stats data (sparklines are decorative mock trends; live counts come from DB)
 // ---------------------------------------------------------------------------
+
+interface LiveStats {
+  contentTypes: number;
+  contentEntries: number;
+  users: number;
+  media: number;
+  extensions: number;
+}
 
 const STATS = [
   {
+    key: 'contentEntries' as keyof LiveStats,
     label: 'Content Entries',
-    value: 1248,
-    display: '1,248',
+    fallback: 0,
     change: 12.4,
     trend: [820, 932, 901, 934, 1090, 1130, 1248],
     icon: FileText,
@@ -95,9 +103,9 @@ const STATS = [
     href: '/content',
   },
   {
+    key: 'media' as keyof LiveStats,
     label: 'Media Files',
-    value: 3841,
-    display: '3,841',
+    fallback: 0,
     change: 5.2,
     trend: [3200, 3350, 3400, 3520, 3680, 3750, 3841],
     icon: Image,
@@ -107,9 +115,9 @@ const STATS = [
     href: '/media',
   },
   {
+    key: 'extensions' as keyof LiveStats,
     label: 'Active Extensions',
-    value: 7,
-    display: '7',
+    fallback: 0,
     change: 16.7,
     trend: [3, 4, 4, 5, 5, 6, 7],
     icon: Puzzle,
@@ -119,9 +127,9 @@ const STATS = [
     href: '/extensions',
   },
   {
+    key: 'users' as keyof LiveStats,
     label: 'Users',
-    value: 24,
-    display: '24',
+    fallback: 0,
     change: 14.3,
     trend: [14, 16, 17, 18, 20, 22, 24],
     icon: Users,
@@ -137,11 +145,22 @@ const STATS = [
 // ---------------------------------------------------------------------------
 
 export function StatsCards() {
+  const [live, setLive] = React.useState<LiveStats | null>(null);
+
+  React.useEffect(() => {
+    fetch('/api/dashboard/stats')
+      .then((r) => r.ok ? r.json() : null)
+      .then((data: LiveStats | null) => { if (data) setLive(data); })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
       {STATS.map((stat) => {
         const Icon = stat.icon;
         const positive = stat.change >= 0;
+        const count = live != null ? live[stat.key] : stat.fallback;
+        const display = live != null ? count.toLocaleString() : '—';
 
         return (
           <Link key={stat.label} href={stat.href}>
@@ -175,12 +194,12 @@ export function StatsCards() {
 
                 <div className="mb-3">
                   <p className="text-2xl font-bold text-[hsl(var(--foreground))] tracking-tight">
-                    {stat.display}
+                    {display}
                   </p>
                   <p className="text-xs text-[hsl(var(--muted-foreground))] mt-0.5">{stat.label}</p>
                 </div>
 
-                {/* Sparkline */}
+                {/* Sparkline (decorative trend) */}
                 <Sparkline data={stat.trend} color={stat.color} className="w-full h-7" />
               </CardContent>
             </Card>

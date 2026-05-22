@@ -93,7 +93,7 @@ The polish phase. Make the product genuinely beautiful, accessible, and AI-power
 | ✅ | Stripe integration for Support Plan subscriptions (yearly and monthly) — UI built, Stripe keys not yet configured |
 | 🔄 | Licensing API for attribution removal validation (Bazarix backend) |
 | ✅ | Stripe webhook handler — activate, refresh, revoke, grace period on payment events |
-| 🔄 | Complete documentation on GitHub Pages |
+| ✅ | Complete documentation on GitHub Pages |
 | ✅ | **v0.5.0-beta** release |
 | 📋 | Soft Product Hunt launch |
 

@@ -17,6 +17,12 @@ Versions with neither label are stable.
 
 ## [Unreleased]
 
+### Added — May 22, 2026
+
+**VOLQ-015** · Dashboard StatsCards wired to real Prisma data. Added `GET /api/dashboard/stats` route that queries Prisma for live counts: `contentEntries`, `media`, `extensions` (enabled), and `users`. `StatsCards` fetches this endpoint on mount and shows real values; sparklines remain as decorative trend visuals.
+
+**VOLQ-016** · Documentation complete. Audit confirmed all developer documentation pages (`extensions/getting-started`, `api-reference`, `examples`, `publishing`; `themes/getting-started`, `api-reference`, `publishing`) exist in `docs/`. GitHub Pages deploy workflow at `.github/workflows/deploy-docs.yml` is configured to publish on push to `main`. Roadmap Phase 2 item marked ✅.
+
 ### Fixed — May 22, 2026
 
 **VOLQ-013** · TopBar user menu displayed hardcoded "Admin User" / "admin@example.com" instead of the real authenticated user. Added `GET /api/auth/me` route that reads and verifies the `volqan_session` cookie and returns the admin email + derived display name. `TopBar` now fetches `/api/auth/me` on mount and renders the real values.
