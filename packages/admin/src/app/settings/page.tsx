@@ -105,29 +105,75 @@ function ApiKeyRow({ name, value, onRevoke }: { name: string; value: string; onR
 // Page component
 // ---------------------------------------------------------------------------
 
+const DEFAULTS = {
+  siteName: 'My Volqan Site',
+  siteUrl: 'https://example.com',
+  siteDescription: 'Powered by Volqan CMS',
+  defaultLocale: 'en',
+  smtpHost: 'smtp.mailgun.org',
+  smtpPort: '587',
+  smtpUser: '',
+  fromEmail: 'noreply@example.com',
+  storageProvider: 'local',
+};
+
 export default function SettingsPage() {
   const [saving, setSaving] = React.useState<Record<string, boolean>>({});
+  const [saveSuccess, setSaveSuccess] = React.useState<Record<string, boolean>>({});
+
+  // General settings state
+  const [siteName, setSiteName] = React.useState(DEFAULTS.siteName);
+  const [siteUrl, setSiteUrl] = React.useState(DEFAULTS.siteUrl);
+  const [siteDescription, setSiteDescription] = React.useState(DEFAULTS.siteDescription);
+  const [defaultLocale, setDefaultLocale] = React.useState(DEFAULTS.defaultLocale);
+
+  // Email settings state
+  const [smtpHost, setSmtpHost] = React.useState(DEFAULTS.smtpHost);
+  const [smtpPort, setSmtpPort] = React.useState(DEFAULTS.smtpPort);
+  const [smtpUser, setSmtpUser] = React.useState(DEFAULTS.smtpUser);
+  const [fromEmail, setFromEmail] = React.useState(DEFAULTS.fromEmail);
+
+  // Storage settings
+  const [storageProvider, setStorageProvider] = React.useState(DEFAULTS.storageProvider);
+
+  React.useEffect(() => {
+    fetch('/api/settings')
+      .then((r) => r.ok ? r.json() : {})
+      .then((s: Record<string, string>) => {
+        if (s['site.name']) setSiteName(s['site.name']);
+        if (s['site.url']) setSiteUrl(s['site.url']);
+        if (s['site.description']) setSiteDescription(s['site.description']);
+        if (s['site.locale']) setDefaultLocale(s['site.locale']);
+        if (s['email.smtpHost']) setSmtpHost(s['email.smtpHost']);
+        if (s['email.smtpPort']) setSmtpPort(s['email.smtpPort']);
+        if (s['email.smtpUser']) setSmtpUser(s['email.smtpUser']);
+        if (s['email.fromEmail']) setFromEmail(s['email.fromEmail']);
+        if (s['storage.provider']) setStorageProvider(s['storage.provider']);
+      })
+      .catch(() => {});
+  }, []);
 
   const handleSave = async (group: string) => {
     setSaving((s) => ({ ...s, [group]: true }));
-    await new Promise((r) => setTimeout(r, 700));
+    const payload: Record<string, string> =
+      group === 'general'
+        ? { 'site.name': siteName, 'site.url': siteUrl, 'site.description': siteDescription, 'site.locale': defaultLocale }
+        : group === 'email'
+        ? { 'email.smtpHost': smtpHost, 'email.smtpPort': smtpPort, 'email.smtpUser': smtpUser, 'email.fromEmail': fromEmail }
+        : group === 'storage'
+        ? { 'storage.provider': storageProvider }
+        : {};
+
+    await fetch('/api/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).catch(() => {});
+
     setSaving((s) => ({ ...s, [group]: false }));
+    setSaveSuccess((s) => ({ ...s, [group]: true }));
+    setTimeout(() => setSaveSuccess((s) => ({ ...s, [group]: false })), 2000);
   };
-
-  // General settings state
-  const [siteName, setSiteName] = React.useState('My Volqan Site');
-  const [siteUrl, setSiteUrl] = React.useState('https://example.com');
-  const [siteDescription, setSiteDescription] = React.useState('Powered by Volqan CMS');
-  const [defaultLocale, setDefaultLocale] = React.useState('en');
-
-  // Email settings state
-  const [smtpHost, setSmtpHost] = React.useState('smtp.mailgun.org');
-  const [smtpPort, setSmtpPort] = React.useState('587');
-  const [smtpUser, setSmtpUser] = React.useState('');
-  const [fromEmail, setFromEmail] = React.useState('noreply@example.com');
-
-  // Storage settings
-  const [storageProvider, setStorageProvider] = React.useState('local');
 
   // API keys
   const [apiKeys] = React.useState([

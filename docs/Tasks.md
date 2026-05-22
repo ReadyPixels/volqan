@@ -306,4 +306,102 @@ Work items are tracked with VOLQ-NNN identifiers. Status: **Open** → **In Prog
 
 ---
 
+## Content CRUD & Data Wiring — May 22, 2026
+
+### VOLQ-019 — Content entries list uses MOCK_ENTRIES (42 fake rows)
+
+**Status:** ✅ Done — May 22, 2026, 1:20 PM  
+**File:** `packages/admin/src/app/content/[slug]/page.tsx`  
+**Description:** The entries list page for each content type loads 42 hardcoded mock entries. Delete only filters local state. No real API is called.  
+**Implementation plan:**
+1. `GET /api/content-types/[slug]/entries` — list ContentEntry rows for this type
+2. `DELETE /api/content-types/[slug]/entries/[id]` — delete a single entry
+3. Wire page to fetch and delete via real API
+
+**Acceptance criteria:**
+- Content entries list shows real DB rows (empty when no entries)
+- Deleting an entry removes it from DB and list refreshes
+- No mock data in the component
+
+---
+
+### VOLQ-020 — New/edit entry form does setTimeout stub instead of real save
+
+**Status:** ✅ Done — May 22, 2026, 1:20 PM  
+**Files:** `packages/admin/src/app/content/[slug]/new/page.tsx`, `packages/admin/src/app/content/[slug]/[id]/page.tsx`  
+**Description:** Both forms do `setTimeout(800)` then redirect — no POST/PUT to any API endpoint. Fields are hardcoded for post/page/product, not dynamic from ContentType.fields.  
+**Implementation plan:**
+1. `POST /api/content-types/[slug]/entries` — create a new ContentEntry
+2. `GET /api/content-types/[slug]/entries/[id]` — fetch entry for edit
+3. `PUT /api/content-types/[slug]/entries/[id]` — update entry
+4. Fetch ContentType.fields JSON and render fields dynamically
+
+**Acceptance criteria:**
+- Creating an entry saves to SQLite; appears in the list after redirect
+- Editing an entry updates the DB record
+- Fields rendered from ContentType.fields schema (not hardcoded)
+
+---
+
+### VOLQ-021 — Media page has no upload endpoint
+
+**Status:** ✅ Done — May 22, 2026, 1:20 PM  
+**File:** `packages/admin/src/app/media/page.tsx`  
+**Description:** The media page shows 12 hardcoded mock files. The dropzone UI exists but no `/api/media` route exists. Uploaded files need to be saved to `public/uploads/` and recorded in the Media table.  
+**Implementation plan:**
+1. `POST /api/media` — accept multipart upload, write to `public/uploads/[filename]`, create Media record
+2. `GET /api/media` — list Media records from DB
+3. `DELETE /api/media/[id]` — delete file + DB record
+4. Wire dropzone and grid to real API
+
+**Acceptance criteria:**
+- Dropping a file uploads it to `public/uploads/` and shows it in the grid
+- Uploaded files persist after page refresh
+- Mock data removed
+
+---
+
+### VOLQ-022 — Users page shows 6 hardcoded mock users
+
+**Status:** ✅ Done — May 22, 2026, 1:20 PM  
+**File:** `packages/admin/src/app/users/page.tsx`  
+**Description:** The users list uses a `USERS` constant with Alice, Bob, Charlie, Diana, Eve, Frank. The DB has a real User table (seeded with admin user).  
+**Implementation plan:**
+1. `GET /api/users` — list User records from Prisma
+2. Wire users page to fetch from API
+
+**Acceptance criteria:**
+- Users list shows real DB users (at minimum the seeded admin)
+- Mock USERS constant removed
+
+---
+
+### VOLQ-023 — Settings page does setTimeout stub, no DB persistence
+
+**Status:** ✅ Done — May 22, 2026, 1:20 PM  
+**File:** `packages/admin/src/app/settings/page.tsx`  
+**Description:** `handleSave` does `setTimeout(700)` only. All state is hardcoded defaults. The `Setting` model (key-value store) exists in Prisma schema.  
+**Implementation plan:**
+1. `GET /api/settings` — load settings from Prisma Setting table (key-value)
+2. `PUT /api/settings` — upsert setting rows
+3. Wire settings form load and save to API
+
+**Acceptance criteria:**
+- Settings load from DB on page open
+- Saving persists to SQLite; values survive page refresh
+- setTimeout stub removed
+
+---
+
+### VOLQ-024 — Add "What's left for v1.0.0" section to roadmap
+
+**Status:** ✅ Done — May 22, 2026, 1:25 PM  
+**File:** `docs/roadmap.md`  
+**Description:** The roadmap has no summary of what must be done before v1.0.0 stable. Add a clear section listing remaining blockers and in-progress items.  
+**Acceptance criteria:**
+- Roadmap has a "Path to v1.0.0" or similar section listing outstanding items
+- Items map to VOLQ-NNN task IDs where applicable
+
+---
+
 *Last updated: May 22, 2026.*

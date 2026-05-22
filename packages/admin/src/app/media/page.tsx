@@ -1,29 +1,19 @@
 'use client';
 
-/**
- * @file app/media/page.tsx
- * @description Media library with grid/list view, upload dropzone, and preview modal.
- */
-
 import * as React from 'react';
 import {
   Upload, Grid, List, Search, Folder, Image, File, Film,
-  Trash2, Download, Copy, X, ChevronLeft, Plus,
+  Trash2, Download, Copy, X,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-
-// ---------------------------------------------------------------------------
-// Mock data
-// ---------------------------------------------------------------------------
 
 type MediaFileType = 'image' | 'video' | 'file';
 
 interface MediaFile {
   id: string;
   name: string;
+  originalName?: string;
   type: MediaFileType;
   size: string;
   dimensions?: string;
@@ -34,32 +24,28 @@ interface MediaFile {
 
 const FOLDERS = ['Images', 'Documents', 'Videos', 'Products'];
 
-const MEDIA_FILES: MediaFile[] = [
-  { id: '1', name: 'hero-banner.jpg', type: 'image', size: '1.2 MB', dimensions: '1920×1080', folder: 'Images', url: 'https://images.unsplash.com/photo-1639762681057-408e52192e55?w=400', createdAt: '2d ago' },
-  { id: '2', name: 'product-01.jpg', type: 'image', size: '845 KB', dimensions: '800×800', folder: 'Products', url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', createdAt: '3d ago' },
-  { id: '3', name: 'team-photo.jpg', type: 'image', size: '2.1 MB', dimensions: '2400×1600', folder: 'Images', url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400', createdAt: '5d ago' },
-  { id: '4', name: 'report-q4.pdf', type: 'file', size: '4.3 MB', folder: 'Documents', url: '#', createdAt: '1w ago' },
-  { id: '5', name: 'demo-video.mp4', type: 'video', size: '24 MB', folder: 'Videos', url: '#', createdAt: '1w ago' },
-  { id: '6', name: 'logo-dark.png', type: 'image', size: '45 KB', dimensions: '400×120', folder: 'Images', url: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400', createdAt: '2w ago' },
-  { id: '7', name: 'product-02.jpg', type: 'image', size: '632 KB', dimensions: '800×800', folder: 'Products', url: 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=400', createdAt: '2w ago' },
-  { id: '8', name: 'terms.pdf', type: 'file', size: '156 KB', folder: 'Documents', url: '#', createdAt: '3w ago' },
-  { id: '9', name: 'product-03.jpg', type: 'image', size: '712 KB', dimensions: '800×800', folder: 'Products', url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400', createdAt: '3w ago' },
-  { id: '10', name: 'cover-art.jpg', type: 'image', size: '1.8 MB', dimensions: '1200×630', folder: 'Images', url: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=400', createdAt: '1mo ago' },
-  { id: '11', name: 'brand-guide.pdf', type: 'file', size: '8.2 MB', folder: 'Documents', url: '#', createdAt: '1mo ago' },
-  { id: '12', name: 'promo-video.mp4', type: 'video', size: '56 MB', folder: 'Videos', url: '#', createdAt: '1mo ago' },
-];
-
 const FILE_ICON: Record<MediaFileType, React.ComponentType<{ className?: string }>> = {
   image: Image,
   video: Film,
   file: File,
 };
 
+function relativeTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  if (d < 30) return `${d}d ago`;
+  return `${Math.floor(d / 30)}mo ago`;
+}
+
 // ---------------------------------------------------------------------------
 // Dropzone
 // ---------------------------------------------------------------------------
 
-function UploadDropzone({ onDrop }: { onDrop: (files: FileList) => void }) {
+function UploadDropzone({ onDrop, uploading }: { onDrop: (files: FileList) => void; uploading: boolean }) {
   const [dragging, setDragging] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -71,6 +57,7 @@ function UploadDropzone({ onDrop }: { onDrop: (files: FileList) => void }) {
         dragging
           ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.06)]'
           : 'border-[hsl(var(--border))]',
+        uploading && 'opacity-60 pointer-events-none',
       )}
       onDragEnter={() => setDragging(true)}
       onDragLeave={() => setDragging(false)}
@@ -84,7 +71,7 @@ function UploadDropzone({ onDrop }: { onDrop: (files: FileList) => void }) {
     >
       <Upload className="w-8 h-8 text-[hsl(var(--muted-foreground))] mx-auto mb-3" />
       <p className="text-sm font-medium text-[hsl(var(--foreground))]">
-        Drop files here, or click to browse
+        {uploading ? 'Uploading…' : 'Drop files here, or click to browse'}
       </p>
       <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">
         JPG, PNG, GIF, MP4, PDF up to 100MB
@@ -104,12 +91,7 @@ function UploadDropzone({ onDrop }: { onDrop: (files: FileList) => void }) {
 // Preview modal
 // ---------------------------------------------------------------------------
 
-interface PreviewModalProps {
-  file: MediaFile | null;
-  onClose: () => void;
-}
-
-function PreviewModal({ file, onClose }: PreviewModalProps) {
+function PreviewModal({ file, onClose }: { file: MediaFile | null; onClose: () => void }) {
   if (!file) return null;
 
   return (
@@ -156,16 +138,23 @@ function PreviewModal({ file, onClose }: PreviewModalProps) {
             </div>
             <div>
               <span className="text-[hsl(var(--muted-foreground))]">Added</span>
-              <p className="font-medium">{file.createdAt}</p>
+              <p className="font-medium">{relativeTime(file.createdAt)}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 pt-2 border-t border-[hsl(var(--border))]">
-            <Button size="sm" variant="outline" className="gap-1">
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1"
+              onClick={() => navigator.clipboard.writeText(window.location.origin + file.url)}
+            >
               <Copy className="w-3.5 h-3.5" /> Copy URL
             </Button>
-            <Button size="sm" variant="outline" className="gap-1">
-              <Download className="w-3.5 h-3.5" /> Download
-            </Button>
+            <a href={file.url} download={file.name}>
+              <Button size="sm" variant="outline" className="gap-1">
+                <Download className="w-3.5 h-3.5" /> Download
+              </Button>
+            </a>
           </div>
         </div>
       </div>
@@ -182,7 +171,52 @@ export default function MediaPage() {
   const [selectedFolder, setSelectedFolder] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [preview, setPreview] = React.useState<MediaFile | null>(null);
-  const [files, setFiles] = React.useState(MEDIA_FILES);
+  const [files, setFiles] = React.useState<MediaFile[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [uploading, setUploading] = React.useState(false);
+  const [uploadError, setUploadError] = React.useState<string | null>(null);
+
+  const loadMedia = () => {
+    fetch('/api/media')
+      .then((r) => r.ok ? r.json() : [])
+      .then((rows: MediaFile[]) => setFiles(rows))
+      .catch(() => setFiles([]))
+      .finally(() => setLoading(false));
+  };
+
+  React.useEffect(() => { loadMedia(); }, []);
+
+  const handleUpload = async (fileList: FileList) => {
+    setUploading(true);
+    setUploadError(null);
+    const results: MediaFile[] = [];
+    for (const file of Array.from(fileList)) {
+      const fd = new FormData();
+      fd.append('file', file);
+      if (selectedFolder) fd.append('folder', selectedFolder);
+      try {
+        const res = await fetch('/api/media', { method: 'POST', body: fd });
+        if (res.ok) {
+          const data = await res.json() as MediaFile;
+          results.push(data);
+        } else {
+          setUploadError(`Failed to upload ${file.name}`);
+        }
+      } catch {
+        setUploadError(`Upload error for ${file.name}`);
+      }
+    }
+    if (results.length) setFiles((prev) => [...results, ...prev]);
+    setUploading(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    const res = await fetch(`/api/media/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      setFiles((prev) => prev.filter((f) => f.id !== id));
+      if (preview?.id === id) setPreview(null);
+    }
+  };
 
   const filtered = files.filter((f) => {
     const matchFolder = selectedFolder === null || f.folder === selectedFolder;
@@ -190,18 +224,19 @@ export default function MediaPage() {
     return matchFolder && matchSearch;
   });
 
+  const totalMB = files.reduce((sum, f) => {
+    const num = parseFloat(f.size);
+    const unit = f.size.slice(-2);
+    return sum + (unit === 'MB' ? num : unit === 'KB' ? num / 1024 : num);
+  }, 0);
+
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[hsl(var(--foreground))] tracking-tight">Media Library</h1>
           <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
-            {files.length} files · {(files.reduce((sum, f) => {
-              const num = parseFloat(f.size);
-              const unit = f.size.slice(-2);
-              return sum + (unit === 'MB' ? num : unit === 'KB' ? num / 1024 : num);
-            }, 0)).toFixed(1)} MB total
+            {loading ? '…' : `${files.length} files · ${totalMB.toFixed(1)} MB total`}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -222,11 +257,15 @@ export default function MediaPage() {
         </div>
       </div>
 
-      {/* Upload zone */}
-      <UploadDropzone onDrop={(fl) => console.log('Upload:', fl)} />
+      <UploadDropzone onDrop={handleUpload} uploading={uploading} />
+
+      {uploadError && (
+        <div className="rounded-md bg-[hsl(var(--destructive)/0.1)] border border-[hsl(var(--destructive)/0.3)] px-4 py-2 text-sm text-[hsl(var(--destructive))]">
+          {uploadError}
+        </div>
+      )}
 
       <div className="flex gap-6">
-        {/* Sidebar folders */}
         <div className="w-44 flex-shrink-0 space-y-1">
           <p className="text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-2">Folders</p>
           <button
@@ -259,9 +298,7 @@ export default function MediaPage() {
           ))}
         </div>
 
-        {/* Main area */}
         <div className="flex-1 min-w-0 space-y-4">
-          {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[hsl(var(--muted-foreground))]" />
             <input
@@ -273,8 +310,27 @@ export default function MediaPage() {
             />
           </div>
 
-          {/* Files grid/list */}
-          {viewMode === 'grid' ? (
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="rounded-lg border border-[hsl(var(--border))] overflow-hidden animate-pulse">
+                  <div className="aspect-square bg-[hsl(var(--muted))]" />
+                  <div className="p-2 space-y-1">
+                    <div className="h-3 bg-[hsl(var(--muted))] rounded w-3/4" />
+                    <div className="h-2 bg-[hsl(var(--muted))] rounded w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <Upload className="w-10 h-10 text-[hsl(var(--muted-foreground))] mb-3 opacity-40" />
+              <p className="text-sm font-medium text-[hsl(var(--foreground))]">No files yet</p>
+              <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">
+                Upload files using the dropzone above.
+              </p>
+            </div>
+          ) : viewMode === 'grid' ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {filtered.map((file) => {
                 const Icon = FILE_ICON[file.type];
@@ -287,11 +343,7 @@ export default function MediaPage() {
                     <div className="aspect-square bg-[hsl(var(--muted)/0.3)] flex items-center justify-center overflow-hidden">
                       {file.type === 'image' ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={file.url}
-                          alt={file.name}
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={file.url} alt={file.name} className="w-full h-full object-cover" />
                       ) : (
                         <Icon className="w-10 h-10 text-[hsl(var(--muted-foreground))]" />
                       )}
@@ -302,7 +354,7 @@ export default function MediaPage() {
                     </div>
                     <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
-                        onClick={(e) => { e.stopPropagation(); setFiles((prev) => prev.filter((f) => f.id !== file.id)); }}
+                        onClick={(e) => { e.stopPropagation(); handleDelete(file.id); }}
                         className="w-6 h-6 bg-black/60 rounded text-white flex items-center justify-center hover:bg-red-600 transition-colors"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -333,15 +385,15 @@ export default function MediaPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{file.name}</p>
                       <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                        {file.folder} · {file.size}{file.dimensions ? ` · ${file.dimensions}` : ''}
+                        {file.folder ?? 'Root'} · {file.size}
                       </p>
                     </div>
-                    <span className="text-xs text-[hsl(var(--muted-foreground))]">{file.createdAt}</span>
+                    <span className="text-xs text-[hsl(var(--muted-foreground))]">{relativeTime(file.createdAt)}</span>
                     <Button
                       variant="ghost"
                       size="icon"
                       className="w-7 h-7 opacity-0 group-hover:opacity-100 text-[hsl(var(--destructive))]"
-                      onClick={(e: any) => { e.stopPropagation(); setFiles((prev) => prev.filter((f) => f.id !== file.id)); }}
+                      onClick={(e: any) => { e.stopPropagation(); handleDelete(file.id); }}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </Button>
@@ -353,7 +405,6 @@ export default function MediaPage() {
         </div>
       </div>
 
-      {/* Preview modal */}
       <PreviewModal file={preview} onClose={() => setPreview(null)} />
     </div>
   );

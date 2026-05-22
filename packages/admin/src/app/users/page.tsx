@@ -34,18 +34,15 @@ interface User {
   avatarUrl?: string;
 }
 
-// ---------------------------------------------------------------------------
-// Mock data
-// ---------------------------------------------------------------------------
-
-const USERS: User[] = [
-  { id: '1', name: 'Alice Johnson', email: 'alice@example.com', role: 'super_admin', status: 'active', lastSeen: 'Just now' },
-  { id: '2', name: 'Bob Smith', email: 'bob@example.com', role: 'admin', status: 'active', lastSeen: '5m ago' },
-  { id: '3', name: 'Charlie Davis', email: 'charlie@example.com', role: 'editor', status: 'active', lastSeen: '2h ago' },
-  { id: '4', name: 'Diana Chen', email: 'diana@example.com', role: 'editor', status: 'active', lastSeen: '1d ago' },
-  { id: '5', name: 'Eve Wilson', email: 'eve@example.com', role: 'viewer', status: 'invited', lastSeen: 'Never' },
-  { id: '6', name: 'Frank Miller', email: 'frank@example.com', role: 'viewer', status: 'inactive', lastSeen: '30d ago' },
-];
+function relativeTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 2) return 'Just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
 
 const ROLE_BADGE: Record<UserRole, React.ReactNode> = {
   super_admin: <Badge variant="destructive">Super Admin</Badge>,
@@ -131,9 +128,18 @@ function InviteDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
 // ---------------------------------------------------------------------------
 
 export default function UsersPage() {
-  const [users, setUsers] = React.useState(USERS);
+  const [users, setUsers] = React.useState<User[]>([]);
+  const [loading, setLoading] = React.useState(true);
   const [inviteOpen, setInviteOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
+
+  React.useEffect(() => {
+    fetch('/api/users')
+      .then((r) => r.ok ? r.json() : [])
+      .then((rows: User[]) => setUsers(rows))
+      .catch(() => setUsers([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   const filtered = users.filter(
     (u) =>
@@ -153,7 +159,7 @@ export default function UsersPage() {
         <div>
           <h1 className="text-2xl font-bold text-[hsl(var(--foreground))] tracking-tight">Users</h1>
           <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
-            {users.filter((u) => u.status === 'active').length} active of {users.length} total members
+            {loading ? '…' : `${users.filter((u) => u.status === 'active').length} active of ${users.length} total members`}
           </p>
         </div>
         <Button size="sm" onClick={() => setInviteOpen(true)}>
@@ -221,7 +227,7 @@ export default function UsersPage() {
                     </td>
                     <td className="px-4 py-3">{ROLE_BADGE[user.role]}</td>
                     <td className="px-4 py-3">{STATUS_BADGE[user.status]}</td>
-                    <td className="px-4 py-3 text-xs text-[hsl(var(--muted-foreground))]">{user.lastSeen}</td>
+                    <td className="px-4 py-3 text-xs text-[hsl(var(--muted-foreground))]">{relativeTime(user.lastSeen)}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">
                         <Button variant="ghost" size="icon" className="w-7 h-7" aria-label="Edit user">

@@ -1,10 +1,5 @@
 'use client';
 
-/**
- * @file app/content/[slug]/[id]/page.tsx
- * @description Edit a specific content entry.
- */
-
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Save, Trash2, Eye } from 'lucide-react';
@@ -14,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FormField, type FormFieldDefinition } from '@/components/ui/form-field';
 
-// Reuse field defs from new page (in a real app, share from a shared module)
 const DEFAULT_FIELDS: FormFieldDefinition[] = [
   { key: 'title', label: 'Title', type: 'text', required: true },
   { key: 'slug', label: 'Slug', type: 'text', required: true, description: 'URL-friendly identifier' },
@@ -27,6 +21,17 @@ const DEFAULT_FIELDS: FormFieldDefinition[] = [
   { key: 'publishedAt', label: 'Publish Date', type: 'datetime' },
 ];
 
+interface EntryData {
+  id: string;
+  data: Record<string, unknown>;
+  fields: FormFieldDefinition[];
+  status: string;
+  slug: string;
+  authorName: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export default function EditContentEntryPage() {
   const params = useParams();
   const router = useRouter();
@@ -34,20 +39,45 @@ export default function EditContentEntryPage() {
   const id = params?.id as string;
   const typeName = slug ? slug.charAt(0).toUpperCase() + slug.slice(1) : 'Content';
 
-  const [formData, setFormData] = React.useState<Record<string, unknown>>({
-    title: `Sample ${typeName} Entry #${id}`,
-    slug: `sample-${typeName.toLowerCase()}-entry-${id}`,
-    content: 'This is the content body.',
-    status: 'published',
-    publishedAt: new Date().toISOString().slice(0, 16),
-  });
+  const [entry, setEntry] = React.useState<EntryData | null>(null);
+  const [fields, setFields] = React.useState<FormFieldDefinition[]>(DEFAULT_FIELDS);
+  const [formData, setFormData] = React.useState<Record<string, unknown>>({});
   const [errors, setErrors] = React.useState<Record<string, string>>({});
+  const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
+  const [saveError, setSaveError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!slug || !id) return;
+    fetch(`/api/content-types/${slug}/entries/${id}`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((e: EntryData | null) => {
+        if (!e) return;
+        setEntry(e);
+        if (e.fields?.length) {
+          const mapped = (e.fields as unknown as Record<string, unknown>[]).map((f) => ({
+            key: (f.key as string) ?? (f.name as string),
+            label: (f.label as string) ?? ((f.name as string)?.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase())),
+            type: (f.type as FormFieldDefinition['type']) ?? 'text',
+            required: (f.required as boolean) ?? false,
+            description: (f.description as string) ?? undefined,
+            options: (f.options as FormFieldDefinition['options']) ?? undefined,
+          } as FormFieldDefinition));
+          setFields(mapped);
+        }
+        setFormData({ ...e.data, status: e.status, slug: e.slug });
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [slug, id]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!formData.title) newErrors.title = 'Title is required';
-    if (!formData.slug) newErrors.slug = 'Slug is required';
+    for (const field of fields) {
+      if (field.required && !formData[field.key]) {
+        newErrors[field.key] = `${field.label} is required`;
+      }
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -55,18 +85,46 @@ export default function EditContentEntryPage() {
   const handleSave = async () => {
     if (!validate()) return;
     setSaving(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setSaving(false);
+    setSaveError(null);
+    try {
+      const { status, slug: entrySlug, ...rest } = formData;
+      const res = await fetch(`/api/content-types/${slug}/entries/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: rest, status, slug: entrySlug }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setSaveError((body as { error?: string }).error ?? 'Save failed');
+        return;
+      }
+    } catch {
+      setSaveError('Network error — please try again');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this entry?')) return;
+    await fetch(`/api/content-types/${slug}/entries/${id}`, { method: 'DELETE' });
     router.push(`/content/${slug}`);
   };
 
+  const mainFields = fields.filter((f) => !['status', 'publishedAt'].includes(f.key));
+  const sideFields = fields.filter((f) => ['status', 'publishedAt'].includes(f.key));
+
+  if (loading) {
+    return (
+      <div className="space-y-4 animate-fade-in max-w-4xl">
+        <div className="h-8 w-48 rounded bg-[hsl(var(--muted))] animate-pulse" />
+        <div className="h-64 rounded-lg bg-[hsl(var(--muted))] animate-pulse" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 animate-fade-in max-w-4xl">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href={`/content/${slug}`}>
@@ -98,46 +156,43 @@ export default function EditContentEntryPage() {
         </div>
       </div>
 
-      {/* Form */}
+      {saveError && (
+        <div className="rounded-md bg-[hsl(var(--destructive)/0.1)] border border-[hsl(var(--destructive)/0.3)] px-4 py-3 text-sm text-[hsl(var(--destructive))]">
+          {saveError}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <Card>
-            <CardHeader>
-              <CardTitle>Content</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle>Content</CardTitle></CardHeader>
             <CardContent className="space-y-5">
-              {DEFAULT_FIELDS
-                .filter((f) => !['status', 'publishedAt'].includes(f.key))
-                .map((field) => (
-                  <FormField
-                    key={field.key}
-                    field={field}
-                    value={formData[field.key]}
-                    onChange={(v: any) => setFormData((prev) => ({ ...prev, [field.key]: v }))}
-                    error={errors[field.key]}
-                  />
-                ))}
+              {mainFields.map((field) => (
+                <FormField
+                  key={field.key}
+                  field={field}
+                  value={formData[field.key]}
+                  onChange={(v: any) => setFormData((prev) => ({ ...prev, [field.key]: v }))}
+                  error={errors[field.key]}
+                />
+              ))}
             </CardContent>
           </Card>
         </div>
 
         <div className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Publishing</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle>Publishing</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              {DEFAULT_FIELDS
-                .filter((f) => ['status', 'publishedAt'].includes(f.key))
-                .map((field) => (
-                  <FormField
-                    key={field.key}
-                    field={field}
-                    value={formData[field.key]}
-                    onChange={(v: any) => setFormData((prev) => ({ ...prev, [field.key]: v }))}
-                    error={errors[field.key]}
-                  />
-                ))}
+              {sideFields.map((field) => (
+                <FormField
+                  key={field.key}
+                  field={field}
+                  value={formData[field.key]}
+                  onChange={(v: any) => setFormData((prev) => ({ ...prev, [field.key]: v }))}
+                  error={errors[field.key]}
+                />
+              ))}
               <Button className="w-full" loading={saving} onClick={handleSave}>
                 <Save className="w-4 h-4" />
                 Update
@@ -146,9 +201,7 @@ export default function EditContentEntryPage() {
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle>Entry Details</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle>Entry Details</CardTitle></CardHeader>
             <CardContent className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-[hsl(var(--muted-foreground))]">Type</span>
@@ -158,14 +211,22 @@ export default function EditContentEntryPage() {
                 <span className="text-[hsl(var(--muted-foreground))]">ID</span>
                 <span className="font-mono text-xs">{id}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-[hsl(var(--muted-foreground))]">Created</span>
-                <span>3 days ago</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[hsl(var(--muted-foreground))]">Last modified</span>
-                <span>2 hours ago</span>
-              </div>
+              {entry && (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-[hsl(var(--muted-foreground))]">Author</span>
+                    <span>{entry.authorName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[hsl(var(--muted-foreground))]">Created</span>
+                    <span className="text-xs">{new Date(entry.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[hsl(var(--muted-foreground))]">Updated</span>
+                    <span className="text-xs">{new Date(entry.updatedAt).toLocaleDateString()}</span>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>

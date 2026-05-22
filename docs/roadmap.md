@@ -193,4 +193,29 @@ The following are explicitly out of scope and will not be added to this roadmap 
 
 ---
 
-*Last updated: May 21, 2026. [Discuss this roadmap →](https://github.com/ReadyPixels/volqan/discussions)*
+---
+
+## Path to v1.0.0 Stable
+
+The following items must be completed before the v1.0.0 stable release can be tagged. This list is derived from the Phase 3 roadmap and outstanding gaps in the current build.
+
+| # | Item | Status | Task |
+|---|---|---|---|
+| 1 | Content entry CRUD fully wired to SQLite | ✅ Done | VOLQ-019, VOLQ-020 |
+| 2 | Media upload endpoint — files saved to `public/uploads/` | ✅ Done | VOLQ-021 |
+| 3 | Users page wired to real Prisma User table | ✅ Done | VOLQ-022 |
+| 4 | Settings persistence via Prisma `Setting` model | ✅ Done | VOLQ-023 |
+| 5 | OAuth — Google and GitHub social login via NextAuth.js | 🔄 In Progress | — |
+| 6 | Role-based access control enforcement (not just display) | 🔄 In Progress | — |
+| 7 | S3-compatible storage adapter for media | 📋 Planned | — |
+| 8 | Extension SDK (`@volqan/extension-sdk`) published to npm | 🔄 Awaiting npm credentials | VOLQ-012 |
+| 9 | Theme SDK (`@volqan/theme-sdk`) published to npm | 🔄 Awaiting npm credentials | VOLQ-012 |
+| 10 | Bazarix marketplace platform launched (private beta) | 📋 Planned | — |
+| 11 | License key system implemented | 📋 Planned | — |
+| 12 | Licensing API (Bazarix backend) for attribution validation | 🔄 In Progress | — |
+| 13 | REST API and GraphQL API connected to live DB | 📋 Planned | — |
+| 14 | Soft Product Hunt launch | 📋 Planned | — |
+
+> Once items 5–14 are complete, `v1.0.0` will be tagged. Items 1–4 are done as of v0.5.0-beta. The SDK publish (items 8–9) is blocked on npm credentials only — code is publish-ready.
+
+*Last updated: May 22, 2026. [Discuss this roadmap →](https://github.com/ReadyPixels/volqan/discussions)*

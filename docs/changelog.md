@@ -17,6 +17,20 @@ Versions with neither label are stable.
 
 ## [Unreleased]
 
+### Added — May 22, 2026 (data wiring pass)
+
+**VOLQ-019** · Content entries list wired to real Prisma data. Replaced 42-row `MOCK_ENTRIES` constant in `/content/[slug]/page.tsx` with `GET /api/content-types/[slug]/entries` fetch on mount. Delete button calls `DELETE /api/content-types/[slug]/entries/[id]` and removes the row from state. Shows real entry count and relative timestamps. Bulk delete triggers parallel DELETE requests.
+
+**VOLQ-020** · New and edit content entry forms wired to real API. `new/page.tsx`: fetches ContentType fields from `/api/content-types` and maps `{name}` → `{key, label}` for `FormField` rendering; `handleSave` posts to `POST /api/content-types/[slug]/entries`. `[id]/page.tsx`: loads entry from `GET /api/content-types/[slug]/entries/[id]` on mount (with loading skeleton); save calls `PUT`; delete calls `DELETE` and redirects. Both forms show inline error banners on API failure. `setTimeout` stubs removed.
+
+**VOLQ-021** · Media page wired to real upload endpoint. New `POST /api/media` route accepts multipart file upload, writes to `packages/admin/public/uploads/[name]-[timestamp][ext]`, and creates a `Media` record in SQLite. `GET /api/media` lists all records. `DELETE /api/media/[id]` removes the file from disk and the DB record. Media page loads from API on mount, shows loading skeleton and empty state, uploads files on drop/select (sequential, one per file), and calls DELETE on the trash button. Mock `MEDIA_FILES` array removed.
+
+**VOLQ-022** · Users page wired to real Prisma User table. New `GET /api/users` route returns all users with role, status (`active`), and last-seen timestamp. Users page fetches on mount (with loading count), replaces `USERS` mock constant. `relativeTime()` formats the ISO `lastSeen` timestamp.
+
+**VOLQ-023** · Settings page wired to Prisma `Setting` model. New `GET /api/settings` route returns all settings as a flat `{key: value}` map. `PUT /api/settings` upserts any subset of keys using dot-notation (e.g. `site.name`, `email.smtpHost`). Settings page loads all values on mount, populates form fields from DB, and calls `PUT` on save with only the relevant group's keys. `setTimeout` stub removed. Save shows a 2-second success state.
+
+**VOLQ-024** · Roadmap updated with "Path to v1.0.0 Stable" section. Lists all remaining blockers (OAuth, RBAC enforcement, SDK publish, Bazarix marketplace, REST/GraphQL live-DB wiring) with status and task IDs. Items 1–4 (CRUD, media, users, settings) marked ✅.
+
 ### Added — May 22, 2026 (continued)
 
 **VOLQ-017** · RecentEntries dashboard widget wired to real Prisma data. Replaced hardcoded mock entries with `GET /api/dashboard/recent-entries` (last 5 `ContentEntry` records with content type name and author). Shows loading skeleton, "No entries yet" empty state with CTA when empty, or real rows with relative timestamps.
