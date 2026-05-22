@@ -19,6 +19,18 @@ Versions with neither label are stable.
 
 ---
 
+## [0.5.0-beta] — May 21, 2026
+
+Phase 2 beta release. Analytics widget, WCAG 2.1 AA accessibility, and npm-publish-ready SDK packages.
+
+### Added — May 21, 2026, 5:30 PM
+
+**VOLQ-011** · v0.5.0-beta release prep. Bumped `@volqan/admin`, `@volqan/extension-sdk`, and `@volqan/theme-sdk` to `0.5.0-beta`. Updated `roadmap.md` to mark the v0.5.0-beta Phase 2 release item as ✅. Tagged `v0.5.0-beta`.
+
+**VOLQ-012** · npm publish readiness for `@volqan/extension-sdk` and `@volqan/theme-sdk`. Fixed source file layout: both packages had sources at `src/src/` (double-nested) while `tsconfig.json` had `rootDir: "src"`, causing `tsc` to emit to `dist/src/` instead of `dist/`. Fixed by: (1) updating both tscconfigs to standalone (no `extends`) with `rootDir: "src/src"`, `include: ["src/src/**/*.ts"]`, `module: NodeNext`, `moduleResolution: NodeNext`, and `skipLibCheck: true` — this prevents pulling in `@volqan/core` workspace source files which are outside rootDir; (2) added `exports` field to both `package.json` files (`"." → import + types`); (3) added `README.md` to `files` array; (4) added "Publishing" section with `pnpm publish --dry-run --access public` instructions to both READMEs. Both packages now build cleanly: `dist/index.js` and `dist/index.d.ts` at package root.
+
+---
+
 ## [0.1.0-alpha] — May 21, 2026
 
 First public alpha release of Volqan. Core admin panel with authentication, SQLite database, content modeling, and full dashboard UI.

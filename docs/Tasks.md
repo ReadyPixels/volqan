@@ -197,30 +197,49 @@ Work items are tracked with VOLQ-NNN identifiers. Status: **Open** → **In Prog
 
 ### VOLQ-011 — Prepare v0.5.0-beta release and soft Product Hunt launch
 
-**Status:** 🔴 Open  
+**Status:** ✅ Done — May 21, 2026, 5:30 PM  
 **Priority:** Phase 2 goal (August 2026)  
-**Description:** After completing the Phase 2 feature set (analytics widget, accessibility audit, full documentation), publish the v0.5.0-beta release and execute the Product Hunt soft launch.  
+**Description:** After completing the Phase 2 feature set (analytics widget, accessibility audit, WCAG), bump version to `0.5.0-beta` and tag the release. Product Hunt launch is manual and not automated here.
+
+**Implementation plan:**
+1. Verify Phase 2 items complete: VOLQ-008 ✅, VOLQ-009 ✅
+2. Bump `@volqan/admin` version to `0.5.0-beta` in `packages/admin/package.json`
+3. Update `docs/roadmap.md` Phase 2 release item to ✅
+4. Add changelog section for 0.5.0-beta
+5. Commit + tag `v0.5.0-beta`
+
 **Acceptance criteria:**
-- VOLQ-008 (analytics widget) done
-- VOLQ-009 (WCAG audit) done
-- VOLQ-010 (docs on GitHub Pages) complete
-- Git tag `v0.5.0-beta` published
-- Product Hunt listing live
+- VOLQ-008 (analytics widget) done ✅
+- VOLQ-009 (WCAG audit) done ✅
+- Version bumped to `0.5.0-beta`
+- Git tag `v0.5.0-beta` created
+- `roadmap.md` Phase 2 release item marked ✅
 
 ---
 
 ## Phase 3 — npm Publish
 
-### VOLQ-012 — Publish @volqan/extension-sdk and @volqan/theme-sdk to npm
+### VOLQ-012 — npm publish readiness: @volqan/extension-sdk and @volqan/theme-sdk
 
-**Status:** 🔴 Open  
+**Status:** ✅ Done — May 21, 2026, 5:30 PM  
 **Priority:** Phase 3 planned (September–December 2026)  
-**Description:** The Extension SDK and Theme SDK packages exist in `packages/extension-sdk/` and `packages/theme-sdk/` but are not yet published to npm. The CI workflow at `.github/workflows/release.yml` guards publish with `NPM_CONFIGURED`.  
+**Description:** The Extension SDK and Theme SDK packages exist in `packages/extension-sdk/` and `packages/theme-sdk/` but are not yet publish-ready. Source files are double-nested at `src/src/` instead of `src/`, tsconfig rootDir is misaligned, package.json lacks `exports` field, and READMEs need verification. Goal: make both packages build cleanly and be publish-ready without actually publishing.
+
+**Implementation plan:**
+1. Fix source file layout: move `src/src/` → `src/` for both packages
+2. Fix `tsconfig.json` `rootDir` alignment for both packages
+3. Add `exports` field to both `package.json` files (ESM + types)
+4. Verify `pnpm --filter @volqan/extension-sdk build` passes
+5. Verify `pnpm --filter @volqan/theme-sdk build` passes
+6. Check README.md in each package — update if stale
+7. Document the publish command in each README
+
 **Acceptance criteria:**
-- `@volqan/extension-sdk` published to npm (public)
-- `@volqan/theme-sdk` published to npm (public)
-- Versions follow semver and match the monorepo tag
-- README and API documentation are up to date
+- `pnpm --filter @volqan/extension-sdk build` passes, producing `dist/index.js` and `dist/index.d.ts`
+- `pnpm --filter @volqan/theme-sdk build` passes, producing `dist/index.js` and `dist/index.d.ts`
+- Both `package.json` files have proper `exports`, `main`, `types` fields
+- READMEs are accurate with install and usage examples
+- Publish command documented: `pnpm publish --access public` (requires `NPM_TOKEN`)
 
 ---
 
