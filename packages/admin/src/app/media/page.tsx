@@ -226,8 +226,11 @@ export default function MediaPage() {
 
   const totalMB = files.reduce((sum, f) => {
     const num = parseFloat(f.size);
-    const unit = f.size.slice(-2);
-    return sum + (unit === 'MB' ? num : unit === 'KB' ? num / 1024 : num);
+    const trimmed = f.size.trimEnd();
+    if (trimmed.endsWith('MB')) return sum + num;
+    if (trimmed.endsWith('KB')) return sum + num / 1024;
+    if (trimmed.endsWith('GB')) return sum + num * 1024;
+    return sum + num / (1024 * 1024); // bytes
   }, 0);
 
   return (
