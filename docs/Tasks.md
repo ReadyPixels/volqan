@@ -288,4 +288,22 @@ Work items are tracked with VOLQ-NNN identifiers. Status: **Open** → **In Prog
 
 ---
 
+### VOLQ-017 — Wire RecentEntries dashboard widget to real Prisma data
+
+**Status:** ✅ Done — May 22, 2026, 10:20 AM  
+**File:** `packages/admin/src/components/dashboard/RecentEntries.tsx`  
+**Description:** The "Recent Entries" dashboard widget shows 5 hardcoded mock content entries. Real content entries should come from `ContentEntry` table via a new `/api/dashboard/recent-entries` route. Shows empty state when no entries exist.  
+**Acceptance criteria:** Widget shows real content entries from DB; shows a "No entries yet" empty state when empty; mock data removed.
+
+---
+
+### VOLQ-018 — Dashboard greeting uses hardcoded "Admin" name
+
+**Status:** ✅ Done — May 22, 2026, 10:20 AM  
+**File:** `packages/admin/src/app/page.tsx`  
+**Description:** The dashboard h1 says "Welcome back, Admin" with a hardcoded string. It should use the real user's display name from `/api/auth/me`, matching the TopBar which already does this.  
+**Acceptance criteria:** Dashboard greeting shows "Welcome back, [real name]" using the same `/api/auth/me` endpoint.
+
+---
+
 *Last updated: May 22, 2026.*

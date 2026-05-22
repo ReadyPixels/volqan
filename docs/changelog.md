@@ -17,6 +17,12 @@ Versions with neither label are stable.
 
 ## [Unreleased]
 
+### Added — May 22, 2026 (continued)
+
+**VOLQ-017** · RecentEntries dashboard widget wired to real Prisma data. Replaced hardcoded mock entries with `GET /api/dashboard/recent-entries` (last 5 `ContentEntry` records with content type name and author). Shows loading skeleton, "No entries yet" empty state with CTA when empty, or real rows with relative timestamps.
+
+**VOLQ-018** · Dashboard greeting now uses real user name. Extracted header into `DashboardGreeting` client component that fetches `/api/auth/me` on mount and displays "Welcome back, [name]" with the actual authenticated user's display name.
+
 ### Added — May 22, 2026
 
 **VOLQ-015** · Dashboard StatsCards wired to real Prisma data. Added `GET /api/dashboard/stats` route that queries Prisma for live counts: `contentEntries`, `media`, `extensions` (enabled), and `users`. `StatsCards` fetches this endpoint on mount and shows real values; sparklines remain as decorative trend visuals.
