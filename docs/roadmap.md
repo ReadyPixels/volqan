@@ -106,13 +106,13 @@ Open the ecosystem. Launch the marketplace. Reach v1.0.
 
 | Status | Item |
 |---|---|
-| 🔄 | Extension SDK (`@volqan/extension-sdk`) published to npm — SDK built, not yet published |
-| 🔄 | Theme SDK (`@volqan/theme-sdk`) published to npm — SDK built, not yet published |
+| 🔄 | Extension SDK (`@volqan/extension-sdk`) publish-ready — awaiting npm credentials to publish |
+| 🔄 | Theme SDK (`@volqan/theme-sdk`) publish-ready — awaiting npm credentials to publish |
 | ✅ | CLI command: `npx create-volqan-app --extension my-extension` scaffolding |
 | ✅ | Full developer documentation for building and publishing extensions |
 | ✅ | Full developer documentation for building and publishing themes |
+| ✅ | Extension Manager deep link to Bazarix marketplace live in admin panel |
 | 📋 | Bazarix marketplace platform launched (private beta for approved sellers) |
-| 📋 | Extension Manager deep link to Bazarix marketplace live in admin panel |
 | 📋 | Seller onboarding and approval workflow in Bazarix |
 | 📋 | License key system: `MKT-[PRODUCT_ID]-[INSTALL_ID]-[EXPIRY_HASH]` format |
 | 📋 | License validation API: `GET /api/v1/license/validate` (server-side only) |
