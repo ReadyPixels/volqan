@@ -88,7 +88,7 @@ All outstanding work identified across the codebase audit (May 2026).
 - [x] Full audit log — `src/lib/audit.ts` helper wired into content create/update/delete and user create/update/delete routes; `GET /api/audit-log` with pagination and filters (`packages/admin`)
 - [x] SSO support: SAML 2.0 and LDAP/Active Directory — `GET/POST /api/auth/sso` config endpoints; SAML ACS skeleton at `/api/auth/sso/saml/acs`; LDAP test at `/api/auth/sso/ldap/test`; awaits `node-saml`/`ldapts` packages for full validation (`packages/admin`)
 - [x] Redis caching layer for content API — `src/lib/cache.ts` with Redis (`REDIS_URL` env) + in-process LRU fallback; `cached()` wrapper used on content list route; cache flushed on write (`packages/admin`)
-- [ ] **v1.5.0** release — pending Phase 4 feature completion
+- [x] **v1.5.0** release — published at <https://github.com/ReadyPixels/volqan/releases/tag/v1.5.0>; SAML ACS (node-saml v3), LDAP test (ldapts), Redis cache, webhooks, content scheduling, workflow engine, analytics, license system, audit log, invite email, WCAG 2.1 AA
 
 ---
 
