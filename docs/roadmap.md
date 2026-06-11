@@ -140,7 +140,7 @@ Enterprise-readiness, internationalization, and the Pro product line.
 | 📋 | Pro version feature differentiation planning and architecture |
 | 📋 | Hosted/Cloud version infrastructure design (multi-tenant) |
 | 📋 | Enterprise license tier — white-label, SLA, dedicated support |
-| 📋 | Multilingual and i18n support built into core (content translation, admin UI localization) |
+| 📋 | Arabic and English locale support — RTL layout and translation strings for admin UI |
 | 📋 | Advanced content workflow engine — draft/review/publish approval chains |
 | 📋 | Content scheduling — publish and unpublish at a specific date and time |
 | 📋 | Outbound webhook system — trigger HTTP events on content changes |

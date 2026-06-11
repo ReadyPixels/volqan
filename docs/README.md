@@ -124,7 +124,7 @@ volqan/
 
 ### Phase 4 — Pro and Growth
 - Plan feature boundaries for Pro and hosted offerings
-- Add multilingual support, advanced workflows, outbound webhooks, audit logs, and enterprise auth
+- Add Arabic/English locale support (RTL layout), advanced workflows, outbound webhooks, audit logs, and enterprise auth
 - Introduce scaling infrastructure such as Redis-backed caching
 - Grow toward v1.5.0 and broader commercial adoption
 

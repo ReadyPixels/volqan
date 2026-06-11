@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { db } from '@volqan/core';
 import { getSessionUser, json, unauthorized, badRequest, internalError } from '@/lib/api-helpers';
+import path from 'node:path';
 
 export async function GET(request: NextRequest): Promise<Response> {
   const user = await getSessionUser(request);
@@ -12,8 +13,11 @@ export async function GET(request: NextRequest): Promise<Response> {
   const folder = searchParams.get('folder') ?? undefined;
   const search = searchParams.get('search') ?? undefined;
 
+  const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN';
+
   try {
     const where = {
+      ...(isAdmin ? {} : { uploadedById: user.id }),
       ...(folder ? { folder } : {}),
       ...(search ? { filename: { contains: search, mode: 'insensitive' as const } } : {}),
     };
@@ -62,22 +66,30 @@ export async function POST(request: NextRequest): Promise<Response> {
     return badRequest('File exceeds the 10 MB size limit.');
   }
 
+  const uploadRoot = path.resolve(process.env.VOLQAN_UPLOAD_DIR ?? './public/uploads');
+  const normalizedFolder = normalizeUploadFolder(folder);
+  const targetDir = path.resolve(uploadRoot, normalizedFolder);
+
+  if (!isWithinRoot(uploadRoot, targetDir)) {
+    return badRequest('Invalid upload folder.');
+  }
+
+  if (!isAllowedUpload(file.name, file.type)) {
+    return badRequest('Unsupported file type.');
+  }
+
   try {
-    const uploadDir = process.env.VOLQAN_UPLOAD_DIR ?? './public/uploads';
     const { writeFile, mkdir } = await import('node:fs/promises');
-    const path = await import('node:path');
     const crypto = await import('node:crypto');
 
-    const ext = path.extname(file.name);
+    const ext = path.extname(file.name).toLowerCase();
     const unique = crypto.randomUUID();
     const filename = `${unique}${ext}`;
-    const folderPath = path.join(uploadDir, folder.replace(/^\//, ''));
-
-    await mkdir(folderPath, { recursive: true });
+    await mkdir(targetDir, { recursive: true });
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(folderPath, filename), buffer);
+    await writeFile(path.join(targetDir, filename), buffer);
 
-    const publicUrl = `/uploads/${folder.replace(/^\//, '')}/${filename}`.replace(/\/\//g, '/');
+    const publicUrl = `/uploads/${normalizedFolder ? `${normalizedFolder}/` : ''}${filename}`.replace(/\/\//g, '/');
 
     const record = await db.media.create({
       data: {
@@ -97,4 +109,32 @@ export async function POST(request: NextRequest): Promise<Response> {
     console.error('[media POST]', err);
     return internalError();
   }
+}
+
+function normalizeUploadFolder(folder: string): string {
+  return folder
+    .replace(/^\/+/, '')
+    .replace(/\/+$/, '')
+    .replace(/\.\./g, '')
+    .replace(/[^a-zA-Z0-9/_-]/g, '');
+}
+
+function isWithinRoot(root: string, candidate: string): boolean {
+  const relative = path.relative(root, candidate);
+  return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
+function isAllowedUpload(fileName: string, mimeType: string): boolean {
+  const ext = path.extname(fileName).toLowerCase();
+  const safeExtensions = new Set([
+    '.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif',
+    '.mp4', '.mov', '.webm', '.mp3', '.wav', '.pdf',
+  ]);
+  const blockedExtensions = new Set(['.html', '.htm', '.svg', '.xml', '.mhtml', '.xhtml']);
+
+  if (blockedExtensions.has(ext)) return false;
+  if (safeExtensions.has(ext)) return true;
+
+  const allowedMimePrefixes = ['image/', 'video/', 'audio/'];
+  return allowedMimePrefixes.some((prefix) => mimeType.startsWith(prefix)) || mimeType === 'application/pdf';
 }

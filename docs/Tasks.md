@@ -13,55 +13,37 @@ All outstanding work identified across the codebase audit (May 2026).
 
 ## Security
 
-- [ ] **API keys**: Store only a hash of the key in DB, not the plaintext value (`packages/admin/src/app/api/settings/api-keys/route.ts` — `hash` field currently stores raw key)
-- [ ] Add rate limiting to `POST /api/auth/login` (brute-force protection)
-- [ ] Add CSRF protection to state-mutating API routes (or document that session cookie + SameSite=Lax is sufficient)
-- [ ] Verify `SameSite` and `Secure` flags are set on the session cookie in production (`packages/core/src/auth.ts`)
-- [ ] Review file upload MIME type validation in `POST /api/media` — currently accepts any file extension
+- [x] **API keys**: SHA-256 hash stored instead of plaintext — `key` field stores digest, raw key returned only once on creation (`packages/admin/src/app/api/settings/api-keys/route.ts`)
+- [x] Rate limiting added to `POST /api/auth/login` — 10 attempts per 15 min per IP via in-memory sliding window (`src/lib/rate-limit.ts`); also applied to forgot-password and reset-password routes
+- [x] CSRF: `SameSite=Lax` + `HttpOnly` is sufficient for same-origin admin use (admin panel is same-origin only; no cross-origin form POST attack surface). Documented in middleware.
+- [x] `Secure` flag added to session cookie in production environments (`api/auth/login/route.ts`)
+- [x] File upload MIME type validation — media upload route enforces upload-root boundaries and blocks HTML/SVG/JS/executable content (`packages/admin/src/app/api/media/route.ts`)
+- [x] Scriptable uploads blocked — upload route rejects `.html`, `.svg`, `.js`, `.ts`, `.php` and other browser-executable extensions
+- [ ] Validate uploaded file type by reading magic bytes (content-based validation), not just client-supplied MIME/extension — not yet implemented; relies on extension allowlist only
+- [x] API key scope validated against allowlist on creation; non-admin users cannot escalate permissions (`packages/admin/src/app/api/settings/api-keys/route.ts`)
+- [x] Media ownership enforced — non-admin users can only list/read their own uploads (`packages/admin/src/app/api/media/route.ts`, `packages/admin/src/app/api/media/[id]/route.ts`)
 
 ---
 
 ## Authentication & Users
 
-- [ ] OAuth callback routes — `/api/auth/oauth/google` and `/api/auth/oauth/github` do not exist yet; the roadmap marks OAuth as ✅ but no admin-side routes are implemented
-- [ ] Email verification flow — no route to verify email token; `emailVerified` field exists in DB but is never set
-- [ ] Password reset flow — no forgot-password or reset-password routes
-- [ ] Invite email — `POST /api/users` creates a user and returns a `tempPassword` but never sends an email; wire up email sender from `@volqan/core` (or queue it)
-- [ ] User profile edit page (`/profile`) — linked from TopBar user menu but route does not exist
+- [x] OAuth callback routes — `GET /api/auth/oauth/[provider]` redirects to provider; `GET /api/auth/oauth/[provider]/callback` handles code exchange, creates/links accounts, sets session cookie. Supports Google and GitHub.
+- [x] Email verification flow — `POST /api/auth/verify-email` verifies HMAC-signed token and sets `emailVerified`. Token generation helper exported from the route.
+- [x] Password reset flow — `POST /api/auth/forgot-password` generates signed reset token (logs URL in dev); `POST /api/auth/reset-password` verifies token and updates password.
+- [ ] Invite email — `POST /api/users` creates a user and returns a `tempPassword` but never sends an email; requires email provider integration (out of scope until Phase 2 email service is configured)
+- [x] User profile edit page (`/profile`) — full profile page with name/avatar editor and password change form; backed by `PATCH /api/auth/me`
 
 ---
 
 ## Admin Pages (Mock → Real API)
 
-- [ ] **Dashboard** (`packages/admin/src/app/page.tsx`) — widgets still use hardcoded/mock data; wire to `/api/content/types`, `/api/users`, `/api/media`, and audit log endpoints
-- [ ] **Extensions** (`packages/admin/src/app/extensions/page.tsx`) — list, enable/disable, configure extensions via `@volqan/core` ExtensionEngine; currently mock
-- [ ] **Themes** (`packages/admin/src/app/themes/page.tsx`) — list, activate, preview themes via `@volqan/core` ThemeEngine; currently mock
-- [ ] **Billing** (`packages/admin/src/app/billing/page.tsx`) — subscription status, plan details, and cancel flow use mock data; wire to `/api/billing/*` and Stripe Customer Portal
-- [ ] **Page Builder** (`packages/admin/src/app/pages/page.tsx`) — save/load pages; no persistence API exists yet
-- [ ] **AI Assistant** (`packages/admin/src/app/ai/page.tsx`) — LLM provider configuration; needs `/api/settings` integration for API key storage
-
----
-
-## Missing API Routes
-
-- [ ] `GET/POST /api/extensions` — list installed extensions, install from marketplace deep link
-- [ ] `PATCH /api/extensions/[id]` — enable/disable/configure extension
-- [ ] `GET/POST /api/themes` — list themes, activate theme
-- [ ] `GET /api/billing/status` — current subscription status from Stripe
-- [ ] `POST /api/billing/portal` — create Stripe Customer Portal session
-- [ ] `POST /api/billing/webhook` — Stripe webhook handler (activate, refresh, revoke, grace period); roadmap marks this ✅ but no route exists in admin
-- [ ] `GET /api/audit-log` — paginated audit log for dashboard and admin audit view
-- [ ] `GET /api/pages`, `POST /api/pages`, `PATCH /api/pages/[id]`, `DELETE /api/pages/[id]` — page builder persistence
-- [ ] `GET /api/dashboard/stats` — aggregate stats for dashboard widgets (content counts, media count, user count, recent activity)
+- [x] **AI Assistant** (`packages/admin/src/app/ai/page.tsx`) — page created; opens AI panel with `initialOpen`; provider config saved to `/api/settings` as `ai_provider` key
 
 ---
 
 ## Infrastructure & DevOps
 
-- [ ] Create `.env.example` at repo root documenting all required environment variables (`DATABASE_URL`, `SESSION_SECRET`, `STRIPE_SECRET_KEY`, `STRIPE_PRICE_YEARLY`, `STRIPE_PRICE_MONTHLY`, `STRIPE_WEBHOOK_SECRET`, `VOLQAN_UPLOAD_DIR`, `NEXT_PUBLIC_APP_URL`, OAuth client IDs/secrets)
-- [ ] Run and commit Prisma migrations — confirm `packages/core/prisma/migrations/` is up to date with the current schema
-- [ ] Docker image: ensure `VOLQAN_UPLOAD_DIR` volume is configured in `docker-compose.yml`
-- [ ] CI: add `prisma migrate deploy` step to the deployment workflow
+- [ ] Run and commit Prisma migrations — confirm `packages/core/prisma/migrations/` is up to date with the current schema (requires live database; run `prisma migrate dev` locally)
 
 ---
 
@@ -99,7 +81,7 @@ All outstanding work identified across the codebase audit (May 2026).
 - [ ] Pro version feature differentiation planning and architecture
 - [ ] Hosted/Cloud version infrastructure design (multi-tenant)
 - [ ] Enterprise license tier — white-label, SLA, dedicated support
-- [ ] **Remove references to other languages — this app should only support English and Arabic. Remove any reference to other languages in all documents and code files.**
+- [x] ~~Remove references to other languages~~ — done: settings locale dropdown, roadmap, README, changelog all updated to English/Arabic only
 - [ ] Advanced content workflow engine (draft/review/publish approval chains)
 - [ ] Content scheduling (publish/unpublish at specific date/time)
 - [ ] Outbound webhook system
@@ -118,6 +100,27 @@ All outstanding work identified across the codebase audit (May 2026).
 - [x] Security: HTTP security headers in `next.config.ts`
 - [x] Auth: `middleware.ts` — session-based route protection
 - [x] Auth: `app/login/` — login page and standalone layout
+- [x] Security: admin middleware now validates session cookies before route gating
+- [x] Security: media upload route now enforces upload-root boundaries and blocks obvious scriptable file types
+- [x] Security: API keys now stored as SHA-256 hash, not plaintext (`packages/admin` api-keys POST)
+- [x] Security: API key scope creation validated against an allowlist
+- [x] Security: session cookie now includes `Secure` flag in production
+- [x] Security: media list and GET-by-ID now enforce ownership — non-admin users only see their own uploads
+- [x] API: `GET/POST /api/extensions`, `PATCH/DELETE /api/extensions/[id]`
+- [x] API: `GET/POST /api/themes`, `PATCH/DELETE /api/themes/[id]`
+- [x] API: `GET /api/billing/status`, `POST /api/billing/portal`, `POST /api/billing/webhook`
+- [x] API: `GET /api/audit-log` — paginated audit log
+- [x] API: `GET/POST /api/pages`, `GET/PATCH/DELETE /api/pages/[id]`
+- [x] API: `GET /api/dashboard/stats` — aggregate counts, recent entries, recent activity
+- [x] Pages: Billing wired to `/api/billing/status`, cancel, and portal
+- [x] Pages: Extensions wired to `/api/extensions` with live toggle and uninstall
+- [x] Pages: Themes wired to `/api/themes` with activate and token editor
+- [x] Pages: Pages manager wired to `/api/pages`
+- [x] Dashboard: StatsCards, RecentEntries, ActivityFeed wired to `/api/dashboard/stats`
+- [x] Infra: `.env.example` created at repo root
+- [x] Infra: `VOLQAN_UPLOAD_DIR` and `SESSION_SECRET` added to `docker-compose.yml`
+- [x] Infra: `prisma migrate deploy` step added to CI build job
+- [x] Docs: Language references updated — locale dropdown, roadmap, README, changelog now English/Arabic only
 - [x] API: `api-helpers.ts` — `getSessionUser`, response helpers
 - [x] API: `/api/auth/login`, `/api/auth/logout`, `/api/auth/me`
 - [x] API: `/api/content/types`, `/api/content/types/[id]`

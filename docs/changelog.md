@@ -19,9 +19,47 @@ Versions with neither label are stable.
 
 Changes staged for the next release are tracked here before a version number is assigned.
 
+### Added
+
+- Added `GET /api/auth/oauth/[provider]` — OAuth redirect initiation for Google and GitHub with CSRF state cookie (packages/admin)
+- Added `GET /api/auth/oauth/[provider]/callback` — OAuth code exchange, account linking, and session creation (packages/admin)
+- Added `POST /api/auth/forgot-password` — generates HMAC-signed time-limited reset token; logs URL in development (packages/admin)
+- Added `POST /api/auth/reset-password` — verifies reset token and updates user password (packages/admin)
+- Added `POST /api/auth/verify-email` — verifies HMAC-signed email token and sets `emailVerified` timestamp (packages/admin)
+- Added `PATCH /api/auth/me` — profile update (name, avatar) and password change with current-password verification (packages/admin)
+- Added `/profile` page — account info, profile editor, and password change form (packages/admin)
+- Added `/ai` page — AI assistant with `initialOpen`, wired to save provider config to `/api/settings` (packages/admin)
+- Added `/forgot-password` and `/reset-password` pages with standalone layouts (packages/admin)
+- Added Google and GitHub OAuth buttons to login page (packages/admin)
+- Added "Forgot password?" link to login form (packages/admin)
+
+### Added (previous session)
+
+- Added `GET/POST /api/extensions` and `PATCH/DELETE /api/extensions/[id]` — full extension lifecycle management (packages/admin)
+- Added `GET/POST /api/themes` and `PATCH/DELETE /api/themes/[id]` — theme install, activation, and token editing (packages/admin)
+- Added `GET /api/billing/status`, `POST /api/billing/portal`, `POST /api/billing/webhook` — Stripe billing integration (packages/admin)
+- Added `GET /api/audit-log` — paginated audit log for admin and dashboard (packages/admin)
+- Added `GET/POST /api/pages` and `GET/PATCH/DELETE /api/pages/[id]` — page builder persistence via core PageRepository (packages/admin)
+- Added `GET /api/dashboard/stats` — aggregate counts, recent entries, and activity feed (packages/admin)
+- Wired Billing page to `/api/billing/status`, cancel, and Stripe Customer Portal (packages/admin)
+- Wired Extensions page to `/api/extensions` with live enable/disable toggle and uninstall (packages/admin)
+- Wired Themes page to `/api/themes` with activate and token editor persistence (packages/admin)
+- Wired Pages manager to `/api/pages` replacing mock data (packages/admin)
+- Wired dashboard StatsCards, RecentEntries, and ActivityFeed to `/api/dashboard/stats` (packages/admin)
+- Added `.env.example` at repo root documenting all required environment variables
+- Added `SESSION_SECRET` and `VOLQAN_UPLOAD_DIR` environment variables to `docker-compose.yml`
+- Added `prisma migrate deploy` step to CI build job
+- Restricted locale selector to English and Arabic only — removed French, German, Spanish options (packages/admin settings)
+- Updated roadmap, README, and changelog to replace multilingual/i18n references with English/Arabic scope
+
 ### Security
 
-**Admin Panel (`packages/admin`)**
+- Added in-memory sliding-window rate limiter (`src/lib/rate-limit.ts`) applied to login (10/15 min), forgot-password (5/15 min), and reset-password (10/15 min) endpoints (packages/admin)
+- Extended `PUBLIC_PATHS` in middleware to allow OAuth, forgot-password, reset-password, and verify-email routes without session (packages/admin)
+- Fixed API key storage — `hash` field now stores a SHA-256 digest of the raw key instead of the plaintext value (`api-keys/route.ts`)
+- Added scope allowlist validation on API key creation — rejects unknown or unauthorized scope values
+- Added `Secure` cookie flag to session cookie in production environments (`api/auth/login/route.ts`)
+- Added ownership enforcement to `GET /api/media` and `GET /api/media/[id]` — non-admin users can only list and access their own uploads
 - Fixed XSS vulnerability in `HtmlBlock` and `RichTextBlock` page builder components — raw HTML from block props was passed directly to `dangerouslySetInnerHTML`; replaced with an allowlist-based `sanitizeHtml()` function that strips disallowed tags and removes all `on*` event handler and `javascript:` attributes
 - Fixed XSS vulnerability in `AIMessage` markdown renderer — user-supplied content was regex-substituted then passed to `dangerouslySetInnerHTML` without escaping, allowing injected HTML and `javascript:` link URIs; input is now HTML-escaped before pattern matching and link `href` values are validated to `http`/`https` only
 - Fixed `rel="noopener noreferrer"` missing `noreferrer` on AI-generated external links (previously only `noopener`), which allowed target pages to read the `Referer` header
@@ -338,7 +376,7 @@ Changes staged for the next release are tracked here before a version number is 
 | v0.1.0-alpha | Phase 1 | June 2026 | First runnable release — database layer, auth, CRUD, APIs, Docker, CLI |
 | v0.5.0-beta | Phase 2 | August 2026 | Full-featured beta — page builder, AI assistant, Stripe, first-party extensions |
 | v1.0.0 | Phase 3 | December 2026 | Stable release — marketplace live, SDK on npm, community ecosystem |
-| v1.5.0 | Phase 4 | June 2027 | Enterprise features — i18n, workflows, audit log, SSO, Redis |
+| v1.5.0 | Phase 4 | June 2027 | Enterprise features — Arabic/English locale, workflows, audit log, SSO, Redis |
 
 ---
 
