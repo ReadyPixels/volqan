@@ -244,9 +244,6 @@ export default function SettingsPage() {
                 className="w-full h-9 rounded-md border border-[hsl(var(--input))] bg-[hsl(var(--background))] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))]"
               >
                 <option value="en">English (en)</option>
-                <option value="fr">French (fr)</option>
-                <option value="de">German (de)</option>
-                <option value="es">Spanish (es)</option>
                 <option value="ar">Arabic (ar)</option>
               </select>
             </div>

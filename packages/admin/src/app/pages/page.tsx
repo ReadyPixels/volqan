@@ -1,70 +1,42 @@
-/**
- * @file app/pages/page.tsx
- * @description Page manager — list, create, and delete pages.
- */
+'use client';
 
-import type React from 'react';
+import * as React from 'react';
 import Link from 'next/link';
 import {
-  Plus,
-  FileText,
-  Globe,
-  Clock,
-  Archive,
-  Pencil,
-  Eye,
-  MoreHorizontal,
-  Calendar,
+  Plus, FileText, Globe, Clock, Archive,
+  Pencil, Eye, MoreHorizontal, Calendar,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-
-// ---------------------------------------------------------------------------
-// Mock page data (replace with real API calls)
-// ---------------------------------------------------------------------------
-
-type PageStatus = 'draft' | 'published' | 'scheduled' | 'archived';
-
-interface MockPage {
-  id: string;
-  title: string;
-  slug: string;
-  status: PageStatus;
-  blocks: number;
-  author: string;
-  updatedAt: string;
-  publishedAt?: string;
-}
-
-const MOCK_PAGES: MockPage[] = [
-  { id: '1', title: 'Home', slug: '/', status: 'published', blocks: 12, author: 'Alice', updatedAt: '2 hours ago', publishedAt: 'Jan 15, 2025' },
-  { id: '2', title: 'About Us', slug: '/about', status: 'published', blocks: 8, author: 'Bob', updatedAt: '1 day ago', publishedAt: 'Jan 10, 2025' },
-  { id: '3', title: 'Pricing', slug: '/pricing', status: 'draft', blocks: 5, author: 'Alice', updatedAt: '3 days ago' },
-  { id: '4', title: 'Contact', slug: '/contact', status: 'published', blocks: 3, author: 'Charlie', updatedAt: '5 days ago', publishedAt: 'Dec 20, 2024' },
-  { id: '5', title: 'Summer Campaign 2025', slug: '/summer-2025', status: 'scheduled', blocks: 7, author: 'David', updatedAt: '1 week ago' },
-  { id: '6', title: 'Old Landing Page', slug: '/old-landing', status: 'archived', blocks: 4, author: 'Alice', updatedAt: '3 months ago' },
-];
+import type { Page, PageStatus } from '@volqan/core';
 
 const STATUS_CONFIG: Record<PageStatus, { label: string; variant: 'success' | 'default' | 'info' | 'warning'; icon: React.ComponentType<{ className?: string }> }> = {
-  published: { label: 'Published', variant: 'success', icon: Globe },
-  draft: { label: 'Draft', variant: 'default', icon: FileText },
-  scheduled: { label: 'Scheduled', variant: 'info', icon: Calendar },
-  archived: { label: 'Archived', variant: 'warning', icon: Archive },
+  published: { label: 'Published', variant: 'success',  icon: Globe },
+  draft:     { label: 'Draft',     variant: 'default',  icon: FileText },
+  scheduled: { label: 'Scheduled', variant: 'info',     icon: Calendar },
+  archived:  { label: 'Archived',  variant: 'warning',  icon: Archive },
 };
 
-// ---------------------------------------------------------------------------
-// Page manager component
-// ---------------------------------------------------------------------------
-
 export default function PagesPage() {
-  const published = MOCK_PAGES.filter((p) => p.status === 'published').length;
-  const drafts = MOCK_PAGES.filter((p) => p.status === 'draft').length;
-  const scheduled = MOCK_PAGES.filter((p) => p.status === 'scheduled').length;
+  const [pages, setPages] = React.useState<Page[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    fetch('/api/pages?perPage=100')
+      .then((r) => r.json() as Promise<{ data: Page[] }>)
+      .then(({ data }) => setPages(data))
+      .catch(() => setError('Failed to load pages.'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const published = pages.filter((p) => p.status === 'published').length;
+  const drafts    = pages.filter((p) => p.status === 'draft').length;
+  const scheduled = pages.filter((p) => p.status === 'scheduled').length;
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Header */}
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[hsl(var(--foreground))] tracking-tight">Pages</h1>
@@ -80,13 +52,18 @@ export default function PagesPage() {
         </Link>
       </div>
 
-      {/* Stats */}
+      {error && (
+        <div className="p-4 rounded-lg border border-[hsl(var(--destructive)/0.3)] bg-[hsl(var(--destructive)/0.08)] text-sm text-[hsl(var(--destructive))]">
+          {error}
+        </div>
+      )}
+
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Total Pages', value: MOCK_PAGES.length, icon: FileText, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-          { label: 'Published', value: published, icon: Globe, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
-          { label: 'Drafts', value: drafts, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
-          { label: 'Scheduled', value: scheduled, icon: Calendar, color: 'text-violet-500', bg: 'bg-violet-50 dark:bg-violet-900/20' },
+          { label: 'Total Pages', value: pages.length, icon: FileText, color: 'text-blue-500',    bg: 'bg-blue-50 dark:bg-blue-900/20' },
+          { label: 'Published',   value: published,    icon: Globe,    color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+          { label: 'Drafts',      value: drafts,       icon: Clock,    color: 'text-amber-500',   bg: 'bg-amber-50 dark:bg-amber-900/20' },
+          { label: 'Scheduled',   value: scheduled,    icon: Calendar, color: 'text-violet-500',  bg: 'bg-violet-50 dark:bg-violet-900/20' },
         ].map((stat) => {
           const Icon = stat.icon;
           return (
@@ -105,15 +82,27 @@ export default function PagesPage() {
         })}
       </div>
 
-      {/* Pages list */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle>All Pages</CardTitle>
           <CardDescription>Click a page to open the visual builder</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
+          {loading && (
+            <p className="px-6 py-8 text-sm text-[hsl(var(--muted-foreground))]">Loading...</p>
+          )}
+          {!loading && pages.length === 0 && !error && (
+            <div className="px-6 py-12 text-center">
+              <FileText className="w-10 h-10 text-[hsl(var(--muted-foreground))] mx-auto mb-3" />
+              <p className="text-sm font-medium mb-1">No pages yet</p>
+              <p className="text-xs text-[hsl(var(--muted-foreground))] mb-4">Create your first page with the visual builder.</p>
+              <Link href="/pages/new">
+                <Button size="sm" className="gap-1.5"><Plus className="w-3.5 h-3.5" /> New Page</Button>
+              </Link>
+            </div>
+          )}
           <div className="divide-y divide-[hsl(var(--border))]">
-            {MOCK_PAGES.map((page) => {
+            {pages.map((page) => {
               const statusConfig = STATUS_CONFIG[page.status];
               const StatusIcon = statusConfig.icon;
               return (
@@ -121,37 +110,30 @@ export default function PagesPage() {
                   key={page.id}
                   className="flex items-center gap-4 px-6 py-4 hover:bg-[hsl(var(--accent))] transition-colors group"
                 >
-                  {/* Status icon */}
                   <div className="w-8 h-8 rounded-md bg-[hsl(var(--muted))] flex items-center justify-center flex-shrink-0">
                     <StatusIcon className="w-4 h-4 text-[hsl(var(--muted-foreground))]" />
                   </div>
-
-                  {/* Page info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-[hsl(var(--foreground))] truncate">
-                        {page.title}
-                      </p>
+                      <p className="text-sm font-medium text-[hsl(var(--foreground))] truncate">{page.title}</p>
                       <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
                     </div>
                     <div className="flex items-center gap-3 mt-0.5">
                       <p className="text-xs text-[hsl(var(--muted-foreground))]">{page.slug}</p>
                       <span className="text-xs text-[hsl(var(--muted-foreground))]">·</span>
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">{page.blocks} blocks</p>
-                      <span className="text-xs text-[hsl(var(--muted-foreground))]">·</span>
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">{page.author}</p>
+                      <p className="text-xs text-[hsl(var(--muted-foreground))]">{page.blocks.length} blocks</p>
                     </div>
                   </div>
-
-                  {/* Updated at */}
                   <div className="hidden sm:block text-right flex-shrink-0">
-                    <p className="text-xs text-[hsl(var(--muted-foreground))]">Updated {page.updatedAt}</p>
+                    <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                      Updated {new Date(page.updatedAt).toLocaleDateString()}
+                    </p>
                     {page.publishedAt && (
-                      <p className="text-xs text-emerald-600 dark:text-emerald-400">Published {page.publishedAt}</p>
+                      <p className="text-xs text-emerald-600 dark:text-emerald-400">
+                        Published {new Date(page.publishedAt).toLocaleDateString()}
+                      </p>
                     )}
                   </div>
-
-                  {/* Actions */}
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Link href={`/pages/${page.id}`}>
                       <Button variant="ghost" size="icon" className="h-7 w-7" title="Edit page">

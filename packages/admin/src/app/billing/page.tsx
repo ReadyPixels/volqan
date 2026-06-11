@@ -1,17 +1,5 @@
 'use client';
 
-/**
- * @file app/billing/page.tsx
- * @description Admin billing page — plan management, invoice history, and fee disclosure.
- *
- * Shows:
- * - Current plan + subscription status
- * - Attribution removal indicator
- * - Plan comparison table (upgrade / downgrade)
- * - Invoice history
- * - Platform Service Fee explanation
- */
-
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { SubscriptionStatus } from '@/components/billing/SubscriptionStatus';
@@ -21,51 +9,6 @@ import { FeeBreakdown } from '@/components/billing/FeeBreakdown';
 import type { InvoiceRow } from '@/components/billing/InvoiceTable';
 import type { SubscriptionStatusType } from '@/components/billing/SubscriptionStatus';
 
-// ---------------------------------------------------------------------------
-// Mock data — replace with real API calls
-// ---------------------------------------------------------------------------
-
-// These values would normally come from your backend API:
-//   GET /api/billing/subscription
-//   GET /api/billing/invoices
-
-const MOCK_SUBSCRIPTION = {
-  status: 'active' as SubscriptionStatusType,
-  planId: 'support-yearly',
-  planName: 'Support Plan — Yearly',
-  planPriceCents: 4800,           // $48.00/year — owner-configured
-  monthlyPriceCents: 500,         // (4800 / 12) * 1.25 = 500
-  nextBillingDate: 'May 5, 2027',
-  cancelAtPeriodEnd: false,
-  attributionRemoved: true,
-  billingPortalUrl: '',
-};
-
-const MOCK_INVOICES: InvoiceRow[] = [
-  {
-    id: 'inv_1',
-    date: 'May 5, 2026',
-    description: 'Support Plan — Yearly',
-    amount: 4800,
-    serviceFee: 530,
-    total: 5330,
-    currency: 'usd',
-    status: 'paid',
-    downloadUrl: '#',
-  },
-  {
-    id: 'inv_2',
-    date: 'May 5, 2025',
-    description: 'Support Plan — Yearly',
-    amount: 4800,
-    serviceFee: 530,
-    total: 5330,
-    currency: 'usd',
-    status: 'paid',
-    downloadUrl: '#',
-  },
-];
-
 const PLAN_FEATURES = [
   'Priority email support',
   'Attribution removal',
@@ -74,31 +17,41 @@ const PLAN_FEATURES = [
 ];
 
 function formatUsd(cents: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(cents / 100);
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
 }
 
 function calculateFee(baseCents: number): number {
   return 50 + Math.floor(baseCents * 0.1);
 }
 
-// ---------------------------------------------------------------------------
-// Page
-// ---------------------------------------------------------------------------
+interface BillingStatus {
+  status: SubscriptionStatusType | 'none';
+  plan: string;
+  planName: string | null;
+  nextBillingDate: string | null;
+  cancelAtPeriodEnd: boolean;
+  attributionRemoved: boolean;
+  billingPortalUrl: string | null;
+  invoices: InvoiceRow[];
+}
+
+const YEARLY_PRICE_CENTS = 4800;
+const MONTHLY_PRICE_CENTS = 500;
 
 export default function BillingPage() {
   const router = useRouter();
+  const [status, setStatus] = React.useState<BillingStatus | null>(null);
+  const [loading, setLoading] = React.useState(true);
   const [actionLoading, setActionLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
-  // In a real implementation, these would come from useQuery / SWR / fetch
-  const subscription = MOCK_SUBSCRIPTION;
-  const invoices = MOCK_INVOICES;
-  const hasSubscription = subscription.status !== 'none';
-
-  const yearlyFee = calculateFee(subscription.planPriceCents);
-  const monthlyFee = calculateFee(subscription.monthlyPriceCents);
+  React.useEffect(() => {
+    fetch('/api/billing/status')
+      .then((r) => r.json() as Promise<{ data: BillingStatus }>)
+      .then(({ data }) => setStatus(data))
+      .catch(() => setError('Failed to load billing information.'))
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleUpgrade = (planId: string) => {
     router.push(`/billing/checkout?plan=${planId}`);
@@ -107,111 +60,111 @@ export default function BillingPage() {
   const handleCancel = async () => {
     if (!confirm('Cancel your subscription at the end of the current billing period?')) return;
     setActionLoading(true);
-    // TODO: call POST /api/billing/cancel
-    await new Promise((r) => setTimeout(r, 800));
-    setActionLoading(false);
+    try {
+      await fetch('/api/billing/cancel', { method: 'POST' });
+      const r = await fetch('/api/billing/status');
+      const { data } = (await r.json()) as { data: BillingStatus };
+      setStatus(data);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
-  const handleReactivate = async () => {
+  const handlePortal = async () => {
     setActionLoading(true);
-    // TODO: call POST /api/billing/reactivate
-    await new Promise((r) => setTimeout(r, 800));
-    setActionLoading(false);
+    try {
+      const r = await fetch('/api/billing/portal', { method: 'POST' });
+      const { url } = (await r.json()) as { url?: string };
+      if (url) window.location.href = url;
+    } finally {
+      setActionLoading(false);
+    }
   };
+
+  const yearlyFee = calculateFee(YEARLY_PRICE_CENTS);
+  const monthlyFee = calculateFee(MONTHLY_PRICE_CENTS);
+  const hasSubscription = status?.status !== 'none' && status?.status !== undefined;
+  const currentPlanId = status?.plan ?? null;
 
   return (
     <div className="space-y-8 animate-fade-in">
-
-      {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-[hsl(var(--foreground))] tracking-tight">
-          Billing
-        </h1>
+        <h1 className="text-2xl font-bold text-[hsl(var(--foreground))] tracking-tight">Billing</h1>
         <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
           Manage your Support Plan subscription, view invoices, and control attribution.
         </p>
       </div>
 
-      {/* Current subscription status */}
-      <SubscriptionStatus
-        status={subscription.status}
-        planName={subscription.planName}
-        nextBillingDate={subscription.nextBillingDate}
-        cancelAtPeriodEnd={subscription.cancelAtPeriodEnd}
-        attributionRemoved={subscription.attributionRemoved}
-        billingPortalUrl={subscription.billingPortalUrl || undefined}
-        onCancel={hasSubscription ? handleCancel : undefined}
-        onReactivate={
-          subscription.cancelAtPeriodEnd ? handleReactivate : undefined
-        }
-        loading={actionLoading}
-      />
-
-      {/* Plan comparison */}
-      <section>
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-[hsl(var(--foreground))]">
-            Support Plans
-          </h2>
-          <p className="text-sm text-[hsl(var(--muted-foreground))] mt-0.5">
-            All plans include the same features. Choose yearly to save 17%.
-          </p>
+      {error && (
+        <div className="p-4 rounded-lg border border-[hsl(var(--destructive)/0.3)] bg-[hsl(var(--destructive)/0.08)] text-sm text-[hsl(var(--destructive))]">
+          {error}
         </div>
+      )}
 
-        <div className="grid gap-4 sm:grid-cols-2 max-w-2xl">
-          {/* Yearly plan */}
-          <PlanCard
-            name="Support Plan — Yearly"
-            intervalLabel="/ year"
-            price={formatUsd(subscription.planPriceCents)}
-            serviceFeeLabel={`+ ${formatUsd(yearlyFee)} Service Fee`}
-            features={PLAN_FEATURES}
-            isCurrentPlan={
-              subscription.status === 'active' &&
-              subscription.planId === 'support-yearly'
-            }
-            recommended
-            savingsBadge="Save 17% vs monthly"
-            onSelect={() => handleUpgrade('support-yearly')}
+      {loading && (
+        <div className="text-sm text-[hsl(var(--muted-foreground))]">Loading billing information...</div>
+      )}
+
+      {!loading && status && (
+        <>
+          <SubscriptionStatus
+            status={(status.status === 'none' ? 'none' : status.status) as SubscriptionStatusType}
+            planName={status.planName ?? undefined}
+            nextBillingDate={status.nextBillingDate ?? undefined}
+            cancelAtPeriodEnd={status.cancelAtPeriodEnd}
+            attributionRemoved={status.attributionRemoved}
+            billingPortalUrl={status.billingPortalUrl ?? undefined}
+            onCancel={hasSubscription ? handleCancel : undefined}
+            onManage={status.billingPortalUrl ? handlePortal : undefined}
+            loading={actionLoading}
           />
 
-          {/* Monthly plan */}
-          <PlanCard
-            name="Support Plan — Monthly"
-            intervalLabel="/ month"
-            price={formatUsd(subscription.monthlyPriceCents)}
-            serviceFeeLabel={`+ ${formatUsd(monthlyFee)} Service Fee`}
-            features={PLAN_FEATURES}
-            isCurrentPlan={
-              subscription.status === 'active' &&
-              subscription.planId === 'support-monthly'
-            }
-            onSelect={() => handleUpgrade('support-monthly')}
-          />
-        </div>
-      </section>
+          <section>
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold text-[hsl(var(--foreground))]">Support Plans</h2>
+              <p className="text-sm text-[hsl(var(--muted-foreground))] mt-0.5">
+                All plans include the same features. Choose yearly to save 17%.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 max-w-2xl">
+              <PlanCard
+                name="Support Plan - Yearly"
+                intervalLabel="/ year"
+                price={formatUsd(YEARLY_PRICE_CENTS)}
+                serviceFeeLabel={`+ ${formatUsd(yearlyFee)} Service Fee`}
+                features={PLAN_FEATURES}
+                isCurrentPlan={currentPlanId === 'support-yearly'}
+                recommended
+                savingsBadge="Save 17% vs monthly"
+                onSelect={() => handleUpgrade('support-yearly')}
+              />
+              <PlanCard
+                name="Support Plan - Monthly"
+                intervalLabel="/ month"
+                price={formatUsd(MONTHLY_PRICE_CENTS)}
+                serviceFeeLabel={`+ ${formatUsd(monthlyFee)} Service Fee`}
+                features={PLAN_FEATURES}
+                isCurrentPlan={currentPlanId === 'support-monthly'}
+                onSelect={() => handleUpgrade('support-monthly')}
+              />
+            </div>
+          </section>
 
-      {/* Fee explanation card */}
-      <section>
-        <h2 className="text-lg font-semibold text-[hsl(var(--foreground))] mb-4">
-          Platform Service Fee
-        </h2>
-        <div className="max-w-xl">
-          <FeeBreakdown
-            planPriceCents={subscription.planPriceCents}
-            isPayPal={false}
-          />
-        </div>
-      </section>
+          <section>
+            <h2 className="text-lg font-semibold text-[hsl(var(--foreground))] mb-4">Platform Service Fee</h2>
+            <div className="max-w-xl">
+              <FeeBreakdown planPriceCents={YEARLY_PRICE_CENTS} isPayPal={false} />
+            </div>
+          </section>
 
-      {/* Invoice history */}
-      <section>
-        <h2 className="text-lg font-semibold text-[hsl(var(--foreground))] mb-4">
-          Invoices
-        </h2>
-        <InvoiceTable invoices={invoices} />
-      </section>
-
+          {status.invoices.length > 0 && (
+            <section>
+              <h2 className="text-lg font-semibold text-[hsl(var(--foreground))] mb-4">Invoices</h2>
+              <InvoiceTable invoices={status.invoices} />
+            </section>
+          )}
+        </>
+      )}
     </div>
   );
 }

@@ -10,9 +10,11 @@ export async function GET(
   if (!user) return unauthorized();
 
   const { id } = await params;
+  const isAdmin = user.role === 'ADMIN' || user.role === 'SUPER_ADMIN';
   try {
     const file = await db.media.findUnique({ where: { id } });
     if (!file) return notFound('Media file not found.');
+    if (!isAdmin && file.uploadedById !== user.id) return notFound('Media file not found.');
     return json({ data: file });
   } catch (err) {
     console.error('[media/:id GET]', err);

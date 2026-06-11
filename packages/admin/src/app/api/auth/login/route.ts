@@ -1,8 +1,22 @@
 import type { NextRequest } from 'next/server';
 import { db, verifyPassword, createSession, SESSION_COOKIE_NAME, AuthError } from '@volqan/core';
 import { json, badRequest } from '@/lib/api-helpers';
+import { rateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest): Promise<Response> {
+  // Rate limit: 10 attempts per 15 minutes per IP
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
+    'unknown';
+  const rl = rateLimit(`login:${ip}`, { max: 10, windowMs: 15 * 60 * 1000 });
+  if (!rl.allowed) {
+    return json(
+      { error: 'Too many login attempts. Please try again later.' },
+      429,
+    );
+  }
+
   let body: { email?: string; password?: string };
   try {
     body = (await request.json()) as typeof body;
@@ -47,9 +61,10 @@ export async function POST(request: NextRequest): Promise<Response> {
     });
 
     // Set httpOnly session cookie — 7 days
+    const securePart = process.env.NODE_ENV === 'production' ? '; Secure' : '';
     response.headers.set(
       'Set-Cookie',
-      `${SESSION_COOKIE_NAME}=${session.token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}`,
+      `${SESSION_COOKIE_NAME}=${session.token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}${securePart}`,
     );
 
     return response;
