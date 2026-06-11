@@ -24,6 +24,8 @@ import {
   Database,
   CreditCard,
   LayoutTemplate,
+  TrendingUp,
+  Bot,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -86,6 +88,18 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Users',
     href: '/users',
     icon: Users,
+  },
+  {
+    key: 'analytics',
+    label: 'Analytics',
+    href: '/analytics',
+    icon: TrendingUp,
+  },
+  {
+    key: 'ai',
+    label: 'AI Assistant',
+    href: '/ai',
+    icon: Bot,
   },
   {
     key: 'billing',
@@ -204,7 +218,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
+      <nav aria-label="Main navigation" className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href) && !item.external;
@@ -250,6 +264,8 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               {hasChildren ? (
                 <button
                   onClick={() => toggleExpanded(item.key)}
+                  aria-expanded={expanded}
+                  aria-controls={`nav-children-${item.key}`}
                   className={cn(
                     'w-full flex items-center gap-3 px-2 py-2 rounded-md text-sm font-medium',
                     'transition-colors duration-150 group relative',
@@ -280,6 +296,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
               ) : (
                 <Link
                   href={item.href}
+                  aria-current={active ? 'page' : undefined}
                   className={cn(
                     'flex items-center gap-3 px-2 py-2 rounded-md text-sm font-medium',
                     'transition-colors duration-150 group relative',
@@ -289,8 +306,9 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                     collapsed && 'justify-center px-0',
                   )}
                 >
-                  <Icon className="w-4 h-4 flex-shrink-0" />
+                  <Icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                   {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
+                  {collapsed && <span className="sr-only">{item.label}</span>}
                   {collapsed && (
                     <div className="absolute left-full ml-2 px-2 py-1 bg-[hsl(var(--popover))] text-[hsl(var(--popover-foreground))] text-xs rounded-md shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 border border-[hsl(var(--border))]">
                       {item.label}
@@ -301,7 +319,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
               {/* Children */}
               {hasChildren && !collapsed && expanded && (
-                <div className="mt-0.5 ml-4 pl-2 border-l border-[hsl(var(--border))] space-y-0.5">
+                <div id={`nav-children-${item.key}`} className="mt-0.5 ml-4 pl-2 border-l border-[hsl(var(--border))] space-y-0.5">
                   {item.children!.map((child) => {
                     const ChildIcon = child.icon;
                     const childActive = pathname === child.href;
@@ -309,6 +327,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                       <Link
                         key={child.key}
                         href={child.href}
+                        aria-current={childActive ? 'page' : undefined}
                         className={cn(
                           'flex items-center gap-2 px-2 py-1.5 rounded-md text-xs font-medium',
                           'transition-colors duration-150',

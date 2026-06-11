@@ -21,6 +21,45 @@ Changes staged for the next release are tracked here before a version number is 
 
 ### Added
 
+- Added `GET /api/analytics` — activity overview with totals, daily activity buckets, and top audit actions (packages/admin)
+- Added `/analytics` page — bar chart, top actions list, stat cards, period selector (packages/admin)
+- Added `GET/POST /api/settings/webhooks` and `PATCH/DELETE /api/settings/webhooks/[id]` — full outbound webhook CRUD with HMAC-signed delivery (packages/admin)
+- Added `src/lib/webhook.ts` — fire-and-forget webhook dispatcher with per-hook `lastStatus` tracking (packages/admin)
+- Added `POST /api/cron/content-scheduler` — cron endpoint to publish/unpublish content entries by `scheduledAt`/`unpublishAt` fields (packages/admin)
+- Added `POST/GET /api/content/[type]/[id]/workflow` — content approval workflow with submit/approve/reject/publish/unpublish/archive/restore transitions (packages/admin)
+- Added `GET/POST /api/auth/sso` — SAML 2.0 and LDAP/AD configuration endpoints (packages/admin)
+- Added `POST /api/auth/sso/saml/acs` — SAML ACS with full `node-saml` v3 response validation and SSO user provisioning (packages/admin)
+- Added `POST /api/auth/sso/ldap/test` — LDAP connectivity test using `ldapts` bind verification (packages/admin)
+- Added `POST/GET /api/v1/license/validate` — public license key validation endpoint; validates HMAC signature and expiry (packages/admin)
+- Added `src/lib/license.ts` — `MKT-[PRODUCT_ID]-[INSTALL_ID]-[EXPIRY_HASH]` key generation and validation (packages/admin)
+- Added `src/lib/cache.ts` — Redis-backed cache with in-process LRU fallback; `cached()` helper for cache-aside pattern (packages/admin)
+- Added `src/lib/audit.ts` — `audit()` helper for writing AuditLog entries; wired into content and user routes (packages/admin)
+- Added `scheduledAt` and `unpublishAt` fields to `ContentEntry` schema (packages/core)
+- Added `Webhook` model to Prisma schema (packages/core)
+- Added Prisma migration `20260601000000_webhooks_scheduling` for new schema fields (packages/core)
+- Added `publishConfig` to `@volqan/extension-sdk` and `@volqan/theme-sdk` for npm publish (packages/extension-sdk, packages/theme-sdk)
+- Added `LICENSE_SECRET`, `CRON_SECRET`, and `REDIS_URL` to `.env.example`
+- Added Analytics and AI Assistant entries to admin sidebar navigation (packages/admin)
+- Added `docs/pro-architecture.md` — Pro tier feature matrix, plan gating mechanism, activation flow, white-label spec
+- Added `docs/cloud-architecture.md` — multi-tenant hosted architecture: schema-per-tenant, tenant router, control plane design
+- Added `docs/enterprise-license.md` — Enterprise tier feature set, pricing, SLA commitments, white-label scope
+
+### Fixed
+
+- Added `aria-label="Main navigation"` to sidebar `<nav>` element (packages/admin)
+- Added `aria-current="page"` to active sidebar links (packages/admin)
+- Added `aria-expanded` and `aria-controls` to collapsible sidebar nav buttons (packages/admin)
+- Decorative required-field asterisks now `aria-hidden`; added `sr-only` "(required)" text for screen readers (packages/admin)
+- Added `role="alert"` to all form field error messages (packages/admin)
+- Added `aria-pressed` to multiselect toggle buttons (packages/admin)
+- File/image upload inputs are now keyboard-accessible via proper `<label>` wrapping; `className="sr-only"` replaces `className="hidden"` (packages/admin)
+- Richtext toolbar format buttons now have `aria-label` and `title` attributes (packages/admin)
+- Login page error message now uses `role="alert" aria-live="assertive"` (packages/admin)
+- Fixed `passwordHash` field reference in `POST /api/users` — schema field is `password`, not `passwordHash` (packages/admin)
+- Added `src/lib/email.ts` — lightweight email sender supporting Resend HTTP API (`EMAIL_TRANSPORT=resend`) with console fallback for development (packages/admin)
+- Added invite email to `POST /api/users` — sends temporary password to newly created user; email failure is non-fatal (packages/admin)
+- Added initial Prisma migration SQL (`packages/core/prisma/migrations/20260405000000_init/`) generated from current schema
+- Added `EMAIL_TRANSPORT`, `EMAIL_FROM`, and `RESEND_API_KEY` to `.env.example`
 - Added `GET /api/auth/oauth/[provider]` — OAuth redirect initiation for Google and GitHub with CSRF state cookie (packages/admin)
 - Added `GET /api/auth/oauth/[provider]/callback` — OAuth code exchange, account linking, and session creation (packages/admin)
 - Added `POST /api/auth/forgot-password` — generates HMAC-signed time-limited reset token; logs URL in development (packages/admin)
@@ -32,9 +71,6 @@ Changes staged for the next release are tracked here before a version number is 
 - Added `/forgot-password` and `/reset-password` pages with standalone layouts (packages/admin)
 - Added Google and GitHub OAuth buttons to login page (packages/admin)
 - Added "Forgot password?" link to login form (packages/admin)
-
-### Added (previous session)
-
 - Added `GET/POST /api/extensions` and `PATCH/DELETE /api/extensions/[id]` — full extension lifecycle management (packages/admin)
 - Added `GET/POST /api/themes` and `PATCH/DELETE /api/themes/[id]` — theme install, activation, and token editing (packages/admin)
 - Added `GET /api/billing/status`, `POST /api/billing/portal`, `POST /api/billing/webhook` — Stripe billing integration (packages/admin)
@@ -54,6 +90,7 @@ Changes staged for the next release are tracked here before a version number is 
 
 ### Security
 
+- Added magic bytes content validation to media upload route — rejects files whose binary signature doesn't match the declared extension (packages/admin)
 - Added in-memory sliding-window rate limiter (`src/lib/rate-limit.ts`) applied to login (10/15 min), forgot-password (5/15 min), and reset-password (10/15 min) endpoints (packages/admin)
 - Extended `PUBLIC_PATHS` in middleware to allow OAuth, forgot-password, reset-password, and verify-email routes without session (packages/admin)
 - Fixed API key storage — `hash` field now stores a SHA-256 digest of the raw key instead of the plaintext value (`api-keys/route.ts`)

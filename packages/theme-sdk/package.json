@@ -2,6 +2,10 @@
   "name": "@volqan/theme-sdk",
   "version": "0.1.0",
   "private": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

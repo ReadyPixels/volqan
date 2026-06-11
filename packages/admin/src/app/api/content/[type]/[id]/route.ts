@@ -1,6 +1,9 @@
 import type { NextRequest } from 'next/server';
 import { ContentRepository } from '@volqan/core';
 import { getSessionUser, json, unauthorized, notFound, badRequest, internalError } from '@/lib/api-helpers';
+import { audit } from '@/lib/audit';
+import { fireWebhooks } from '@/lib/webhook';
+import { cacheFlush } from '@/lib/cache';
 
 const repo = new ContentRepository();
 
@@ -48,6 +51,11 @@ export async function PATCH(
     }
 
     const updated = await repo.update(type, id, body);
+    const status = (updated as any).status;
+    const action = status === 'PUBLISHED' ? 'content.published' : 'content.updated';
+    await cacheFlush(`content:${type}:`);
+    await audit({ userId: user.id, action, resource: type, resourceId: id });
+    await fireWebhooks(action, { id, type, status }).catch(() => {});
     return json({ data: updated });
   } catch (err: any) {
     if (err?.name === 'ContentValidationError') return json({ error: err.message, fields: err.fields }, 422);
@@ -74,6 +82,9 @@ export async function DELETE(
     }
 
     await repo.delete(type, id);
+    await cacheFlush(`content:${type}:`);
+    await audit({ userId: user.id, action: 'content.deleted', resource: type, resourceId: id });
+    await fireWebhooks('content.deleted', { id, type }).catch(() => {});
     return json({ ok: true });
   } catch (err) {
     console.error(`[content/${type}/${id} DELETE]`, err);

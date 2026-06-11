@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { db, hashPassword } from '@volqan/core';
 import { getSessionUser, json, unauthorized, notFound, badRequest, internalError } from '@/lib/api-helpers';
+import { audit } from '@/lib/audit';
 
 export async function GET(
   request: NextRequest,
@@ -51,7 +52,7 @@ export async function PATCH(
     const updateData: Record<string, unknown> = {};
     if (body.name !== undefined) updateData.name = body.name;
     if (body.role !== undefined) updateData.role = body.role;
-    if (body.password) updateData.passwordHash = await hashPassword(body.password);
+    if (body.password) updateData.password = await hashPassword(body.password);
 
     const updated = await db.user.update({
       where: { id },
@@ -59,6 +60,7 @@ export async function PATCH(
       select: { id: true, email: true, name: true, role: true, updatedAt: true },
     });
 
+    await audit({ userId: user.id, action: 'user.updated', resource: 'User', resourceId: id });
     return json({ data: updated });
   } catch (err) {
     console.error('[users/:id PATCH]', err);
@@ -82,6 +84,7 @@ export async function DELETE(
     if (!target) return notFound('User not found.');
 
     await db.user.delete({ where: { id } });
+    await audit({ userId: user.id, action: 'user.deleted', resource: 'User', resourceId: id, details: { email: target.email } });
     return json({ ok: true });
   } catch (err) {
     console.error('[users/:id DELETE]', err);
