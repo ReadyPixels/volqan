@@ -16,6 +16,9 @@ const PUBLIC_PATHS = [
   '/api/auth/verify-email',
   '/api/auth/oauth',
   '/api/health',
+  '/api/v1/license/validate',
+  '/api/auth/sso/saml/acs',
+  '/api/cron',
   '/favicon.svg',
 ];
 

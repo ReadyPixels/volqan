@@ -26,7 +26,10 @@
     "lucide-react": "^0.487.0",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.2.0",
-    "next-themes": "^0.4.4"
+    "next-themes": "^0.4.4",
+    "redis": "^4.7.0",
+    "node-saml": "^3.1.2",
+    "ldapts": "^7.2.0"
   },
   "devDependencies": {
     "typescript": "^5.9.0",
