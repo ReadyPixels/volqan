@@ -74,5 +74,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Run Prisma migrations
+        run: pnpm --filter @volqan/core exec prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
       - name: Build all packages
         run: pnpm --recursive run build --if-present

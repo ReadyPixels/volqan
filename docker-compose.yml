@@ -28,6 +28,9 @@ services:
       ADMIN_PORT: "3001"
       DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/volqan?schema=public"
       JWT_SECRET: "dev-jwt-secret-change-in-production-immediately"
+      SESSION_SECRET: "dev-session-secret-change-in-production-immediately"
+      VOLQAN_UPLOAD_DIR: "/app/public/uploads"
+      NEXT_PUBLIC_APP_URL: "http://localhost:3001"
       # Bazarix marketplace integration (optional in dev)
       # BAZARIX_LICENSE_KEY: ""
     ports:
