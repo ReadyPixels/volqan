@@ -87,6 +87,10 @@ export async function POST(request: NextRequest): Promise<Response> {
     const filename = `${unique}${ext}`;
     await mkdir(targetDir, { recursive: true });
     const buffer = Buffer.from(await file.arrayBuffer());
+
+    if (!isAllowedMagicBytes(buffer, ext)) {
+      return badRequest('File content does not match the declared type.');
+    }
     await writeFile(path.join(targetDir, filename), buffer);
 
     const publicUrl = `/uploads/${normalizedFolder ? `${normalizedFolder}/` : ''}${filename}`.replace(/\/\//g, '/');
@@ -122,6 +126,27 @@ function normalizeUploadFolder(folder: string): string {
 function isWithinRoot(root: string, candidate: string): boolean {
   const relative = path.relative(root, candidate);
   return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
+const MAGIC: Record<string, (b: Buffer) => boolean> = {
+  '.jpg':  (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
+  '.jpeg': (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
+  '.png':  (b) => b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47,
+  '.gif':  (b) => { const s = b.subarray(0, 6).toString('ascii'); return s === 'GIF87a' || s === 'GIF89a'; },
+  '.webp': (b) => b.subarray(0, 4).toString('ascii') === 'RIFF' && b.subarray(8, 12).toString('ascii') === 'WEBP',
+  '.avif': (b) => b.length >= 12 && b.subarray(4, 8).toString('ascii') === 'ftyp',
+  '.mp4':  (b) => b.length >= 12 && b.subarray(4, 8).toString('ascii') === 'ftyp',
+  '.mov':  (b) => b.length >= 12 && b.subarray(4, 8).toString('ascii') === 'ftyp',
+  '.webm': (b) => b[0] === 0x1a && b[1] === 0x45 && b[2] === 0xdf && b[3] === 0xa3,
+  '.mp3':  (b) => b.subarray(0, 3).toString('ascii') === 'ID3' || (b[0] === 0xff && (b[1] & 0xe0) === 0xe0),
+  '.wav':  (b) => b.subarray(0, 4).toString('ascii') === 'RIFF' && b.subarray(8, 12).toString('ascii') === 'WAVE',
+  '.pdf':  (b) => b.subarray(0, 4).toString('ascii') === '%PDF',
+};
+
+function isAllowedMagicBytes(buf: Buffer, ext: string): boolean {
+  if (buf.length < 4) return false;
+  const check = MAGIC[ext];
+  return check ? check(buf) : false;
 }
 
 function isAllowedUpload(fileName: string, mimeType: string): boolean {

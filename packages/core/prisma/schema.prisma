@@ -166,6 +166,10 @@ model ContentEntry {
   slug          String?
   authorId      String?
   publishedAt   DateTime?
+  /// Schedule future publish — cron job publishes when scheduledAt <= now()
+  scheduledAt   DateTime?
+  /// Schedule future unpublish
+  unpublishAt   DateTime?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
@@ -177,6 +181,7 @@ model ContentEntry {
   @@index([authorId])
   @@index([status])
   @@index([publishedAt])
+  @@index([scheduledAt])
   @@map("content_entries")
 }
 
@@ -320,6 +325,32 @@ model AuditLog {
   @@index([resource, resourceId])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+// ---------------------------------------------------------------------------
+// Webhook
+// ---------------------------------------------------------------------------
+
+/// Outbound webhook subscriptions. On matching events, Volqan POSTs a signed
+/// JSON payload to the configured URL.
+model Webhook {
+  id         String   @id @default(cuid())
+  name       String
+  /// Full HTTPS URL to POST events to
+  url        String
+  /// Array of event names to subscribe to, e.g. ["content.published", "user.created"]
+  events     Json     @default("[]")
+  /// HMAC-SHA256 secret for request signing (X-Volqan-Signature header)
+  secret     String
+  enabled    Boolean  @default(true)
+  /// Last delivery status: "ok" | "error" | null
+  lastStatus String?
+  lastFiredAt DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([enabled])
+  @@map("webhooks")
 }
 
 // ---------------------------------------------------------------------------

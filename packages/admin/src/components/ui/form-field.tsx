@@ -116,7 +116,7 @@ export function FormField({ field, value, onChange, error, disabled }: FormField
           {field.label && (
             <label htmlFor={field.key} className="text-sm font-medium text-[hsl(var(--foreground))]">
               {field.label}
-              {field.required && <span className="text-[hsl(var(--destructive))] ml-1">*</span>}
+              {field.required && <span className="text-[hsl(var(--destructive))] ml-1" aria-hidden="true">*</span>}{field.required && <span className="sr-only">(required)</span>}
             </label>
           )}
           <textarea
@@ -134,7 +134,7 @@ export function FormField({ field, value, onChange, error, disabled }: FormField
               error && 'border-[hsl(var(--destructive))]',
             )}
           />
-          {error && <p className="text-xs text-[hsl(var(--destructive))]">{error}</p>}
+          {error && <p role="alert" className="text-xs text-[hsl(var(--destructive))]">{error}</p>}
           {field.description && !error && (
             <p className="text-xs text-[hsl(var(--muted-foreground))]">{field.description}</p>
           )}
@@ -146,7 +146,7 @@ export function FormField({ field, value, onChange, error, disabled }: FormField
         <div className="space-y-1.5">
           <label htmlFor={field.key} className="text-sm font-medium text-[hsl(var(--foreground))]">
             {field.label}
-            {field.required && <span className="text-[hsl(var(--destructive))] ml-1">*</span>}
+            {field.required && <span className="text-[hsl(var(--destructive))] ml-1" aria-hidden="true">*</span>}{field.required && <span className="sr-only">(required)</span>}
           </label>
           <div className={cn(
             'rounded-md border border-[hsl(var(--input))] bg-[hsl(var(--background))]',
@@ -154,13 +154,19 @@ export function FormField({ field, value, onChange, error, disabled }: FormField
           )}>
             {/* Rich text toolbar placeholder */}
             <div className="flex gap-1 p-2 border-b border-[hsl(var(--border))] flex-wrap">
-              {['B', 'I', 'U', 'H1', 'H2', 'UL', 'OL', 'Link'].map((tool) => (
+              {[
+                { label: 'B', title: 'Bold' }, { label: 'I', title: 'Italic' }, { label: 'U', title: 'Underline' },
+                { label: 'H1', title: 'Heading 1' }, { label: 'H2', title: 'Heading 2' },
+                { label: 'UL', title: 'Unordered list' }, { label: 'OL', title: 'Ordered list' }, { label: 'Link', title: 'Insert link' },
+              ].map(({ label, title }) => (
                 <button
-                  key={tool}
+                  key={label}
                   type="button"
+                  aria-label={title}
+                  title={title}
                   className="px-2 py-0.5 text-xs rounded border border-[hsl(var(--border))] hover:bg-[hsl(var(--accent))] transition-colors"
                 >
-                  {tool}
+                  {label}
                 </button>
               ))}
             </div>
@@ -174,7 +180,7 @@ export function FormField({ field, value, onChange, error, disabled }: FormField
               className="w-full px-3 py-2 text-sm bg-transparent focus:outline-none resize-y"
             />
           </div>
-          {error && <p className="text-xs text-[hsl(var(--destructive))]">{error}</p>}
+          {error && <p role="alert" className="text-xs text-[hsl(var(--destructive))]">{error}</p>}
           {field.description && !error && (
             <p className="text-xs text-[hsl(var(--muted-foreground))]">{field.description}</p>
           )}
@@ -197,7 +203,7 @@ export function FormField({ field, value, onChange, error, disabled }: FormField
           <div>
             <label htmlFor={field.key} className="text-sm font-medium text-[hsl(var(--foreground))] cursor-pointer">
               {field.label}
-              {field.required && <span className="text-[hsl(var(--destructive))] ml-1">*</span>}
+              {field.required && <span className="text-[hsl(var(--destructive))] ml-1" aria-hidden="true">*</span>}{field.required && <span className="sr-only">(required)</span>}
             </label>
             {field.description && (
               <p className="text-xs text-[hsl(var(--muted-foreground))] mt-0.5">{field.description}</p>
@@ -223,7 +229,7 @@ export function FormField({ field, value, onChange, error, disabled }: FormField
         <div className="space-y-1.5">
           <label htmlFor={field.key} className="text-sm font-medium text-[hsl(var(--foreground))]">
             {field.label}
-            {field.required && <span className="text-[hsl(var(--destructive))] ml-1">*</span>}
+            {field.required && <span className="text-[hsl(var(--destructive))] ml-1" aria-hidden="true">*</span>}{field.required && <span className="sr-only">(required)</span>}
           </label>
           <select
             id={field.key}
@@ -245,7 +251,7 @@ export function FormField({ field, value, onChange, error, disabled }: FormField
               </option>
             ))}
           </select>
-          {error && <p className="text-xs text-[hsl(var(--destructive))]">{error}</p>}
+          {error && <p role="alert" className="text-xs text-[hsl(var(--destructive))]">{error}</p>}
           {field.description && !error && (
             <p className="text-xs text-[hsl(var(--muted-foreground))]">{field.description}</p>
           )}
@@ -257,7 +263,7 @@ export function FormField({ field, value, onChange, error, disabled }: FormField
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-[hsl(var(--foreground))]">
             {field.label}
-            {field.required && <span className="text-[hsl(var(--destructive))] ml-1">*</span>}
+            {field.required && <span className="text-[hsl(var(--destructive))] ml-1" aria-hidden="true">*</span>}{field.required && <span className="sr-only">(required)</span>}
           </label>
           <div className="flex flex-wrap gap-2">
             {field.options?.map((opt) => {
@@ -266,6 +272,7 @@ export function FormField({ field, value, onChange, error, disabled }: FormField
                 <button
                   key={String(opt.value)}
                   type="button"
+                  aria-pressed={selected}
                   onClick={() => {
                     const current = Array.isArray(value) ? (value as string[]) : [];
                     if (selected) {
@@ -287,7 +294,7 @@ export function FormField({ field, value, onChange, error, disabled }: FormField
               );
             })}
           </div>
-          {error && <p className="text-xs text-[hsl(var(--destructive))]">{error}</p>}
+          {error && <p role="alert" className="text-xs text-[hsl(var(--destructive))]">{error}</p>}
           {field.description && !error && (
             <p className="text-xs text-[hsl(var(--muted-foreground))]">{field.description}</p>
           )}
@@ -298,26 +305,30 @@ export function FormField({ field, value, onChange, error, disabled }: FormField
     case 'file':
       return (
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-[hsl(var(--foreground))]">
+          <label htmlFor={field.key} className="text-sm font-medium text-[hsl(var(--foreground))]">
             {field.label}
-            {field.required && <span className="text-[hsl(var(--destructive))] ml-1">*</span>}
+            {field.required && <span className="text-[hsl(var(--destructive))] ml-1" aria-hidden="true">*</span>}{field.required && <span className="sr-only">(required)</span>}
           </label>
-          <div className={cn(
-            'border-2 border-dashed border-[hsl(var(--border))] rounded-lg p-6',
-            'text-center cursor-pointer hover:border-[hsl(var(--primary))] transition-colors',
-            error && 'border-[hsl(var(--destructive))]',
-          )}>
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+          <label
+            htmlFor={field.key}
+            className={cn(
+              'border-2 border-dashed border-[hsl(var(--border))] rounded-lg p-6',
+              'block text-center cursor-pointer hover:border-[hsl(var(--primary))] transition-colors',
+              error && 'border-[hsl(var(--destructive))]',
+            )}
+          >
+            <span className="text-sm text-[hsl(var(--muted-foreground))]">
               {field.type === 'image' ? 'Drop an image or click to upload' : 'Drop a file or click to upload'}
-            </p>
+            </span>
             <input
+              id={field.key}
               type="file"
               accept={field.type === 'image' ? 'image/*' : undefined}
-              className="hidden"
+              className="sr-only"
               onChange={(e) => onChange(e.target.files?.[0] ?? null)}
             />
-          </div>
-          {error && <p className="text-xs text-[hsl(var(--destructive))]">{error}</p>}
+          </label>
+          {error && <p role="alert" className="text-xs text-[hsl(var(--destructive))]">{error}</p>}
           {field.description && !error && (
             <p className="text-xs text-[hsl(var(--muted-foreground))]">{field.description}</p>
           )}
@@ -354,7 +365,7 @@ export function FormField({ field, value, onChange, error, disabled }: FormField
         <div className="space-y-1.5">
           <label htmlFor={field.key} className="text-sm font-medium text-[hsl(var(--foreground))]">
             {field.label}
-            {field.required && <span className="text-[hsl(var(--destructive))] ml-1">*</span>}
+            {field.required && <span className="text-[hsl(var(--destructive))] ml-1" aria-hidden="true">*</span>}{field.required && <span className="sr-only">(required)</span>}
           </label>
           <textarea
             id={field.key}
@@ -376,7 +387,7 @@ export function FormField({ field, value, onChange, error, disabled }: FormField
               error && 'border-[hsl(var(--destructive))]',
             )}
           />
-          {error && <p className="text-xs text-[hsl(var(--destructive))]">{error}</p>}
+          {error && <p role="alert" className="text-xs text-[hsl(var(--destructive))]">{error}</p>}
         </div>
       );
 

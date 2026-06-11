@@ -1,6 +1,9 @@
 import type { NextRequest } from 'next/server';
 import { ContentRepository, SchemaBuilder } from '@volqan/core';
 import { getSessionUser, json, unauthorized, notFound, badRequest, internalError } from '@/lib/api-helpers';
+import { audit } from '@/lib/audit';
+import { fireWebhooks } from '@/lib/webhook';
+import { cached, cacheFlush } from '@/lib/cache';
 
 const repo = new ContentRepository();
 const schemaBuilder = new SchemaBuilder();
@@ -26,13 +29,10 @@ export async function GET(
     const contentType = await schemaBuilder.getContentType(type);
     if (!contentType) return notFound(`Content type "${type}" not found.`);
 
-    const result = await repo.list(type, {
-      page,
-      perPage,
-      status: status as any,
-      search,
-      orderBy: [{ field: orderBy, direction }],
-    });
+    const cacheKey = `content:${type}:${page}:${perPage}:${status ?? ''}:${search ?? ''}:${orderBy}:${direction}`;
+    const result = await cached(cacheKey, () =>
+      repo.list(type, { page, perPage, status: status as any, search, orderBy: [{ field: orderBy, direction }] }),
+    );
 
     return json(result);
   } catch (err) {
@@ -60,6 +60,9 @@ export async function POST(
 
   try {
     const entry = await repo.create(type, { ...body, authorId: user.id });
+    await cacheFlush(`content:${type}:`);
+    await audit({ userId: user.id, action: 'content.created', resource: type, resourceId: (entry as any).id });
+    await fireWebhooks('content.created', { id: (entry as any).id, type }).catch(() => {});
     return json({ data: entry }, 201);
   } catch (err: any) {
     if (err?.name === 'ContentValidationError') return json({ error: err.message, fields: err.fields }, 422);
