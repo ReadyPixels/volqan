@@ -35,7 +35,7 @@ interface ScoreRingProps {
   grade: SeoAnalysis['grade'];
 }
 
-function ScoreRing({ score, grade }: ScoreRingProps): JSX.Element {
+function ScoreRing({ score, grade }: ScoreRingProps): React.ReactElement {
   const radius = 36;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (score / 100) * circumference;
@@ -106,7 +106,7 @@ interface IssueItemProps {
   issue: SeoIssue;
 }
 
-function IssueItem({ issue }: IssueItemProps): JSX.Element {
+function IssueItem({ issue }: IssueItemProps): React.ReactElement {
   const iconMap: Record<SeoIssue['severity'], string> = {
     error: '✕',
     warning: '⚠',
@@ -176,7 +176,7 @@ interface CharCounterProps {
   max: number;
 }
 
-function CharCounter({ current, min, max }: CharCounterProps): JSX.Element {
+function CharCounter({ current, min, max }: CharCounterProps): React.ReactElement {
   const isGood = current >= min && current <= max;
   const isTooLong = current > max;
 
@@ -202,7 +202,7 @@ export function SEOPanel({
   meta,
   onMetaChange,
   defaultCollapsed = false,
-}: SEOPanelProps): JSX.Element {
+}: SEOPanelProps): React.ReactElement {
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
   const [analysis, setAnalysis] = useState<SeoAnalysis>(() =>
     analyzeSEO(content, meta),

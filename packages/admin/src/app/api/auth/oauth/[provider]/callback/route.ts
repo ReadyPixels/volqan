@@ -68,7 +68,7 @@ export async function GET(
     let account = await db.account.findUnique({
       where: {
         provider_providerAccountId: {
-          provider: provider.toUpperCase() as 'GOOGLE' | 'GITHUB',
+          provider: provider.toLowerCase() as 'google' | 'github',
           providerAccountId: profile.providerAccountId,
         },
       },
@@ -106,7 +106,7 @@ export async function GET(
       await db.account.create({
         data: {
           userId: user.id,
-          provider: provider.toUpperCase() as 'GOOGLE' | 'GITHUB',
+          provider: provider.toLowerCase() as 'google' | 'github',
           providerAccountId: profile.providerAccountId,
           accessToken: profile.accessToken,
           refreshToken: profile.refreshToken ?? null,

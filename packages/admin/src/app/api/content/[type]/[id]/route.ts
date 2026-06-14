@@ -16,7 +16,7 @@ export async function GET(
 
   const { type, id } = await params;
   try {
-    const entry = await repo.getById(type, id);
+    const entry = await repo.findById(type, id);
     if (!entry) return notFound('Entry not found.');
     return json({ data: entry });
   } catch (err) {

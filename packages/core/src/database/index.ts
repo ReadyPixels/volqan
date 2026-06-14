@@ -112,6 +112,8 @@ export interface ContentEntry {
   slug: string | null;
   authorId: string | null;
   publishedAt: Date | null;
+  scheduledAt: Date | null;
+  unpublishAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }

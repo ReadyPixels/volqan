@@ -26,7 +26,6 @@
  * ```
  */
 
-import type { NextRequest } from 'next/server';
 import type { QueryOptions, OrderByOption } from '../../content/types.js';
 
 // ---------------------------------------------------------------------------
@@ -48,8 +47,8 @@ const MAX_PER_PAGE = 100;
  * @param request The incoming NextRequest.
  * @returns A fully populated QueryOptions object.
  */
-export function parseQueryOptions(request: NextRequest): QueryOptions {
-  const { searchParams } = request.nextUrl;
+export function parseQueryOptions(request: Request): QueryOptions {
+  const { searchParams } = new URL(request.url);
 
   return {
     where: parseFilters(searchParams),

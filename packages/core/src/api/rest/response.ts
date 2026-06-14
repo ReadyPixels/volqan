@@ -2,108 +2,66 @@
  * @file api/rest/response.ts
  * @description Standardised HTTP response helpers for the Volqan REST API.
  *
- * All route handlers must use these helpers to ensure a consistent response
- * envelope across every endpoint.
- *
- * @example
- * ```ts
- * import { success, error, paginated } from '@volqan/core/api/rest';
- *
- * // In a route handler:
- * return success(entry, 201);
- * return error('NOT_FOUND', 'Entry not found', 404);
- * return paginated(entries, { total: 42, page: 1, perPage: 20, totalPages: 3 });
- * ```
+ * Uses standard Web API Response types so the core package remains
+ * framework-agnostic (no Next.js dependency).
  */
 
-import { NextResponse } from 'next/server';
 import type { ApiResponse, ApiPaginatedResponse, ApiError, ApiPaginationMeta } from './types.js';
 
 // ---------------------------------------------------------------------------
 // Success
 // ---------------------------------------------------------------------------
 
-/**
- * Returns a successful JSON response with the standard Volqan envelope.
- *
- * @param data The payload to include in `data`.
- * @param status HTTP status code (default 200).
- * @param message Optional human-readable message.
- */
 export function success<T>(
   data: T,
   status = 200,
   message?: string,
-): NextResponse<ApiResponse<T>> {
+): Response {
   const body: ApiResponse<T> = {
     success: true,
     data,
     timestamp: new Date().toISOString(),
     ...(message ? { message } : {}),
   };
-
-  return NextResponse.json(body, { status });
+  return Response.json(body, { status });
 }
 
-/**
- * Returns a 201 Created response. Alias for `success(data, 201)`.
- */
-export function created<T>(data: T, message?: string): NextResponse<ApiResponse<T>> {
+export function created<T>(data: T, message?: string): Response {
   return success(data, 201, message);
 }
 
-/**
- * Returns a 204 No Content response.
- * Note: 204 responses must have no body; this returns an empty response.
- */
-export function noContent(): NextResponse {
-  return new NextResponse(null, { status: 204 });
+export function noContent(): Response {
+  return new Response(null, { status: 204 });
 }
 
 // ---------------------------------------------------------------------------
 // Paginated list
 // ---------------------------------------------------------------------------
 
-/**
- * Returns a paginated list response with the standard meta block.
- *
- * @param data Array of items for the current page.
- * @param meta Pagination metadata.
- * @param status HTTP status code (default 200).
- */
 export function paginated<T>(
   data: T[],
   meta: ApiPaginationMeta,
   status = 200,
-): NextResponse<ApiPaginatedResponse<T>> {
+): Response {
   const body: ApiPaginatedResponse<T> = {
     success: true,
     data,
     meta,
     timestamp: new Date().toISOString(),
   };
-
-  return NextResponse.json(body, { status });
+  return Response.json(body, { status });
 }
 
 // ---------------------------------------------------------------------------
 // Errors
 // ---------------------------------------------------------------------------
 
-/**
- * Returns an error JSON response with the standard Volqan error envelope.
- *
- * @param code Machine-readable error code (e.g. "NOT_FOUND").
- * @param message Human-readable description.
- * @param status HTTP status code.
- * @param errors Optional per-field validation errors.
- */
 export function error(
   code: string,
   message: string,
   status: number,
   errors?: Array<{ field: string; message: string }>,
-): NextResponse<ApiError> {
+): Response {
   const body: ApiError = {
     success: false,
     code,
@@ -111,71 +69,48 @@ export function error(
     timestamp: new Date().toISOString(),
     ...(errors ? { errors } : {}),
   };
-
-  return NextResponse.json(body, { status });
+  return Response.json(body, { status });
 }
 
-// ---------------------------------------------------------------------------
-// Convenience error factories
-// ---------------------------------------------------------------------------
-
-/** 400 Bad Request */
 export function badRequest(
   message = 'Bad request',
   errors?: Array<{ field: string; message: string }>,
-): NextResponse<ApiError> {
+): Response {
   return error('BAD_REQUEST', message, 400, errors);
 }
 
-/** 401 Unauthorized */
-export function unauthorized(message = 'Authentication required'): NextResponse<ApiError> {
+export function unauthorized(message = 'Authentication required'): Response {
   return error('UNAUTHORIZED', message, 401);
 }
 
-/** 403 Forbidden */
-export function forbidden(message = 'Access denied'): NextResponse<ApiError> {
+export function forbidden(message = 'Access denied'): Response {
   return error('FORBIDDEN', message, 403);
 }
 
-/** 404 Not Found */
-export function notFound(message = 'Resource not found'): NextResponse<ApiError> {
+export function notFound(message = 'Resource not found'): Response {
   return error('NOT_FOUND', message, 404);
 }
 
-/** 409 Conflict */
-export function conflict(message = 'Resource already exists'): NextResponse<ApiError> {
+export function conflict(message = 'Resource already exists'): Response {
   return error('CONFLICT', message, 409);
 }
 
-/** 422 Unprocessable Entity (validation) */
 export function validationError(
   errors: Array<{ field: string; message: string }>,
   message = 'Validation failed',
-): NextResponse<ApiError> {
+): Response {
   return error('VALIDATION_ERROR', message, 422, errors);
 }
 
-/** 429 Too Many Requests */
-export function tooManyRequests(message = 'Rate limit exceeded'): NextResponse<ApiError> {
+export function tooManyRequests(message = 'Rate limit exceeded'): Response {
   return error('RATE_LIMIT_EXCEEDED', message, 429);
 }
 
-/** 500 Internal Server Error */
-export function internalError(message = 'Internal server error'): NextResponse<ApiError> {
+export function internalError(message = 'Internal server error'): Response {
   return error('INTERNAL_ERROR', message, 500);
 }
 
-// ---------------------------------------------------------------------------
-// Error handler — converts known error types to API responses
-// ---------------------------------------------------------------------------
-
-/**
- * Converts a caught error into an appropriate API error response.
- * Handles Volqan-specific errors and falls back to 500 for unknown errors.
- *
- * @param err The caught error (unknown type from a try/catch).
- */
-export function handleError(err: unknown): NextResponse<ApiError> {
+export function handleError(err: unknown): Response {
   if (err instanceof Error) {
     switch (err.name) {
       case 'ContentTypeNotFoundError':

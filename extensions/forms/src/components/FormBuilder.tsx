@@ -82,7 +82,7 @@ interface PaletteItemProps {
   onAdd: (type: FormFieldType) => void;
 }
 
-function PaletteItem({ type, label, icon, onDragStart, onAdd }: PaletteItemProps): JSX.Element {
+function PaletteItem({ type, label, icon, onDragStart, onAdd }: PaletteItemProps): React.ReactElement {
   return (
     <div
       draggable
@@ -138,7 +138,7 @@ function FieldEditor({
   onMoveDown,
   onDragStart,
   onDrop,
-}: FieldEditorProps): JSX.Element {
+}: FieldEditorProps): React.ReactElement {
   const [expanded, setExpanded] = useState(false);
   const [optionInput, setOptionInput] = useState('');
 
@@ -320,7 +320,7 @@ export function FormBuilder({
   onChange,
   onSave,
   isSaving = false,
-}: FormBuilderProps): JSX.Element {
+}: FormBuilderProps): React.ReactElement {
   const [form, setForm] = useState<FormDefinition>(initialForm ?? createEmptyForm());
   const [activeTab, setActiveTab] = useState<'build' | 'settings' | 'preview'>('build');
   const [previewData, setPreviewData] = useState<Record<string, unknown>>({});

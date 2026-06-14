@@ -33,14 +33,14 @@ export async function POST(request: NextRequest): Promise<Response> {
   try {
     const user = await db.user.findUnique({
       where: { email: email.toLowerCase().trim() },
-      select: { id: true, email: true, name: true, role: true, passwordHash: true, emailVerified: true },
+      select: { id: true, email: true, name: true, role: true, password: true, emailVerified: true },
     });
 
-    if (!user || !user.passwordHash) {
+    if (!user || !user.password) {
       return json({ error: 'Invalid email or password.' }, 401);
     }
 
-    const valid = await verifyPassword(password, user.passwordHash);
+    const valid = await verifyPassword(password, user.password);
     if (!valid) {
       return json({ error: 'Invalid email or password.' }, 401);
     }

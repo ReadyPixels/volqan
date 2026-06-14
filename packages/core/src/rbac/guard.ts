@@ -32,7 +32,6 @@
 import { getPermission, getRolePermissions } from './permissions.js';
 import type { Action, Resource, RbacUser, ResourceAction } from './types.js';
 import { AuthError } from '../auth/types.js';
-import type { NextRequest } from 'next/server';
 import type { ResolvedAuth } from '../auth/middleware.js';
 import { requireAuth, authErrorResponse } from '../auth/middleware.js';
 
@@ -170,46 +169,24 @@ export function canAll(
 // ---------------------------------------------------------------------------
 
 type AppRouteHandler = (
-  request: NextRequest,
+  request: Request,
   auth: ResolvedAuth,
 ) => Promise<Response>;
 
 /**
- * Higher-order function that wraps a Next.js App Router handler with a
+ * Higher-order function that wraps a route handler with a
  * permission check. Returns 401/403 JSON responses on failure.
- *
- * @param resource - The resource to protect
- * @param action - The required action
- * @param handler - The route handler function
- * @param getOwnership - Optional function to resolve ownership context from
- *                       the request (e.g. extract `authorId` from DB)
- *
- * @example
- * ```ts
- * // app/api/content/[id]/route.ts
- * export const DELETE = withPermission(
- *   'content', 'delete',
- *   async (request, { user }) => {
- *     await deleteEntry(params.id);
- *     return Response.json({ ok: true });
- *   },
- *   async (request, user) => {
- *     const entry = await db.contentEntry.findUnique({ where: { id: params.id } });
- *     return { ownerId: entry?.authorId };
- *   },
- * );
- * ```
  */
 export function withPermission(
   resource: Resource,
   action: Action,
   handler: AppRouteHandler,
   getOwnership?: (
-    request: NextRequest,
+    request: Request,
     user: RbacUser,
   ) => Promise<OwnershipContext>,
-): (request: NextRequest) => Promise<Response> {
-  return async (request: NextRequest) => {
+): (request: Request) => Promise<Response> {
+  return async (request: Request) => {
     try {
       const auth = await requireAuth(request);
 

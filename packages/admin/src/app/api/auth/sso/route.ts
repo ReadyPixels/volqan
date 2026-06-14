@@ -56,8 +56,8 @@ export async function POST(request: NextRequest): Promise<Response> {
   try {
     await db.setting.upsert({
       where: { key },
-      create: { key, value: body.config, group: 'sso', isPublic: false },
-      update: { value: body.config },
+      create: { key, value: body.config as unknown as import('@prisma/client').InputJsonValue, group: 'sso', isPublic: false },
+      update: { value: body.config as unknown as import('@prisma/client').InputJsonValue },
     });
     return json({ ok: true });
   } catch (err) {

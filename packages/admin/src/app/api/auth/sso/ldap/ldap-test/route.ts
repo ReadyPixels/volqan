@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { db } from '@volqan/core';
-import { getSessionUser, json, unauthorized, internalError } from '@/lib/api-helpers';
+import { getSessionUser, json, unauthorized, internalError } from '../../../../../../lib/api-helpers';
 
 /**
  * Test LDAP/Active Directory connectivity.

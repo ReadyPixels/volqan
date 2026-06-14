@@ -1,37 +1,20 @@
 /**
  * @file auth/middleware.ts
- * @description Authentication middleware for Next.js 15 App Router.
+ * @description Authentication middleware helpers for Volqan.
+ *
+ * Uses standard Web API Request/Response types so the core package
+ * remains framework-agnostic (no Next.js dependency).
  *
  * Provides three middleware patterns:
- * - {@link requireAuth} — enforce authentication; redirect or 401 if missing
+ * - {@link requireAuth} — enforce authentication; throw if missing
  * - {@link optionalAuth} — resolve auth if present; proceed as guest if not
- * - {@link requireRole} — enforce a minimum role; 403 if insufficient
+ * - {@link requireRole} — enforce a minimum role; throw if insufficient
  *
  * Tokens are read from:
  * 1. `Authorization: Bearer <token>` header (API routes)
  * 2. `volqan_session` httpOnly cookie (browser sessions)
- *
- * @example
- * ```ts
- * // app/api/content/route.ts
- * import { requireAuth, requireRole } from '@volqan/core/auth';
- *
- * export async function GET(request: NextRequest) {
- *   const { user } = await requireAuth(request);
- *   // user is AuthUser
- *   return Response.json({ user });
- * }
- *
- * // Enforce ADMIN role
- * export async function DELETE(request: NextRequest) {
- *   await requireRole(request, 'ADMIN');
- *   // ...
- * }
- * ```
  */
 
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
 import { verifyAccessToken } from './jwt.js';
 import { validateSession } from './session.js';
 import type { AuthUser, AuthSession } from './types.js';
@@ -57,7 +40,7 @@ export const CSRF_COOKIE_NAME = 'volqan_csrf';
  *
  * @returns The raw token string, or null if not present
  */
-export function extractBearerToken(request: NextRequest): string | null {
+export function extractBearerToken(request: Request): string | null {
   const authHeader = request.headers.get('Authorization');
   if (!authHeader?.startsWith('Bearer ')) return null;
   return authHeader.slice(7).trim() || null;
@@ -68,8 +51,11 @@ export function extractBearerToken(request: NextRequest): string | null {
  *
  * @returns The raw token string, or null if not present
  */
-export function extractSessionCookie(request: NextRequest): string | null {
-  return request.cookies.get(SESSION_COOKIE_NAME)?.value ?? null;
+export function extractSessionCookie(request: Request): string | null {
+  const cookie = request.headers.get('Cookie');
+  if (!cookie) return null;
+  const match = cookie.match(new RegExp(`${SESSION_COOKIE_NAME}=([^;]+)`));
+  return match?.[1] ?? null;
 }
 
 // ---------------------------------------------------------------------------
@@ -91,14 +77,11 @@ export interface ResolvedAuth {
  * session cookie. Returns null if neither is present or valid.
  *
  * Priority:
- * 1. JWT Bearer token (stateless — no DB lookup)
- * 2. Session cookie (stateful — validates against DB)
- *
- * @param request - The incoming Next.js request
- * @returns {@link ResolvedAuth} or null
+ * 1. JWT Bearer token (stateless -- no DB lookup)
+ * 2. Session cookie (stateful -- validates against DB)
  */
 export async function resolveAuth(
-  request: NextRequest,
+  request: Request,
 ): Promise<ResolvedAuth | null> {
   // 1. Try JWT Bearer token (preferred for API clients)
   const bearerToken = extractBearerToken(request);
@@ -115,7 +98,7 @@ export async function resolveAuth(
       };
       return { user, session: null, token: bearerToken };
     } catch {
-      // Invalid bearer token — fall through to session cookie
+      // Invalid bearer token -- fall through to session cookie
     }
   }
 
@@ -126,7 +109,7 @@ export async function resolveAuth(
       const session = await validateSession(sessionToken);
       return { user: session.user, session, token: sessionToken };
     } catch {
-      // Invalid or expired session cookie — fall through
+      // Invalid or expired session cookie -- fall through
     }
   }
 
@@ -163,24 +146,14 @@ export function hasRole(userRole: UserRole, requiredRole: UserRole): boolean {
 /**
  * Requires the request to be authenticated.
  *
- * For API routes: throws an {@link AuthError} if not authenticated.
- * Pass `redirectTo` to redirect unauthenticated browser requests instead.
- *
- * @param request - The incoming Next.js request
- * @param options.redirectTo - URL to redirect to if unauthenticated (browser)
+ * @param request - The incoming request
  * @returns Resolved auth data
- * @throws {@link AuthError} if not authenticated and no redirectTo provided
+ * @throws {@link AuthError} if not authenticated
  */
-export async function requireAuth(
-  request: NextRequest,
-  options: { redirectTo?: string } = {},
-): Promise<ResolvedAuth> {
+export async function requireAuth(request: Request): Promise<ResolvedAuth> {
   const auth = await resolveAuth(request);
 
   if (!auth) {
-    if (options.redirectTo) {
-      throw new UnauthenticatedRedirect(options.redirectTo);
-    }
     throw new AuthError('SESSION_NOT_FOUND', 'Authentication required.', 401);
   }
 
@@ -194,14 +167,9 @@ export async function requireAuth(
 /**
  * Resolves authentication if present but does not require it.
  * Returns null when the request is not authenticated.
- *
- * Useful for endpoints that behave differently for authenticated vs. guest users.
- *
- * @param request - The incoming Next.js request
- * @returns {@link ResolvedAuth} or null
  */
 export async function optionalAuth(
-  request: NextRequest,
+  request: Request,
 ): Promise<ResolvedAuth | null> {
   return resolveAuth(request);
 }
@@ -213,13 +181,13 @@ export async function optionalAuth(
 /**
  * Requires the authenticated user to have at least the given role.
  *
- * @param request - The incoming Next.js request
+ * @param request - The incoming request
  * @param role - Minimum required role
  * @returns Resolved auth data
  * @throws {@link AuthError} with SESSION_NOT_FOUND (401) or INSUFFICIENT_PERMISSIONS (403)
  */
 export async function requireRole(
-  request: NextRequest,
+  request: Request,
   role: UserRole,
 ): Promise<ResolvedAuth> {
   const auth = await requireAuth(request);
@@ -254,43 +222,34 @@ export interface SetSessionCookieOptions {
 }
 
 /**
- * Sets the session cookie on a NextResponse.
- *
- * @param response - The response to set the cookie on
- * @param options - Cookie configuration
+ * Sets the session cookie on a Response via Set-Cookie header.
  */
 export function setSessionCookie(
-  response: NextResponse,
+  response: Response,
   options: SetSessionCookieOptions,
 ): void {
   const isProduction = process.env['NODE_ENV'] === 'production';
-  response.cookies.set({
-    name: SESSION_COOKIE_NAME,
-    value: options.token,
-    httpOnly: true,
-    secure: options.secure ?? isProduction,
-    sameSite: 'lax',
-    expires: options.expiresAt,
-    path: '/',
-    domain: options.domain,
-  });
+  const parts = [
+    `${SESSION_COOKIE_NAME}=${options.token}`,
+    'HttpOnly',
+    `Secure=${options.secure ?? isProduction}`,
+    'SameSite=Lax',
+    `Expires=${options.expiresAt.toUTCString()}`,
+    'Path=/',
+  ];
+  if (options.domain) parts.push(`Domain=${options.domain}`);
+  response.headers.append('Set-Cookie', parts.join('; '));
 }
 
 /**
  * Clears the session cookie (logout).
- *
- * @param response - The response to clear the cookie on
  */
-export function clearSessionCookie(response: NextResponse): void {
-  response.cookies.set({
-    name: SESSION_COOKIE_NAME,
-    value: '',
-    httpOnly: true,
-    secure: process.env['NODE_ENV'] === 'production',
-    sameSite: 'lax',
-    expires: new Date(0),
-    path: '/',
-  });
+export function clearSessionCookie(response: Response): void {
+  const isProduction = process.env['NODE_ENV'] === 'production';
+  response.headers.append(
+    'Set-Cookie',
+    `${SESSION_COOKIE_NAME}=; HttpOnly; Secure=${isProduction}; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/`,
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -299,11 +258,9 @@ export function clearSessionCookie(response: NextResponse): void {
 
 /**
  * Creates a standardised JSON error response from an AuthError.
- *
- * @param error - The AuthError to convert
  */
-export function authErrorResponse(error: AuthError): NextResponse {
-  return NextResponse.json(
+export function authErrorResponse(error: AuthError): Response {
+  return Response.json(
     { error: error.code, message: error.message },
     { status: error.statusCode },
   );
@@ -311,21 +268,14 @@ export function authErrorResponse(error: AuthError): NextResponse {
 
 /**
  * Wraps an API route handler with `requireAuth`, returning a 401 on failure.
- *
- * @example
- * ```ts
- * export const GET = withAuth(async (request, { user }) => {
- *   return Response.json({ user });
- * });
- * ```
  */
 export function withAuth(
   handler: (
-    request: NextRequest,
+    request: Request,
     auth: ResolvedAuth,
-  ) => Promise<Response | NextResponse>,
-): (request: NextRequest) => Promise<Response | NextResponse> {
-  return async (request: NextRequest) => {
+  ) => Promise<Response>,
+): (request: Request) => Promise<Response> {
+  return async (request: Request) => {
     try {
       const auth = await requireAuth(request);
       return handler(request, auth);
@@ -340,22 +290,15 @@ export function withAuth(
 
 /**
  * Wraps an API route handler with `requireRole`, returning 401/403 on failure.
- *
- * @example
- * ```ts
- * export const DELETE = withRole('ADMIN', async (request, { user }) => {
- *   // user is guaranteed to be ADMIN or higher
- * });
- * ```
  */
 export function withRole(
   role: UserRole,
   handler: (
-    request: NextRequest,
+    request: Request,
     auth: ResolvedAuth,
-  ) => Promise<Response | NextResponse>,
-): (request: NextRequest) => Promise<Response | NextResponse> {
-  return async (request: NextRequest) => {
+  ) => Promise<Response>,
+): (request: Request) => Promise<Response> {
+  return async (request: Request) => {
     try {
       const auth = await requireRole(request, role);
       return handler(request, auth);
@@ -373,15 +316,13 @@ export function withRole(
 // ---------------------------------------------------------------------------
 
 /**
- * Thrown by {@link requireAuth} when a `redirectTo` option is provided and
- * the request is not authenticated. Callers should catch this to perform the
- * redirect in their Next.js route handler or middleware.
+ * Thrown by auth helpers when a redirect is needed.
  */
 export class UnauthenticatedRedirect extends Error {
   public readonly redirectTo: string;
 
   constructor(redirectTo: string) {
-    super(`Unauthenticated — redirect to: ${redirectTo}`);
+    super(`Unauthenticated -- redirect to: ${redirectTo}`);
     this.name = 'UnauthenticatedRedirect';
     this.redirectTo = redirectTo;
   }

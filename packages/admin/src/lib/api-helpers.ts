@@ -1,4 +1,3 @@
-import type { NextRequest } from 'next/server';
 import { validateSession, SESSION_COOKIE_NAME } from '@volqan/core';
 import type { AuthUser } from '@volqan/core';
 
@@ -7,8 +6,11 @@ export interface ApiContext {
 }
 
 /** Resolves the session cookie into an authenticated user, or returns null. */
-export async function getSessionUser(request: NextRequest): Promise<AuthUser | null> {
-  const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+export async function getSessionUser(request: Request): Promise<AuthUser | null> {
+  const cookie = request.headers.get('Cookie');
+  if (!cookie) return null;
+  const match = cookie.match(new RegExp(`${SESSION_COOKIE_NAME}=([^;]+)`));
+  const token = match?.[1];
   if (!token) return null;
   try {
     const { user } = await validateSession(token);

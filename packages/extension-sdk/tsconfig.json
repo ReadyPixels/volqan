@@ -5,7 +5,12 @@
     "rootDir": "src",
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@volqan/core": ["../core/dist/index.js"],
+      "@volqan/core/*": ["../core/dist/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules", "dist"]

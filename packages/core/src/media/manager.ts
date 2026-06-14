@@ -191,14 +191,9 @@ export class MediaManager {
         mimeType,
         size: fileSize,
         url: uploadResult.url,
-        thumbnailUrl,
-        width,
-        height,
         folder: options.folder ?? null,
         alt: options.alt ?? null,
-        caption: options.caption ?? null,
-        storageKey: uploadResult.key,
-      } as Record<string, unknown>,
+      },
     });
 
     return this._recordToFile(record);
@@ -217,27 +212,6 @@ export class MediaManager {
   async delete(id: string): Promise<void> {
     const record = await this.prisma.media.findUnique({ where: { id } });
     if (!record) throw new MediaNotFoundError(id);
-
-    const storageKey = (record as Record<string, unknown>)['storageKey'] as string | null;
-
-    // Delete from storage (best effort — don't abort if storage deletion fails)
-    if (storageKey) {
-      try {
-        await this.storage.delete(storageKey);
-      } catch (err) {
-        console.warn(`[MediaManager] Storage deletion failed for key "${storageKey}":`, err);
-      }
-    }
-
-    // Also delete thumbnail if one exists
-    if (record.thumbnailUrl) {
-      try {
-        const thumbKey = this._thumbnailKeyFromUrl(record.thumbnailUrl, storageKey);
-        if (thumbKey) await this.storage.delete(thumbKey);
-      } catch {
-        // Non-fatal
-      }
-    }
 
     // Remove database record
     await this.prisma.media.delete({ where: { id } });
@@ -335,7 +309,7 @@ export class MediaManager {
 
     const updated = await this.prisma.media.update({
       where: { id },
-      data: { folder: sanitizedFolder } as Record<string, unknown>,
+      data: { folder: sanitizedFolder },
     });
 
     return this._recordToFile(updated);
@@ -353,28 +327,12 @@ export class MediaManager {
       mimeType: record['mimeType'] as string,
       size: record['size'] as number,
       url: record['url'] as string,
-      thumbnailUrl: (record['thumbnailUrl'] as string | null) ?? null,
-      width: (record['width'] as number | null) ?? null,
-      height: (record['height'] as number | null) ?? null,
       folder: (record['folder'] as string | null) ?? null,
       alt: (record['alt'] as string | null) ?? null,
-      caption: (record['caption'] as string | null) ?? null,
       createdAt: record['createdAt'] as Date,
-      updatedAt: record['updatedAt'] as Date,
     };
   }
 
-  /**
-   * Infers the thumbnail storage key from its URL and the original file's key.
-   * Returns null if the key cannot be determined.
-   */
-  private _thumbnailKeyFromUrl(thumbnailUrl: string, originalKey: string | null): string | null {
-    if (!originalKey) return null;
-    const dir = originalKey.includes('/') ? originalKey.substring(0, originalKey.lastIndexOf('/') + 1) : '';
-    const thumbFilename = thumbnailUrl.split('/').pop();
-    if (!thumbFilename) return null;
-    return dir + thumbFilename;
-  }
 }
 
 // ---------------------------------------------------------------------------
