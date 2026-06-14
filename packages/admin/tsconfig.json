@@ -1,34 +1,15 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": [
-        "./packages/admin/src/*"
-      ]
+      "@/*": ["./packages/admin/src/*"]
     },
-    "strict": true,
     "noEmit": true,
-    "skipLibCheck": true,
     "verbatimModuleSyntax": false,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
     "isolatedModules": true,
     "allowJs": true
   },
@@ -38,7 +19,5 @@
     "**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
