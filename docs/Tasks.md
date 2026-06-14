@@ -134,3 +134,54 @@ All outstanding work identified across the codebase audit (May 2026).
 - [x] TopBar: sign-out calls `/api/auth/logout`
 - [x] Docs: changelog updated with all unreleased and post-0.0.1 work
 - [x] Docs: roadmap statuses updated to reflect actual build state
+
+---
+
+## Security Remediation (2026-06-14 Audit)
+
+### Critical
+
+- [x] **SEC-001**: Whitelist `orderBy`/`direction` in content list route — `packages/admin/src/app/api/content/[type]/route.ts`
+- [x] **SEC-002**: Replace in-memory rate limiter with Redis-backed implementation — `packages/admin/src/lib/rate-limit.ts`
+- [x] **SEC-003**: Require `CRON_SECRET` — return 503 when unset — `packages/admin/src/app/api/cron/content-scheduler/route.ts`
+
+### High
+
+- [x] **SEC-004**: Add `Content-Security-Policy` header to `next.config.ts`
+- [x] **SEC-005**: Throw error if `SESSION_SECRET` is unset in production (token routes)
+- [x] **SEC-006**: Remove `localhost:4000` from `serverActions.allowedOrigins`
+- [x] **H-2**: Use cryptographically random `oauth_state` with `Secure` flag in production
+- [x] **H-3**: Create `SECURITY.md` at repo root with vulnerability reporting instructions
+- [x] **H-5**: Fix user enumeration timing in OAuth callback
+- [ ] **H-1**: Switch password reset to code-based flow (token in POST body, not URL) — requires email provider integration
+
+### Medium
+
+- [x] **SEC-007**: Add request body size limits to JSON API routes
+- [x] **SEC-008**: Invalidate all sessions on password change
+- [x] **SEC-010**: Add `client_max_body_size` note to deployment docs for nginx
+- [x] **M-1**: Enforce `Content-Length` limits via middleware wrapper
+- [x] **M-2**: Ensure temp password response is HTTPS-only with change-on-first-login requirement
+- [ ] **SEC-009**: Add CORS configuration for public API routes
+
+### Low
+
+- [x] **SEC-012**: Clean up `.gitignore` — fix `CLAUDE.md` entry
+- [x] **L-3**: Verify `scripts/postgres/init.sql` exists or document as optional
+
+---
+
+## Cleanup Infrastructure
+
+### High
+
+- [x] **CLN-001**: Create `.tmp/` directory at project root for temporary session files
+- [x] **CLN-002**: Create `.claude/cleanup.ps1` — runs at end of session: deletes `.tmp/` contents, removes stale `.claude/worktrees/`, reports what was cleaned
+- [x] **CLN-003**: Add cleanup instructions section to `CLAUDE.md` — instruct Claude to run cleanup script and use `.tmp/` for all temporary files
+
+---
+
+## Documentation
+
+- [x] **DOC-001**: Refactor `docs/changelog.md` from version-based to date-based format
+- [x] **DOC-002**: Update `CLAUDE.md` changelog section to reference date-based format

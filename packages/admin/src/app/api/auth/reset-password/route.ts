@@ -1,10 +1,13 @@
 import type { NextRequest } from 'next/server';
 import { createHmac } from 'node:crypto';
-import { db, hashPassword } from '@volqan/core';
+import { db, hashPassword, destroyAllUserSessions } from '@volqan/core';
 import { json, badRequest, internalError } from '@/lib/api-helpers';
 import { rateLimit } from '@/lib/rate-limit';
+import { checkContentLength } from '@/lib/body-limit';
 
-const SECRET = process.env.SESSION_SECRET ?? 'dev-session-secret';
+import { getRequiredSessionSecret } from '@/lib/session-secret';
+
+const SECRET = getRequiredSessionSecret();
 
 function verifyResetToken(token: string): { userId: string } | null {
   try {
@@ -28,10 +31,13 @@ export async function POST(request: NextRequest): Promise<Response> {
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     request.headers.get('x-real-ip') ??
     'unknown';
-  const rl = rateLimit(`reset-pw:${ip}`, { max: 10, windowMs: 15 * 60 * 1000 });
+  const rl = await rateLimit(`reset-pw:${ip}`, { max: 10, windowMs: 15 * 60 * 1000 });
   if (!rl.allowed) {
     return json({ error: 'Too many requests. Please try again later.' }, 429);
   }
+
+  const bodySizeError = checkContentLength(request);
+  if (bodySizeError) return bodySizeError;
 
   let body: { token?: string; password?: string };
   try {
@@ -58,6 +64,9 @@ export async function POST(request: NextRequest): Promise<Response> {
       where: { id: verified.userId },
       data: { password: passwordHash },
     });
+
+    // Invalidate all existing sessions for this user on password reset
+    await destroyAllUserSessions(verified.userId);
 
     return json({ ok: true, message: 'Password updated successfully.' });
   } catch (err) {

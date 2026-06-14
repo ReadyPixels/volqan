@@ -4,6 +4,7 @@ import { getSessionUser, json, unauthorized, badRequest, internalError } from '@
 import { sendEmail, inviteEmail } from '@/lib/email';
 import { audit } from '@/lib/audit';
 import { fireWebhooks } from '@/lib/webhook';
+import { checkContentLength } from '@/lib/body-limit';
 
 export async function GET(request: NextRequest): Promise<Response> {
   const user = await getSessionUser(request);
@@ -53,6 +54,9 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (!user) return unauthorized();
   if (user.role === 'VIEWER' || user.role === 'EDITOR') return json({ error: 'Forbidden' }, 403);
 
+  const bodySizeError = checkContentLength(request);
+  if (bodySizeError) return bodySizeError;
+
   let body: { email?: string; name?: string; role?: string; password?: string };
   try {
     body = (await request.json()) as typeof body;
@@ -77,6 +81,7 @@ export async function POST(request: NextRequest): Promise<Response> {
         name: body.name ?? null,
         role: (body.role as any) ?? 'EDITOR',
         password,
+        requirePasswordChange: true,
       },
       select: { id: true, email: true, name: true, role: true, createdAt: true },
     });

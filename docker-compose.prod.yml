@@ -84,6 +84,9 @@ services:
       - "5432"
     volumes:
       - postgres-data-prod:/var/lib/postgresql/data
+      # Optional: initialization script for first-time database setup.
+      # Create this file if you need custom seed data or extensions.
+      # If the file does not exist, Docker will ignore this mount.
       - ./scripts/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - volqan-prod-network

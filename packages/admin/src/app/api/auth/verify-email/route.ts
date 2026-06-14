@@ -2,8 +2,11 @@ import type { NextRequest } from 'next/server';
 import { createHmac } from 'node:crypto';
 import { db } from '@volqan/core';
 import { json, badRequest, internalError } from '@/lib/api-helpers';
+import { checkContentLength } from '@/lib/body-limit';
 
-const SECRET = process.env.SESSION_SECRET ?? 'dev-session-secret';
+import { getRequiredSessionSecret } from '@/lib/session-secret';
+
+const SECRET = getRequiredSessionSecret();
 
 /** Creates a signed email verification token valid for 24 hours. */
 export function createVerifyToken(userId: string): string {
@@ -32,6 +35,9 @@ function verifyToken(token: string): { userId: string } | null {
 
 // POST /api/auth/verify-email — mark email as verified
 export async function POST(request: NextRequest): Promise<Response> {
+  const bodySizeError = checkContentLength(request);
+  if (bodySizeError) return bodySizeError;
+
   let body: { token?: string };
   try {
     body = (await request.json()) as typeof body;

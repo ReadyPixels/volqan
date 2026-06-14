@@ -57,6 +57,9 @@ services:
   # ---------------------------------------------------------------------------
   # PostgreSQL database
   # ---------------------------------------------------------------------------
+  # WARNING: The default credentials below are for development only.
+  # In production, use a strong, unique password via environment variables.
+  # ---------------------------------------------------------------------------
   postgres:
     image: postgres:16-alpine
     container_name: volqan-postgres

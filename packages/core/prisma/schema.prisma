@@ -60,6 +60,8 @@ model User {
   avatar        String?
   role          UserRole  @default(VIEWER)
   emailVerified DateTime?
+  /// When true, user must change password on next login (e.g. after admin-created account)
+  requirePasswordChange Boolean @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
