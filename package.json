@@ -15,9 +15,9 @@
     "pnpm": ">=9"
   },
   "devDependencies": {
-    "typescript": "^5.9.0",
+    "@types/node": "^22.14.1",
     "eslint": "^9.24.0",
     "prettier": "^3.5.3",
-    "@types/node": "^22.14.1"
+    "typescript": "^6.0.3"
   }
 }

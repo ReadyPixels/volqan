@@ -5,8 +5,10 @@
     "jsx": "preserve",
     "incremental": true,
     "plugins": [{ "name": "next" }],
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./packages/admin/src/*"]
+      "@/*": ["./src/*"]
     },
     "noEmit": true,
     "verbatimModuleSyntax": false,
