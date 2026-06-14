@@ -3,8 +3,11 @@ import { createHmac } from 'node:crypto';
 import { db } from '@volqan/core';
 import { json, badRequest, internalError } from '@/lib/api-helpers';
 import { rateLimit } from '@/lib/rate-limit';
+import { checkContentLength } from '@/lib/body-limit';
 
-const SECRET = process.env.SESSION_SECRET ?? 'dev-session-secret';
+import { getRequiredSessionSecret } from '@/lib/session-secret';
+
+const SECRET = getRequiredSessionSecret();
 
 /** Creates a signed password-reset token valid for 1 hour. */
 export function createResetToken(userId: string): string {
@@ -19,10 +22,13 @@ export async function POST(request: NextRequest): Promise<Response> {
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     request.headers.get('x-real-ip') ??
     'unknown';
-  const rl = rateLimit(`forgot-pw:${ip}`, { max: 5, windowMs: 15 * 60 * 1000 });
+  const rl = await rateLimit(`forgot-pw:${ip}`, { max: 5, windowMs: 15 * 60 * 1000 });
   if (!rl.allowed) {
     return json({ error: 'Too many requests. Please try again later.' }, 429);
   }
+
+  const bodySizeError = checkContentLength(request);
+  if (bodySizeError) return bodySizeError;
 
   let body: { email?: string };
   try {

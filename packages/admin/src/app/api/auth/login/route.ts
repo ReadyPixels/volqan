@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { db, verifyPassword, createSession, SESSION_COOKIE_NAME, AuthError } from '@volqan/core';
 import { json, badRequest } from '@/lib/api-helpers';
+import { checkContentLength } from '@/lib/body-limit';
 import { rateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest): Promise<Response> {
@@ -9,13 +10,16 @@ export async function POST(request: NextRequest): Promise<Response> {
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     request.headers.get('x-real-ip') ??
     'unknown';
-  const rl = rateLimit(`login:${ip}`, { max: 10, windowMs: 15 * 60 * 1000 });
+  const rl = await rateLimit(`login:${ip}`, { max: 10, windowMs: 15 * 60 * 1000 });
   if (!rl.allowed) {
     return json(
       { error: 'Too many login attempts. Please try again later.' },
       429,
     );
   }
+
+  const bodySizeError = checkContentLength(request);
+  if (bodySizeError) return bodySizeError;
 
   let body: { email?: string; password?: string };
   try {

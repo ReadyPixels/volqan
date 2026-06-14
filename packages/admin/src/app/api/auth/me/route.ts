@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
-import { db, hashPassword, verifyPassword } from '@volqan/core';
+import { db, hashPassword, verifyPassword, destroyAllUserSessions } from '@volqan/core';
 import { getSessionUser, json, unauthorized, badRequest, internalError } from '@/lib/api-helpers';
+import { checkContentLength } from '@/lib/body-limit';
 
 export async function GET(request: NextRequest): Promise<Response> {
   const user = await getSessionUser(request);
@@ -11,6 +12,9 @@ export async function GET(request: NextRequest): Promise<Response> {
 export async function PATCH(request: NextRequest): Promise<Response> {
   const user = await getSessionUser(request);
   if (!user) return unauthorized();
+
+  const bodySizeError = checkContentLength(request);
+  if (bodySizeError) return bodySizeError;
 
   let body: { name?: string; avatar?: string; currentPassword?: string; newPassword?: string };
   try {
@@ -50,6 +54,8 @@ export async function PATCH(request: NextRequest): Promise<Response> {
       return json({ error: 'Current password is incorrect.' }, 400);
     }
     data.password = await hashPassword(body.newPassword);
+    // Invalidate all existing sessions for this user on password change
+    await destroyAllUserSessions(user.id);
   }
 
   if (Object.keys(data).length === 0) {

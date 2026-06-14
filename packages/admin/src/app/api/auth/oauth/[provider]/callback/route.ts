@@ -61,35 +61,10 @@ export async function GET(
     return Response.redirect(`${appUrl}/login?error=oauth_not_configured`);
   }
 
-  try {
-    const profile = await p.exchangeCode(code);
+    try {
+      const profile = await p.exchangeCode(code);
 
-    // Find existing account link
-    let account = await db.account.findUnique({
-      where: {
-        provider_providerAccountId: {
-          provider: provider.toLowerCase() as 'google' | 'github',
-          providerAccountId: profile.providerAccountId,
-        },
-      },
-      include: { user: true },
-    });
-
-    let userId: string;
-
-    if (account) {
-      // Update tokens
-      await db.account.update({
-        where: { id: account.id },
-        data: {
-          accessToken: profile.accessToken,
-          refreshToken: profile.refreshToken ?? undefined,
-          expiresAt: profile.expiresAt ? new Date(profile.expiresAt * 1000) : null,
-        },
-      });
-      userId = account.userId;
-    } else {
-      // Find or create user by email
+      // Find or create user by email — unified flow to prevent timing-based enumeration
       let user = await db.user.findUnique({ where: { email: profile.email } });
       if (!user) {
         user = await db.user.create({
@@ -102,9 +77,21 @@ export async function GET(
           },
         });
       }
-      // Link account
-      await db.account.create({
-        data: {
+
+      // Link account (idempotent — creates if missing, updates tokens if already linked)
+      await db.account.upsert({
+        where: {
+          provider_providerAccountId: {
+            provider: provider.toLowerCase() as 'google' | 'github',
+            providerAccountId: profile.providerAccountId,
+          },
+        },
+        update: {
+          accessToken: profile.accessToken,
+          refreshToken: profile.refreshToken ?? undefined,
+          expiresAt: profile.expiresAt ? new Date(profile.expiresAt * 1000) : null,
+        },
+        create: {
           userId: user.id,
           provider: provider.toLowerCase() as 'google' | 'github',
           providerAccountId: profile.providerAccountId,
@@ -113,10 +100,9 @@ export async function GET(
           expiresAt: profile.expiresAt ? new Date(profile.expiresAt * 1000) : null,
         },
       });
-      userId = user.id;
-    }
+      const userId = user.id;
 
-    const session = await createSession({
+      const session = await createSession({
       userId,
       ipAddress:
         request.headers.get('x-forwarded-for') ??

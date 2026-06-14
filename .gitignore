@@ -44,12 +44,15 @@ test-results/
 # local package artifacts
 *.tgz
 
+# AI tooling (private project files)
 .playwright-mcp
 .kilo
+.claude
+CLAUDE.md
 dogfood-output
+
+# personal notes
+.remember
 
 # docs archive
 docs/archive/
-
-
-CLAUDE.md

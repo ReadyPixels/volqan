@@ -7,11 +7,12 @@ import { fireWebhooks } from '@/lib/webhook';
  *  Protected by a shared secret via Authorization header. */
 export async function POST(request: NextRequest): Promise<Response> {
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const auth = request.headers.get('authorization');
-    if (auth !== `Bearer ${cronSecret}`) {
-      return json({ error: 'Unauthorized' }, 401);
-    }
+  if (!cronSecret) {
+    return json({ error: 'Cron endpoint is not configured. Set CRON_SECRET environment variable.' }, 503);
+  }
+  const auth = request.headers.get('authorization');
+  if (auth !== `Bearer ${cronSecret}`) {
+    return json({ error: 'Unauthorized' }, 401);
   }
 
   const now = new Date();

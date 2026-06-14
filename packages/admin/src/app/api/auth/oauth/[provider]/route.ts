@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { GoogleProvider, GitHubProvider, db, createSession, SESSION_COOKIE_NAME } from '@volqan/core';
 import { json, badRequest } from '@/lib/api-helpers';
+import { randomBytes } from 'node:crypto';
 
 type Provider = 'google' | 'github';
 
@@ -38,13 +39,16 @@ export async function GET(
     return json({ error: `OAuth provider "${provider}" is not configured.` }, 503);
   }
 
-  const { url, state } = p.getAuthorizationUrl();
+  // Generate a cryptographically random state value ourselves to ensure strength
+  const state = randomBytes(32).toString('hex');
+  const { url } = p.getAuthorizationUrl({ state });
 
   const response = Response.redirect(url);
+  const securePart = process.env.NODE_ENV === 'production' ? '; Secure' : '';
   // Store state in a short-lived cookie for CSRF verification on callback
   response.headers.set(
     'Set-Cookie',
-    `oauth_state=${state}; Path=/api/auth/oauth; HttpOnly; SameSite=Lax; Max-Age=600`,
+    `oauth_state=${state}; Path=/api/auth/oauth; HttpOnly; SameSite=Lax; Max-Age=600${securePart}`,
   );
   return response;
 }
