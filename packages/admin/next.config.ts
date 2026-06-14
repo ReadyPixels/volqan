@@ -10,7 +10,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ['sharp'],
+  serverExternalPackages: ['sharp', '@volqan/core'],
 
   images: {
     remotePatterns: [

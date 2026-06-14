@@ -1,10 +1,10 @@
-'use client';
-
 /**
  * @file components/layout/AdminShell.tsx
- * @description Client-side admin shell with sidebar state management.
+ * @description Admin shell with sidebar state management.
  * Fully responsive: desktop sidebar + mobile bottom nav.
  */
+
+'use client';
 
 import * as React from 'react';
 import { Sidebar } from './Sidebar';
@@ -13,6 +13,7 @@ import { ThemeProvider } from './ThemeProvider';
 import { MobileNav } from './MobileNav';
 import { MobileHeader } from './MobileHeader';
 import { AIAssistant } from '../ai/AIAssistant';
+import { ClientPageContent } from './ClientPageContent';
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = React.useState(false);
@@ -37,7 +38,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
           {/* Page content */}
           <main className="flex-1 overflow-y-auto">
-            <div className="p-4 md:p-6">{children}</div>
+            <ClientPageContent>{children}</ClientPageContent>
           </main>
 
           {/* Attribution footer (desktop only) */}
@@ -56,9 +57,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-/**
- * Client-side wrapper for AttributionFooter.
- */
 function ClientAttributionFooter() {
   return (
     <footer

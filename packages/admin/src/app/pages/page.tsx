@@ -9,7 +9,18 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import type { Page, PageStatus } from '@volqan/core';
+type PageStatus = 'published' | 'draft' | 'scheduled' | 'archived';
+
+interface Page {
+  id: string;
+  title: string;
+  slug: string;
+  status: PageStatus;
+  blocks: unknown[];
+  updatedAt: string | Date;
+  publishedAt?: string | Date | null;
+}
+
 
 const STATUS_CONFIG: Record<PageStatus, { label: string; variant: 'success' | 'default' | 'info' | 'warning'; icon: React.ComponentType<{ className?: string }> }> = {
   published: { label: 'Published', variant: 'success',  icon: Globe },

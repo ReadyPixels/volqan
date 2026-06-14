@@ -1,86 +1,41 @@
 'use client';
 
-/**
- * @file components/layout/TopBar.tsx
- * @description Admin top bar with breadcrumb, search, notifications, and user menu.
- */
-
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  Search,
-  Bell,
-  ChevronRight,
-  Sun,
-  Moon,
-  Monitor,
-  LogOut,
-  User,
-  Settings,
-} from 'lucide-react';
+import { Search, Bell, Sun, Moon, Monitor, LogOut, User, Settings, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from './ThemeProvider';
-
-// ---------------------------------------------------------------------------
-// Breadcrumb
-// ---------------------------------------------------------------------------
 
 function getBreadcrumbs(pathname: string): Array<{ label: string; href: string }> {
   const segments = pathname.split('/').filter(Boolean);
   const crumbs: Array<{ label: string; href: string }> = [{ label: 'Dashboard', href: '/' }];
-
   const labelMap: Record<string, string> = {
-    content: 'Content',
-    media: 'Media',
-    extensions: 'Extensions',
-    themes: 'Themes',
-    users: 'Users',
-    settings: 'Settings',
-    types: 'Content Types',
-    new: 'New',
+    content: 'Content', media: 'Media', extensions: 'Extensions', themes: 'Themes',
+    users: 'Users', settings: 'Settings', types: 'Content Types', new: 'New',
+    analytics: 'Analytics', billing: 'Billing', ai: 'AI Assistant', pages: 'Pages',
+    profile: 'Profile',
   };
-
   let path = '';
   for (const seg of segments) {
     path += `/${seg}`;
-    // Skip dynamic segments like [id] representations
     const label = labelMap[seg] ?? (seg.startsWith('[') ? '' : seg.charAt(0).toUpperCase() + seg.slice(1));
-    if (label) {
-      crumbs.push({ label, href: path });
-    }
+    if (label) crumbs.push({ label, href: path });
   }
-
   return crumbs;
 }
 
-// ---------------------------------------------------------------------------
-// Notification item shape
-// ---------------------------------------------------------------------------
-
-interface Notification {
-  id: string;
-  title: string;
-  description: string;
-  time: string;
-  read: boolean;
-}
+interface Notification { id: string; title: string; description: string; time: string; read: boolean; }
 
 const MOCK_NOTIFICATIONS: Notification[] = [
-  { id: '1', title: 'Extension updated', description: 'acme/seo was updated to v2.1.0', time: '2m ago', read: false },
+  { id: '1', title: 'Extension updated', description: 'acme/seo updated to v2.1.0', time: '2m ago', read: false },
   { id: '2', title: 'New user registered', description: 'jane@example.com joined', time: '1h ago', read: false },
-  { id: '3', title: 'Backup completed', description: 'Daily backup finished successfully', time: '3h ago', read: true },
+  { id: '3', title: 'Backup completed', description: 'Daily backup finished', time: '3h ago', read: true },
 ];
 
-// ---------------------------------------------------------------------------
-// TopBar component
-// ---------------------------------------------------------------------------
+interface UserData { name: string; email: string; initials: string; }
 
-interface TopBarProps {
-  className?: string;
-}
-
-export function TopBar({ className }: TopBarProps) {
+export function TopBar({ className }: Readonly<{ className?: string }>) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const breadcrumbs = getBreadcrumbs(pathname);
@@ -90,118 +45,96 @@ export function TopBar({ className }: TopBarProps) {
   const [notifOpen, setNotifOpen] = React.useState(false);
   const [userOpen, setUserOpen] = React.useState(false);
   const [themeOpen, setThemeOpen] = React.useState(false);
+  const [user, setUser] = React.useState<UserData>({ name: 'Admin', email: 'admin@example.com', initials: 'A' });
 
   const unreadCount = MOCK_NOTIFICATIONS.filter((n) => !n.read).length;
 
-  // Close dropdowns on outside click
+  React.useEffect(() => {
+    fetch('/api/auth/me').then(r => r.ok ? r.json() : null).then(d => {
+      if (d?.user) {
+        const name = d.user.name ?? d.user.email ?? 'Admin';
+        const initials = name.split(' ').map((p: string) => p[0]).join('').slice(0, 2).toUpperCase();
+        setUser({ name, email: d.user.email ?? '', initials });
+      }
+    }).catch(() => null);
+  }, []);
+
   React.useEffect(() => {
     const handler = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target.closest('[data-dropdown]')) {
-        setNotifOpen(false);
-        setUserOpen(false);
-        setThemeOpen(false);
+      if (!(e.target as HTMLElement).closest('[data-dropdown]')) {
+        setNotifOpen(false); setUserOpen(false); setThemeOpen(false);
       }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const themeIcon = theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor;
-  const ThemeIcon = themeIcon;
+  let ThemeIcon = Monitor;
+  if (theme === 'dark') ThemeIcon = Moon;
+  else if (theme === 'light') ThemeIcon = Sun;
 
   return (
-    <header
-      className={cn(
-        'h-14 flex items-center px-4 gap-4 bg-[hsl(var(--card))] border-b border-[hsl(var(--border))]',
-        className,
-      )}
-    >
+    <header className={cn('topbar', className)}>
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-1 text-sm flex-1 min-w-0" aria-label="Breadcrumb">
+      <nav className="topbar__breadcrumb" aria-label="Breadcrumb">
         {breadcrumbs.map((crumb, i) => (
           <React.Fragment key={crumb.href}>
-            {i > 0 && <ChevronRight className="w-3.5 h-3.5 text-[hsl(var(--muted-foreground))] flex-shrink-0" />}
+            {i > 0 && <ChevronRight className="w-3 h-3 topbar__sep flex-shrink-0" aria-hidden="true" />}
             {i === breadcrumbs.length - 1 ? (
-              <span className="font-medium text-[hsl(var(--foreground))] truncate">{crumb.label}</span>
+              <span className="topbar__crumb topbar__crumb--active">{crumb.label}</span>
             ) : (
-              <Link
-                href={crumb.href}
-                className="text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors truncate"
-              >
-                {crumb.label}
-              </Link>
+              <Link href={crumb.href} className="topbar__crumb">{crumb.label}</Link>
             )}
           </React.Fragment>
         ))}
       </nav>
 
       {/* Search */}
-      <div className="relative">
+      <div className="relative flex-shrink-0">
         {searchOpen ? (
           <input
             autoFocus
-            type="text"
+            type="search"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             onBlur={() => { setSearchOpen(false); setSearchValue(''); }}
-            placeholder="Search..."
-            className={cn(
-              'w-56 h-8 px-3 pr-8 text-sm rounded-md border border-[hsl(var(--border))]',
-              'bg-[hsl(var(--background))] text-[hsl(var(--foreground))]',
-              'placeholder:text-[hsl(var(--muted-foreground))]',
-              'focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))]',
-            )}
+            placeholder="Search…"
+            className="input"
+            style={{ width: 220, height: 32, fontSize: 13 }}
           />
         ) : (
           <button
             onClick={() => setSearchOpen(true)}
-            className={cn(
-              'flex items-center gap-2 h-8 px-3 text-sm rounded-md',
-              'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]',
-              'border border-[hsl(var(--border))] hover:bg-[hsl(var(--accent))]',
-              'transition-colors duration-150',
-            )}
+            className="topbar__search"
+            aria-label="Open search"
           >
-            <Search className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-xs">Search...</span>
-            <kbd className="hidden sm:inline text-[10px] bg-[hsl(var(--muted))] px-1.5 py-0.5 rounded font-mono">⌘K</kbd>
+            <Search className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+            <span className="hidden sm:inline">Search…</span>
+            <kbd className="topbar__kbd hidden sm:inline">⌘K</kbd>
           </button>
         )}
       </div>
 
       {/* Theme toggle */}
-      <div className="relative" data-dropdown>
+      <div className="relative flex-shrink-0" data-dropdown>
         <button
-          onClick={() => setThemeOpen((v) => !v)}
-          className={cn(
-            'w-8 h-8 flex items-center justify-center rounded-md',
-            'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]',
-            'hover:bg-[hsl(var(--accent))] transition-colors duration-150',
-          )}
+          onClick={() => setThemeOpen(v => !v)}
+          className="topbar__action"
           aria-label="Toggle theme"
         >
-          <ThemeIcon className="w-4 h-4" />
+          <ThemeIcon className="w-4 h-4" aria-hidden="true" />
         </button>
         {themeOpen && (
-          <div className={cn(
-            'absolute right-0 top-full mt-1 w-36 rounded-md border border-[hsl(var(--border))]',
-            'bg-[hsl(var(--popover))] shadow-lg py-1 z-50 animate-fade-in',
-          )}>
+          <div className="dropdown" style={{ right: 0, top: 'calc(100% + 6px)', width: 140 }}>
             {([['light', 'Light', Sun], ['dark', 'Dark', Moon], ['system', 'System', Monitor]] as const).map(
               ([value, label, Icon]) => (
                 <button
                   key={value}
                   onClick={() => { setTheme(value); setThemeOpen(false); }}
-                  className={cn(
-                    'w-full flex items-center gap-2 px-3 py-1.5 text-sm',
-                    'hover:bg-[hsl(var(--accent))] transition-colors',
-                    theme === value
-                      ? 'text-[hsl(var(--primary))] font-medium'
-                      : 'text-[hsl(var(--popover-foreground))]',
-                  )}
+                  className={cn('dropdown-item', theme === value && 'font-medium')}
+                  style={{ color: theme === value ? 'hsl(var(--primary))' : undefined }}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className="w-3.5 h-3.5" aria-hidden="true" />
                   {label}
                 </button>
               ),
@@ -211,49 +144,43 @@ export function TopBar({ className }: TopBarProps) {
       </div>
 
       {/* Notifications */}
-      <div className="relative" data-dropdown>
+      <div className="relative flex-shrink-0" data-dropdown>
         <button
-          onClick={() => setNotifOpen((v) => !v)}
-          className={cn(
-            'relative w-8 h-8 flex items-center justify-center rounded-md',
-            'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]',
-            'hover:bg-[hsl(var(--accent))] transition-colors duration-150',
-          )}
-          aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+          onClick={() => setNotifOpen(v => !v)}
+          className="topbar__action"
+          aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : 'Notifications'}
         >
-          <Bell className="w-4 h-4" />
-          {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 w-2 h-2 bg-[hsl(var(--destructive))] rounded-full" />
-          )}
+          <Bell className="w-4 h-4" aria-hidden="true" />
+          {unreadCount > 0 && <span className="notif-dot" aria-hidden="true" />}
         </button>
 
         {notifOpen && (
-          <div className={cn(
-            'absolute right-0 top-full mt-1 w-80 rounded-md border border-[hsl(var(--border))]',
-            'bg-[hsl(var(--popover))] shadow-lg z-50 animate-fade-in overflow-hidden',
-          )}>
-            <div className="px-4 py-2.5 border-b border-[hsl(var(--border))]">
-              <h3 className="text-sm font-semibold text-[hsl(var(--popover-foreground))]">Notifications</h3>
+          <div className="dropdown" style={{ right: 0, top: 'calc(100% + 6px)', width: 300 }}>
+            <div style={{ padding: '10px 14px 8px', borderBottom: '1px solid hsl(var(--border))' }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'hsl(var(--foreground))' }}>Notifications</span>
             </div>
-            <div className="max-h-80 overflow-y-auto">
+            <div style={{ maxHeight: 300, overflowY: 'auto' }}>
               {MOCK_NOTIFICATIONS.map((n) => (
                 <div
                   key={n.id}
-                  className={cn(
-                    'px-4 py-3 border-b border-[hsl(var(--border))] last:border-0',
-                    'hover:bg-[hsl(var(--accent))] transition-colors cursor-pointer',
-                    !n.read && 'bg-[hsl(var(--primary)/0.04)]',
-                  )}
+                  className="dropdown-item"
+                  style={{
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    gap: 2,
+                    borderBottom: '1px solid hsl(var(--border) / 0.5)',
+                    background: n.read ? undefined : 'hsl(var(--primary) / 0.04)',
+                  }}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className={cn('text-xs font-medium truncate', !n.read && 'text-[hsl(var(--primary))]')}>
-                        {n.title}
-                      </p>
-                      <p className="text-xs text-[hsl(var(--muted-foreground))] mt-0.5 line-clamp-1">{n.description}</p>
-                    </div>
-                    <span className="text-[10px] text-[hsl(var(--muted-foreground))] flex-shrink-0">{n.time}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 550, color: n.read ? 'hsl(var(--foreground))' : 'hsl(var(--primary))' }}>
+                      {n.title}
+                    </span>
+                    <span style={{ fontSize: 10.5, fontFamily: 'var(--font-mono)', color: 'hsl(var(--muted-foreground))' }}>
+                      {n.time}
+                    </span>
                   </div>
+                  <span style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))' }}>{n.description}</span>
                 </div>
               ))}
             </div>
@@ -262,56 +189,42 @@ export function TopBar({ className }: TopBarProps) {
       </div>
 
       {/* User menu */}
-      <div className="relative" data-dropdown>
+      <div className="relative flex-shrink-0" data-dropdown>
         <button
-          onClick={() => setUserOpen((v) => !v)}
-          className={cn(
-            'flex items-center gap-2 h-8 px-2 rounded-md',
-            'hover:bg-[hsl(var(--accent))] transition-colors duration-150',
-          )}
+          onClick={() => setUserOpen(v => !v)}
+          className={cn('topbar__action', 'gap-2')}
+          style={{ width: 'auto', padding: '0 8px' }}
           aria-label="User menu"
         >
-          <div className="w-6 h-6 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center flex-shrink-0">
-            <span className="text-[10px] font-semibold text-white">A</span>
-          </div>
-          <span className="hidden sm:inline text-sm font-medium text-[hsl(var(--foreground))]">Admin</span>
+          <div className="topbar__avatar" aria-hidden="true">{user.initials}</div>
+          <span className="hidden sm:inline" style={{ fontSize: 13, fontWeight: 500, color: 'hsl(var(--foreground))' }}>
+            {user.name}
+          </span>
         </button>
 
         {userOpen && (
-          <div className={cn(
-            'absolute right-0 top-full mt-1 w-48 rounded-md border border-[hsl(var(--border))]',
-            'bg-[hsl(var(--popover))] shadow-lg z-50 animate-fade-in py-1',
-          )}>
-            <div className="px-3 py-2 border-b border-[hsl(var(--border))]">
-              <p className="text-xs font-semibold text-[hsl(var(--popover-foreground))]">Admin User</p>
-              <p className="text-[11px] text-[hsl(var(--muted-foreground))] truncate">admin@example.com</p>
+          <div className="dropdown" style={{ right: 0, top: 'calc(100% + 6px)', width: 192 }}>
+            <div style={{ padding: '10px 14px 8px', borderBottom: '1px solid hsl(var(--border))' }}>
+              <div style={{ fontSize: 12.5, fontWeight: 600, color: 'hsl(var(--foreground))' }}>{user.name}</div>
+              <div style={{ fontSize: 11.5, color: 'hsl(var(--muted-foreground))', marginTop: 1 }}>{user.email}</div>
             </div>
-            <Link
-              href="/profile"
-              className="flex items-center gap-2 px-3 py-1.5 text-sm text-[hsl(var(--popover-foreground))] hover:bg-[hsl(var(--accent))] transition-colors"
-              onClick={() => setUserOpen(false)}
-            >
-              <User className="w-3.5 h-3.5" /> Profile
+            <Link href="/profile" className="dropdown-item" onClick={() => setUserOpen(false)}>
+              <User className="w-3.5 h-3.5" aria-hidden="true" /> Profile
             </Link>
-            <Link
-              href="/settings"
-              className="flex items-center gap-2 px-3 py-1.5 text-sm text-[hsl(var(--popover-foreground))] hover:bg-[hsl(var(--accent))] transition-colors"
-              onClick={() => setUserOpen(false)}
-            >
-              <Settings className="w-3.5 h-3.5" /> Settings
+            <Link href="/settings" className="dropdown-item" onClick={() => setUserOpen(false)}>
+              <Settings className="w-3.5 h-3.5" aria-hidden="true" /> Settings
             </Link>
-            <div className="border-t border-[hsl(var(--border))] mt-1 pt-1">
-              <button
-                className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-[hsl(var(--destructive))] hover:bg-[hsl(var(--accent))] transition-colors"
-                onClick={async () => {
-                  setUserOpen(false);
-                  await fetch('/api/auth/logout', { method: 'POST' }).catch(() => null);
-                  window.location.href = '/login';
-                }}
-              >
-                <LogOut className="w-3.5 h-3.5" /> Sign out
-              </button>
-            </div>
+            <div className="dropdown-sep" />
+            <button
+              className="dropdown-item dropdown-item--danger"
+              onClick={async () => {
+                setUserOpen(false);
+                await fetch('/api/auth/logout', { method: 'POST' }).catch(() => null);
+                globalThis.location.href = '/login';
+              }}
+            >
+              <LogOut className="w-3.5 h-3.5" aria-hidden="true" /> Sign out
+            </button>
           </div>
         )}
       </div>
