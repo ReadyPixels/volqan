@@ -31,9 +31,10 @@ export interface ContentEntry {
   slug: string | null;
   status: ContentStatus;
   publishedAt: Date | null;
+  scheduledAt: Date | null;
+  unpublishAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
-  deletedAt: Date | null;
   authorId: string | null;
   data: ContentEntryData;
 }
@@ -50,11 +51,9 @@ export interface ContentEntry {
 function buildPrismaWhere(
   contentTypeId: string,
   where: QueryOptions['where'],
-  includeSoftDeleted = false,
 ): Record<string, unknown> {
   const clause: Record<string, unknown> = {
     contentTypeId,
-    ...(!includeSoftDeleted && { deletedAt: null }),
   };
 
   if (!where) return clause;
@@ -168,8 +167,8 @@ export class ContentRepository {
         slug: entrySlug,
         status: initialStatus,
         authorId: authorId ?? null,
-        data: mutatedData as unknown,
-        publishedAt: initialStatus === ContentStatus.PUBLISHED ? new Date() : null,
+        data: mutatedData as never,
+         publishedAt: initialStatus === ContentStatus.PUBLISHED ? new Date() : null,
       },
     });
 
@@ -192,7 +191,7 @@ export class ContentRepository {
   async findById(contentTypeSlug: string, id: string): Promise<ContentEntry> {
     const dbType = await this._requireDbType(contentTypeSlug);
     const record = await this.prisma.contentEntry.findFirst({
-      where: { id, contentTypeId: dbType.id, deletedAt: null },
+      where: { id, contentTypeId: dbType.id },
     });
     if (!record) throw new ContentEntryNotFoundError(id);
     return this._recordToEntry(record, contentTypeSlug);
@@ -206,7 +205,7 @@ export class ContentRepository {
   async findBySlug(contentTypeSlug: string, slug: string): Promise<ContentEntry> {
     const dbType = await this._requireDbType(contentTypeSlug);
     const record = await this.prisma.contentEntry.findFirst({
-      where: { slug, contentTypeId: dbType.id, deletedAt: null },
+      where: { slug, contentTypeId: dbType.id },
     });
     if (!record) throw new ContentEntryNotFoundError(`slug:${slug}`);
     return this._recordToEntry(record, contentTypeSlug);
@@ -277,7 +276,7 @@ export class ContentRepository {
     const dbType = await this._requireDbType(contentTypeSlug);
 
     const existing = await this.prisma.contentEntry.findFirst({
-      where: { id, contentTypeId: dbType.id, deletedAt: null },
+      where: { id, contentTypeId: dbType.id },
     });
     if (!existing) throw new ContentEntryNotFoundError(id);
 
@@ -293,7 +292,7 @@ export class ContentRepository {
 
     const record = await this.prisma.contentEntry.update({
       where: { id },
-      data: { data: merged as unknown },
+      data: { data: merged as never },
     });
 
     const entry = this._recordToEntry(record, contentTypeSlug);
@@ -316,21 +315,14 @@ export class ContentRepository {
     const dbType = await this._requireDbType(contentTypeSlug);
 
     const existing = await this.prisma.contentEntry.findFirst({
-      where: { id, contentTypeId: dbType.id, deletedAt: null },
+      where: { id, contentTypeId: dbType.id },
     });
     if (!existing) throw new ContentEntryNotFoundError(id);
 
     const entry = this._recordToEntry(existing, contentTypeSlug);
     await this.hooks?.fire('beforeDelete', { contentTypeSlug, entry: entry as unknown as Record<string, unknown> });
 
-    if (contentType.settings.softDelete) {
-      await this.prisma.contentEntry.update({
-        where: { id },
-        data: { deletedAt: new Date(), status: ContentStatus.ARCHIVED },
-      });
-    } else {
-      await this.prisma.contentEntry.delete({ where: { id } });
-    }
+    await this.prisma.contentEntry.delete({ where: { id } });
 
     await this.hooks?.fire('afterDelete', { contentTypeSlug, id });
   }
@@ -347,7 +339,7 @@ export class ContentRepository {
   async publish(contentTypeSlug: string, id: string): Promise<ContentEntry> {
     const dbType = await this._requireDbType(contentTypeSlug);
     const existing = await this.prisma.contentEntry.findFirst({
-      where: { id, contentTypeId: dbType.id, deletedAt: null },
+      where: { id, contentTypeId: dbType.id },
     });
     if (!existing) throw new ContentEntryNotFoundError(id);
 
@@ -372,7 +364,7 @@ export class ContentRepository {
   async unpublish(contentTypeSlug: string, id: string): Promise<ContentEntry> {
     const dbType = await this._requireDbType(contentTypeSlug);
     const existing = await this.prisma.contentEntry.findFirst({
-      where: { id, contentTypeId: dbType.id, deletedAt: null },
+      where: { id, contentTypeId: dbType.id },
     });
     if (!existing) throw new ContentEntryNotFoundError(id);
 
@@ -392,7 +384,7 @@ export class ContentRepository {
   async archive(contentTypeSlug: string, id: string): Promise<ContentEntry> {
     const dbType = await this._requireDbType(contentTypeSlug);
     const existing = await this.prisma.contentEntry.findFirst({
-      where: { id, contentTypeId: dbType.id, deletedAt: null },
+      where: { id, contentTypeId: dbType.id },
     });
     if (!existing) throw new ContentEntryNotFoundError(id);
 
@@ -438,9 +430,10 @@ export class ContentRepository {
       slug: string | null;
       status: string;
       publishedAt: Date | null;
+      scheduledAt: Date | null;
+      unpublishAt: Date | null;
       createdAt: Date;
       updatedAt: Date;
-      deletedAt: Date | null;
       authorId: string | null;
       data: unknown;
     },
@@ -453,9 +446,10 @@ export class ContentRepository {
       slug: record.slug,
       status: record.status as ContentStatus,
       publishedAt: record.publishedAt,
+      scheduledAt: record.scheduledAt,
+      unpublishAt: record.unpublishAt,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
-      deletedAt: record.deletedAt,
       authorId: record.authorId,
       data: record.data as ContentEntryData,
     };

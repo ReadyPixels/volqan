@@ -7,8 +7,8 @@
       "dom.iterable",
       "esnext"
     ],
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "jsx": "preserve",
     "incremental": true,
     "plugins": [
@@ -18,11 +18,13 @@
     ],
     "paths": {
       "@/*": [
-        "./src/*"
+        "./packages/admin/src/*"
       ]
     },
     "strict": true,
     "noEmit": true,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,

@@ -86,8 +86,8 @@ export class SchemaBuilder {
         name: definition.name,
         slug: definition.slug,
         description: definition.description ?? null,
-        fields: definition.fields as unknown,
-        settings: definition.settings as unknown,
+        fields: definition.fields as never,
+        settings: definition.settings as never,
       },
     });
 

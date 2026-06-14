@@ -39,7 +39,10 @@
     "tailwindcss": "^4.1.4",
     "@tailwindcss/postcss": "^4.1.4",
     "postcss": "^8.5.3",
-    "autoprefixer": "^10.4.21"
+    "autoprefixer": "^10.4.21",
+    "@next/eslint-plugin-next": "^15.0.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "typescript-eslint": "^8.0.0"
   },
   "peerDependencies": {
     "react": ">=18"

@@ -78,7 +78,7 @@ function mapToAuthSession(
       email: string;
       name: string | null;
       avatar: string | null;
-      role: import('../database/index.js').UserRole;
+      role: string;
       emailVerified: Date | null;
     };
   },
@@ -88,7 +88,7 @@ function mapToAuthSession(
     email: session.user.email,
     name: session.user.name,
     avatar: session.user.avatar,
-    role: session.user.role,
+    role: session.user.role as import('../database/index.js').UserRole,
     emailVerified: session.user.emailVerified,
   };
 

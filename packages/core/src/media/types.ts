@@ -27,22 +27,12 @@ export interface MediaFile {
   size: number;
   /** Publicly accessible URL to the file. */
   url: string;
-  /** URL of the generated thumbnail (images only). */
-  thumbnailUrl: string | null;
-  /** Image width in pixels (images only). */
-  width: number | null;
-  /** Image height in pixels (images only). */
-  height: number | null;
   /** Virtual folder path (e.g. "blog/heroes"). */
   folder: string | null;
   /** Optional alt text for accessibility. */
   alt: string | null;
-  /** Optional human-readable caption. */
-  caption: string | null;
   /** Timestamp of upload. */
   createdAt: Date;
-  /** Timestamp of last metadata update. */
-  updatedAt: Date;
 }
 
 // ---------------------------------------------------------------------------
@@ -59,8 +49,6 @@ export interface UploadOptions {
   filename?: string;
   /** Alt text for image accessibility. */
   alt?: string;
-  /** Human-readable caption for the image. */
-  caption?: string;
   /** When true, generate a thumbnail for image files. Default true. */
   generateThumbnail?: boolean;
   /** Maximum allowed file size in bytes. Overrides the global default. */

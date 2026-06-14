@@ -81,7 +81,7 @@ interface LabelProps {
   children: React.ReactNode;
 }
 
-function Label({ htmlFor, required, children }: LabelProps): JSX.Element {
+function Label({ htmlFor, required, children }: LabelProps): React.ReactElement {
   return (
     <label
       htmlFor={htmlFor}
@@ -105,7 +105,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
-function Input({ error, style, ...props }: InputProps): JSX.Element {
+function Input({ error, style, ...props }: InputProps): React.ReactElement {
   return (
     <>
       <input
@@ -135,7 +135,7 @@ interface ImagePickerProps {
   onChange: (url: string | null) => void;
 }
 
-function ImagePicker({ value, onChange }: ImagePickerProps): JSX.Element {
+function ImagePicker({ value, onChange }: ImagePickerProps): React.ReactElement {
   return (
     <div
       style={{
@@ -216,7 +216,7 @@ interface TagInputProps {
   onChange: (tags: string[]) => void;
 }
 
-function TagInput({ value, onChange }: TagInputProps): JSX.Element {
+function TagInput({ value, onChange }: TagInputProps): React.ReactElement {
   const [inputValue, setInputValue] = useState('');
 
   const addTag = useCallback(
@@ -315,7 +315,7 @@ interface RichTextAreaProps {
  * In production this would delegate to Volqan's built-in TipTap/ProseMirror editor.
  * The textarea fallback guarantees the component is always functional.
  */
-function RichTextArea({ value, onChange, minHeight = '400px' }: RichTextAreaProps): JSX.Element {
+function RichTextArea({ value, onChange, minHeight = '400px' }: RichTextAreaProps): React.ReactElement {
   return (
     <div
       style={{
@@ -397,7 +397,7 @@ function PublishControls({
   onDraft,
   onPublish,
   onSchedule,
-}: PublishControlsProps): JSX.Element {
+}: PublishControlsProps): React.ReactElement {
   const isScheduled =
     publishedAt != null && new Date(publishedAt).getTime() > Date.now();
 
@@ -522,7 +522,7 @@ export function PostEditor({
   onCancel,
   isSaving = false,
   categories = DEFAULT_CATEGORIES,
-}: PostEditorProps): JSX.Element {
+}: PostEditorProps): React.ReactElement {
   const [post, setPost] = useState<PostEditorPost>({
     title: '',
     slug: '',

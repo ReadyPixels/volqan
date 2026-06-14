@@ -73,7 +73,7 @@ interface FieldProps {
   onChange: (name: string, value: FieldValue) => void;
 }
 
-function RenderedField({ field, value, error, onChange }: FieldProps): JSX.Element {
+function RenderedField({ field, value, error, onChange }: FieldProps): React.ReactElement {
   const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: '0.625rem 0.75rem',
@@ -289,7 +289,7 @@ export function FormRenderer({
   className,
   onSuccess,
   onError,
-}: FormRendererProps): JSX.Element {
+}: FormRendererProps): React.ReactElement {
   const [data, setData] = useState<Record<string, FieldValue>>(() =>
     getInitialData(form.fields),
   );

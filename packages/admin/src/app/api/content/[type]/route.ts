@@ -31,7 +31,7 @@ export async function GET(
 
     const cacheKey = `content:${type}:${page}:${perPage}:${status ?? ''}:${search ?? ''}:${orderBy}:${direction}`;
     const result = await cached(cacheKey, () =>
-      repo.list(type, { page, perPage, status: status as any, search, orderBy: [{ field: orderBy, direction }] }),
+      repo.findMany(type, { page, perPage, status: status as any, search, orderBy: [{ field: orderBy, direction }] }),
     );
 
     return json(result);
@@ -59,7 +59,7 @@ export async function POST(
   }
 
   try {
-    const entry = await repo.create(type, { ...body, authorId: user.id });
+    const entry = await repo.create(type, { ...body, authorId: user.id } as Record<string, unknown>, user.id);
     await cacheFlush(`content:${type}:`);
     await audit({ userId: user.id, action: 'content.created', resource: type, resourceId: (entry as any).id });
     await fireWebhooks('content.created', { id: (entry as any).id, type }).catch(() => {});

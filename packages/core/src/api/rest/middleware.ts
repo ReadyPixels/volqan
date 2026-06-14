@@ -2,27 +2,10 @@
  * @file api/rest/middleware.ts
  * @description API middleware for the Volqan REST layer.
  *
- * Provides composable middleware functions for:
- * - JWT Authentication
- * - Role-based access control
- * - Rate limiting (in-memory, suitable for single-node deployments)
- * - CORS
- * - Request body validation
- * - Global error handling
- *
- * @example
- * ```ts
- * import { withAuth, withCors, withRateLimit, compose } from '@volqan/core/api/rest';
- *
- * const handler = compose(
- *   withCors({ origins: '*' }),
- *   withRateLimit({ maxRequests: 100, windowMs: 60_000 }),
- *   withAuth(),
- * )(myRouteHandler);
- * ```
+ * Uses standard Web API Request/Response types so the core package
+ * remains framework-agnostic (no Next.js dependency).
  */
 
-import { NextResponse, type NextRequest } from 'next/server';
 import {
   unauthorized,
   forbidden,
@@ -36,13 +19,7 @@ import type { CorsConfig, RateLimitConfig, Middleware, AuthContext } from './typ
 // Auth middleware
 // ---------------------------------------------------------------------------
 
-/**
- * Resolves the auth context from a request's Authorization header.
- * This is a lightweight JWT decode — a real deployment should use a proper
- * JWT library (e.g. `jose`). The actual signature verification MUST be done
- * in the middleware; this placeholder provides the structure for integration.
- */
-export function resolveAuthContext(request: NextRequest): AuthContext | null {
+export function resolveAuthContext(request: Request): AuthContext | null {
   const authHeader = request.headers.get('authorization');
   if (!authHeader?.startsWith('Bearer ')) return null;
 
@@ -50,7 +27,6 @@ export function resolveAuthContext(request: NextRequest): AuthContext | null {
   if (!token) return null;
 
   try {
-    // Decode JWT payload (base64url, no verification here — verify in your JWT lib)
     const parts = token.split('.');
     if (parts.length !== 3) return null;
 
@@ -62,9 +38,7 @@ export function resolveAuthContext(request: NextRequest): AuthContext | null {
       exp?: number;
     };
 
-    // Expiry check
     if (payload.exp && Date.now() / 1000 > payload.exp) return null;
-
     if (!payload.sub) return null;
 
     return {
@@ -77,44 +51,23 @@ export function resolveAuthContext(request: NextRequest): AuthContext | null {
   }
 }
 
-/**
- * Middleware that requires a valid Bearer token.
- * Attaches the resolved auth context to `request.headers` via a custom header
- * (Next.js does not allow mutating the request object directly).
- *
- * @param options.optional When true, the middleware passes unauthenticated
- *   requests through instead of rejecting them.
- */
 export function withAuth(options: { optional?: boolean } = {}): Middleware {
   return async (request, next) => {
     const auth = resolveAuthContext(request);
 
     if (!auth && !options.optional) {
-      return unauthorized() as NextResponse;
-    }
-
-    // Inject auth context into request headers for downstream consumption.
-    // Clone the request with the injected headers.
-    const headers = new Headers(request.headers);
-    if (auth) {
-      headers.set('x-volqan-user-id', auth.userId);
-      headers.set('x-volqan-user-email', auth.email);
-      headers.set('x-volqan-user-role', auth.role);
+      return unauthorized();
     }
 
     return next();
   };
 }
 
-/**
- * Middleware that requires the authenticated user to have a specific role.
- * Must be used after `withAuth`.
- */
 export function withRole(requiredRole: string): Middleware {
   return async (request, next) => {
     const role = request.headers.get('x-volqan-user-role');
     if (!role || role !== requiredRole) {
-      return forbidden(`This action requires the "${requiredRole}" role`) as NextResponse;
+      return forbidden(`This action requires the "${requiredRole}" role`);
     }
     return next();
   };
@@ -124,15 +77,8 @@ export function withRole(requiredRole: string): Middleware {
 // Rate limiting
 // ---------------------------------------------------------------------------
 
-/** In-memory rate limit store. Not suitable for multi-node deployments. */
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
 
-/**
- * Middleware that enforces a sliding-window rate limit per IP address.
- * For production multi-node deployments, replace the in-memory store with Redis.
- *
- * @param config Rate limit configuration.
- */
 export function withRateLimit(config: RateLimitConfig): Middleware {
   const { maxRequests, windowMs } = config;
 
@@ -150,7 +96,7 @@ export function withRateLimit(config: RateLimitConfig): Middleware {
     } else {
       entry.count++;
       if (entry.count > maxRequests) {
-        const response = tooManyRequests() as NextResponse;
+        const response = tooManyRequests();
         response.headers.set('Retry-After', String(Math.ceil((entry.resetAt - now) / 1000)));
         return response;
       }
@@ -170,12 +116,6 @@ export function withRateLimit(config: RateLimitConfig): Middleware {
 // CORS
 // ---------------------------------------------------------------------------
 
-/**
- * Middleware that adds CORS headers to every response.
- * Also handles OPTIONS preflight requests.
- *
- * @param config CORS configuration.
- */
 export function withCors(config: CorsConfig): Middleware {
   const {
     origins,
@@ -202,9 +142,8 @@ export function withCors(config: CorsConfig): Middleware {
       corsHeaders['Access-Control-Allow-Origin'] = origins === '*' ? '*' : origin;
     }
 
-    // Handle preflight
     if (request.method === 'OPTIONS') {
-      return new NextResponse(null, { status: 204, headers: corsHeaders });
+      return new Response(null, { status: 204, headers: corsHeaders });
     }
 
     const response = await next();
@@ -219,10 +158,6 @@ export function withCors(config: CorsConfig): Middleware {
 // Request body validation
 // ---------------------------------------------------------------------------
 
-/**
- * Middleware that parses and validates the JSON request body.
- * Rejects requests with non-JSON bodies for POST/PUT/PATCH methods.
- */
 export function withJsonBody(): Middleware {
   return async (request, next) => {
     const method = request.method.toUpperCase();
@@ -230,13 +165,13 @@ export function withJsonBody(): Middleware {
 
     const contentType = request.headers.get('content-type') ?? '';
     if (!contentType.includes('application/json')) {
-      return badRequest('Content-Type must be application/json') as NextResponse;
+      return badRequest('Content-Type must be application/json');
     }
 
     try {
       await request.json();
     } catch {
-      return badRequest('Invalid JSON body') as NextResponse;
+      return badRequest('Invalid JSON body');
     }
 
     return next();
@@ -247,24 +182,18 @@ export function withJsonBody(): Middleware {
 // Error catching wrapper
 // ---------------------------------------------------------------------------
 
-/**
- * Wraps a route handler with a top-level try/catch.
- * Any unhandled errors are converted to a 500 response.
- *
- * @param handler The route handler to wrap.
- */
 export function withErrorHandling(
-  handler: (request: NextRequest, context: { params: Promise<Record<string, string>> }) => Promise<NextResponse>,
+  handler: (request: Request, context: { params: Promise<Record<string, string>> }) => Promise<Response>,
 ) {
   return async (
-    request: NextRequest,
+    request: Request,
     context: { params: Promise<Record<string, string>> },
-  ): Promise<NextResponse> => {
+  ): Promise<Response> => {
     try {
       return await handler(request, context);
     } catch (err) {
       console.error('[Volqan] Unhandled route error:', err);
-      return internalError() as NextResponse;
+      return internalError();
     }
   };
 }
@@ -274,32 +203,16 @@ export function withErrorHandling(
 // ---------------------------------------------------------------------------
 
 type AnyHandler = (
-  request: NextRequest,
+  request: Request,
   context: { params: Promise<Record<string, string>> },
-) => Promise<NextResponse>;
+) => Promise<Response>;
 
-/**
- * Composes multiple middleware functions into a single wrapper.
- * Middleware is applied in the order provided (outermost to innermost).
- *
- * @param middlewares Ordered list of middleware to compose.
- * @returns A function that wraps a route handler with the composed middleware.
- *
- * @example
- * ```ts
- * const protectedHandler = compose(
- *   withCors({ origins: '*' }),
- *   withRateLimit({ maxRequests: 60, windowMs: 60_000 }),
- *   withAuth(),
- * )(myHandler);
- * ```
- */
 export function compose(...middlewares: Middleware[]) {
   return (handler: AnyHandler): AnyHandler => {
     return async (request, context) => {
       let index = 0;
 
-      const run = async (): Promise<NextResponse> => {
+      const run = async (): Promise<Response> => {
         if (index >= middlewares.length) {
           return handler(request, context);
         }
@@ -313,14 +226,10 @@ export function compose(...middlewares: Middleware[]) {
 }
 
 // ---------------------------------------------------------------------------
-// Auth context helpers for use inside route handlers
+// Auth context helpers
 // ---------------------------------------------------------------------------
 
-/**
- * Reads the injected auth context from request headers.
- * Returns null if the request was not authenticated.
- */
-export function getAuthContext(request: NextRequest): AuthContext | null {
+export function getAuthContext(request: Request): AuthContext | null {
   const userId = request.headers.get('x-volqan-user-id');
   const email = request.headers.get('x-volqan-user-email');
   const role = request.headers.get('x-volqan-user-role');
