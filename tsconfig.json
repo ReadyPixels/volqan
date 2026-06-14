@@ -13,34 +13,7 @@
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "resolveJsonModule": true,
-    "verbatimModuleSyntax": true,
-    "baseUrl": ".",
-    "paths": {
-      "@volqan/core": [
-        "packages/core/src/index.ts"
-      ],
-      "@volqan/admin": [
-        "packages/admin/src/index.ts"
-      ],
-      "@volqan/cli": [
-        "packages/cli/src/index.ts"
-      ],
-      "@volqan/extension-sdk": [
-        "packages/extension-sdk/src/index.ts"
-      ],
-      "@volqan/theme-sdk": [
-        "packages/theme-sdk/src/index.ts"
-      ],
-      "@volqan/cloud-bridge": [
-        "packages/cloud-bridge/src/index.ts"
-      ],
-      "@volqan/*": [
-        "packages/*/src/index.ts"
-      ],
-      "@/*": [
-        "packages/admin/src/*"
-      ]
-    }
+    "verbatimModuleSyntax": true
   },
   "include": [
     "packages/**/*.ts",
