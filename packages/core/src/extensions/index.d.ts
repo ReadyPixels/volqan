@@ -1,0 +1,17 @@
+/**
+ * @file extensions/index.ts
+ * @description Barrel export for the Volqan Extension Engine.
+ *
+ * Import from this module to access all extension-related types and functions:
+ * ```ts
+ * import { VolqanExtension, ExtensionManager } from '@volqan/core/extensions';
+ * ```
+ */
+export type { VolqanExtension, ExtensionContext, MenuItem, AdminPage, Widget, SettingField, RouteDefinition, ExtensionRequest, ExtensionResponse, ContentHook, ContentHookPayload, Migration, } from './types.js';
+export { loadExtension, validateExtension, enableExtension, disableExtension, bootExtension, unloadExtension, getInstalledExtensions, getExtension, collectMenuItems, collectAdminPages, collectWidgets, collectSettings, collectApiRoutes, collectContentHooks, collectMigrations, setInstallationId, ExtensionValidationError, ExtensionLifecycleError, } from './loader.js';
+export type { LoadedExtension, ExtensionStatus } from './loader.js';
+export { ExtensionManager, BAZARIX_MARKETPLACE_URL, BAZARIX_EXTENSIONS_URL, BAZARIX_THEMES_URL, } from './manager.js';
+export type { ExtensionManagerOptions, LicenseValidationResult, } from './manager.js';
+export { BAZARIX_BASE_URL, BAZARIX_EXTENSIONS_BROWSE_URL, BAZARIX_THEMES_BROWSE_URL, buildMarketplaceURL, parseInstallURL, } from './deep-link.js';
+export type { MarketplaceFilters, ParsedInstallURL } from './deep-link.js';
+//# sourceMappingURL=index.d.ts.map

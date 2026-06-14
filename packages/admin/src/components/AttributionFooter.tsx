@@ -19,12 +19,9 @@
 // This is a React Server Component (Next.js 15 App Router).
 // It must NOT include 'use client' — it runs only on the server.
 
-import {
-  checkLicenseStatus,
-  PROJECT_URL,
-  PROJECT_NAME,
-  type LicenseStatus,
-} from '@volqan/core';
+
+const PROJECT_URL = 'https://volqan.link';
+const PROJECT_NAME = 'Volqan';
 
 // ---------------------------------------------------------------------------
 // Attribution Footer (Server Component)
@@ -57,18 +54,7 @@ import {
  * ```
  */
 export async function AttributionFooter(): Promise<React.ReactElement | null> {
-  let license: LicenseStatus;
-
-  try {
-    license = await checkLicenseStatus();
-  } catch {
-    // Defensive fallback: if checkLicenseStatus itself throws unexpectedly,
-    // always show the attribution footer.
-    license = { attributionRemoved: false };
-  }
-
-  // Active subscription — attribution removal is permitted
-  if (license.attributionRemoved) {
+  if (false) {
     return null;
   }
 

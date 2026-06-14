@@ -46,7 +46,9 @@ Changes staged for the next release are tracked here before a version number is 
 
 ### Fixed
 
-- Added `aria-label="Main navigation"` to sidebar `<nav>` element (packages/admin)
+- Fixed `UnhandledSchemeError: Reading from "node:child_process"` build error — removed `@volqan/core` import from middleware (edge runtime cannot resolve Node.js-only modules); middleware now checks session cookie existence only, with per-route auth validation preserved via `api-helpers.ts` (packages/admin)
+- Fixed `useState in Server Component` error — added `'use client'` directive to `AdminShell.tsx` which manages sidebar collapse state (packages/admin)
+- Removed runtime `@volqan/core` imports from client-rendered components (`AttributionFooter.tsx`, `pages/page.tsx`) to prevent Node.js module leakage into browser bundles (packages/admin)
 - Added `aria-current="page"` to active sidebar links (packages/admin)
 - Added `aria-expanded` and `aria-controls` to collapsible sidebar nav buttons (packages/admin)
 - Decorative required-field asterisks now `aria-hidden`; added `sr-only` "(required)" text for screen readers (packages/admin)
