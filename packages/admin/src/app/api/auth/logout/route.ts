@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server';
-import { destroySession, SESSION_COOKIE_NAME } from '@volqan/core';
+import { destroySession, clearSessionCookie, SESSION_COOKIE_NAME } from '@volqan/core';
 import { json } from '@/lib/api-helpers';
 
 export async function POST(request: NextRequest): Promise<Response> {
@@ -10,10 +10,6 @@ export async function POST(request: NextRequest): Promise<Response> {
   }
 
   const response = json({ ok: true });
-  // Clear the cookie
-  response.headers.set(
-    'Set-Cookie',
-    `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`,
-  );
+  clearSessionCookie(response);
   return response;
 }

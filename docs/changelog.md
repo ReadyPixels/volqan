@@ -21,6 +21,18 @@ Changes not yet assigned to a date.
 
 ---
 
+## 2026-06-22
+
+### Security
+- Hardened API key management routes to enforce admin-only access and prevent `ADMIN` users from managing other users' keys (packages/admin)
+- Unified session cookie issue/clear handling through shared helpers, preserving production `Secure` attributes across login, logout, OAuth callback, and SAML ACS flows (packages/admin, packages/core)
+- Added focused regression tests for API key permission filtering and session cookie formatting (packages/admin, packages/core)
+
+### Changed
+- Excluded `*.test.ts` and `*.spec.ts` files from package typecheck in admin and core packages so runtime-focused node tests do not block package compilation (packages/admin, packages/core)
+
+---
+
 ## 2026-06-14
 
 ### Security

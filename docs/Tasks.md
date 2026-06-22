@@ -106,6 +106,8 @@ All outstanding work identified across the codebase audit (May 2026).
 - [x] Security: API key scope creation validated against an allowlist
 - [x] Security: session cookie now includes `Secure` flag in production
 - [x] Security: media list and GET-by-ID now enforce ownership — non-admin users only see their own uploads
+- [x] Security: API key routes now enforce admin-only access; `ADMIN` users are limited to their own keys while `SUPER_ADMIN` may manage all keys
+- [x] Security: session issue/clear flows now use shared cookie helpers, including production `Secure` handling for logout, OAuth callback, and SAML ACS
 - [x] API: `GET/POST /api/extensions`, `PATCH/DELETE /api/extensions/[id]`
 - [x] API: `GET/POST /api/themes`, `PATCH/DELETE /api/themes/[id]`
 - [x] API: `GET /api/billing/status`, `POST /api/billing/portal`, `POST /api/billing/webhook`

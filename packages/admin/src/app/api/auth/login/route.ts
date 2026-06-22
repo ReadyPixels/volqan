@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server';
-import { db, verifyPassword, createSession, SESSION_COOKIE_NAME, AuthError } from '@volqan/core';
+import { db, verifyPassword, createSession, setSessionCookie, AuthError } from '@volqan/core';
 import { json, badRequest } from '@/lib/api-helpers';
 import { checkContentLength } from '@/lib/body-limit';
 import { rateLimit } from '@/lib/rate-limit';
@@ -64,12 +64,10 @@ export async function POST(request: NextRequest): Promise<Response> {
       },
     });
 
-    // Set httpOnly session cookie — 7 days
-    const securePart = process.env.NODE_ENV === 'production' ? '; Secure' : '';
-    response.headers.set(
-      'Set-Cookie',
-      `${SESSION_COOKIE_NAME}=${session.token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}${securePart}`,
-    );
+    setSessionCookie(response, {
+      token: session.token,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
 
     return response;
   } catch (err) {

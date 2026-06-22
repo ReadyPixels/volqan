@@ -232,11 +232,11 @@ export function setSessionCookie(
   const parts = [
     `${SESSION_COOKIE_NAME}=${options.token}`,
     'HttpOnly',
-    `Secure=${options.secure ?? isProduction}`,
     'SameSite=Lax',
     `Expires=${options.expiresAt.toUTCString()}`,
     'Path=/',
   ];
+  if (options.secure ?? isProduction) parts.push('Secure');
   if (options.domain) parts.push(`Domain=${options.domain}`);
   response.headers.append('Set-Cookie', parts.join('; '));
 }
@@ -246,9 +246,18 @@ export function setSessionCookie(
  */
 export function clearSessionCookie(response: Response): void {
   const isProduction = process.env['NODE_ENV'] === 'production';
+  const parts = [
+    `${SESSION_COOKIE_NAME}=`,
+    'HttpOnly',
+    'SameSite=Lax',
+    'Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+    'Max-Age=0',
+    'Path=/',
+  ];
+  if (isProduction) parts.push('Secure');
   response.headers.append(
     'Set-Cookie',
-    `${SESSION_COOKIE_NAME}=; HttpOnly; Secure=${isProduction}; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/`,
+    parts.join('; '),
   );
 }
 
