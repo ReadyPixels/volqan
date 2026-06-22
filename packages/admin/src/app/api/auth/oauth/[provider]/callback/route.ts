@@ -4,7 +4,7 @@ import {
   GitHubProvider,
   db,
   createSession,
-  SESSION_COOKIE_NAME,
+  setSessionCookie,
 } from '@volqan/core';
 import { json } from '@/lib/api-helpers';
 
@@ -111,16 +111,16 @@ export async function GET(
       userAgent: request.headers.get('user-agent') ?? undefined,
     });
 
-    const securePart = process.env.NODE_ENV === 'production' ? '; Secure' : '';
     const response = Response.redirect(`${appUrl}/`);
-    response.headers.set(
-      'Set-Cookie',
-      `${SESSION_COOKIE_NAME}=${session.token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}${securePart}`,
-    );
+    setSessionCookie(response, {
+      token: session.token,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
     // Clear the OAuth state cookie
+    const securePart = process.env.NODE_ENV === 'production' ? '; Secure' : '';
     response.headers.append(
       'Set-Cookie',
-      'oauth_state=; Path=/api/auth/oauth; HttpOnly; Max-Age=0',
+      `oauth_state=; Path=/api/auth/oauth; HttpOnly; SameSite=Lax; Max-Age=0${securePart}`,
     );
 
     return response;

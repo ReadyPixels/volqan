@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server';
-import { db, createSession } from '@volqan/core';
+import { db, createSession, setSessionCookie } from '@volqan/core';
 import { json } from '@/lib/api-helpers';
 
 /**
@@ -76,13 +76,11 @@ export async function POST(request: NextRequest): Promise<Response> {
     });
 
     const redirectUrl = relayState.startsWith('/') ? relayState : '/';
-    const securePart = process.env.NODE_ENV === 'production' ? '; Secure' : '';
     const response = Response.redirect(new URL(redirectUrl, appUrl).toString(), 302);
-
-    response.headers.set(
-      'Set-Cookie',
-      `volqan_session=${session.token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${7 * 24 * 60 * 60}${securePart}`,
-    );
+    setSessionCookie(response, {
+      token: session.token,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
     return response;
   } catch (err) {
     console.error('[sso/saml/acs]', err);

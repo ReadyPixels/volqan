@@ -1,17 +1,17 @@
 import type { NextRequest } from 'next/server';
 import { db } from '@volqan/core';
-import { getSessionUser, json, unauthorized, badRequest, internalError } from '@/lib/api-helpers';
+import { getSessionUser, json, unauthorized, forbidden, badRequest, internalError } from '@/lib/api-helpers';
 import { randomBytes, createHash } from 'node:crypto';
-
-const ALLOWED_PERMISSIONS = new Set(['read', 'write', 'media:read', 'media:write', 'users:read', 'users:write']);
+import { canManageApiKeys, validateApiKeyPermissions } from '@/lib/api-key-permissions';
 
 export async function GET(request: NextRequest): Promise<Response> {
   const user = await getSessionUser(request);
   if (!user) return unauthorized();
+  if (!canManageApiKeys(user.role)) return forbidden();
 
   try {
     const keys = await db.apiKey.findMany({
-      where: user.role === 'SUPER_ADMIN' || user.role === 'ADMIN' ? {} : { userId: user.id },
+      where: user.role === 'SUPER_ADMIN' ? {} : { userId: user.id },
       select: {
         id: true, name: true, permissions: true,
         expiresAt: true, lastUsedAt: true, createdAt: true,
@@ -29,6 +29,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 export async function POST(request: NextRequest): Promise<Response> {
   const user = await getSessionUser(request);
   if (!user) return unauthorized();
+  if (!canManageApiKeys(user.role)) return forbidden();
 
   let body: { name?: string; permissions?: string[]; expiresAt?: string };
   try {
@@ -42,9 +43,18 @@ export async function POST(request: NextRequest): Promise<Response> {
   }
 
   const requestedPermissions = body.permissions ?? ['read'];
-  const invalidPerms = requestedPermissions.filter((p) => !ALLOWED_PERMISSIONS.has(p));
-  if (invalidPerms.length > 0) {
-    return badRequest(`Invalid permissions: ${invalidPerms.join(', ')}`);
+  const { invalid, unauthorized: unauthorizedPermissions, granted } = validateApiKeyPermissions(
+    user.role,
+    requestedPermissions,
+  );
+  if (invalid.length > 0) {
+    return badRequest(`Invalid permissions: ${invalid.join(', ')}`);
+  }
+  if (unauthorizedPermissions.length > 0) {
+    return json(
+      { error: `Permissions not allowed for role ${user.role}: ${unauthorizedPermissions.join(', ')}` },
+      403,
+    );
   }
 
   try {
@@ -56,7 +66,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       data: {
         name: body.name,
         key: keyHash,
-        permissions: requestedPermissions,
+        permissions: granted,
         expiresAt: body.expiresAt ? new Date(body.expiresAt) : null,
         userId: user.id,
       },
