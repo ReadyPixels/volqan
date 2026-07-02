@@ -37,6 +37,7 @@ Changes not yet assigned to a date.
 - Top-bar notifications now show real audit-log activity; top-bar search is a working quick-nav; storage settings limited to Local with S3 marked unavailable; inert test-email button disabled with explanation (packages/admin)
 - Mobile More menu now includes Analytics, Billing, AI Assistant, and Profile (packages/admin)
 - Native `confirm()` prompts replaced with accessible dialogs across users, settings, billing, extensions, media, and content (packages/admin)
+- Renamed all Prisma migration folders from timestamp-prefixed (`20260405000000_init`, `20260601000000_webhooks_scheduling`, `20260702000000_installation_billing_fields`) to plain descriptive names (`init`, `webhooks_scheduling`, `installation_billing_fields`); added a CLAUDE.md rule against date/number-prefixed migration names going forward (packages/core)
 
 ### Fixed
 - All `@volqan/admin` typecheck failures: Prisma JSON value namespaces, content repository constructor usage, Sidebar nav typing, StorageProvider enum casing, billing schema mismatches, CSS side-effect import declarations, `node-saml` types (packages/admin, packages/core)
