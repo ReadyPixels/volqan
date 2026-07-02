@@ -21,8 +21,47 @@ const PUBLIC_PATHS = [
   '/favicon.svg',
 ];
 
+/**
+ * Public, unauthenticated API routes that may be called cross-origin
+ * (e.g. license validation from customer installations).
+ */
+const CORS_PATHS = ['/api/v1/', '/api/health'];
+
+/** Allowed origins for public API CORS. Comma-separated env override; "*" by default (endpoints are public and credential-free). */
+const ALLOWED_ORIGINS = (process.env.CORS_ALLOWED_ORIGINS ?? '*')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+function corsHeaders(origin: string | null): Record<string, string> {
+  const allowed = ALLOWED_ORIGINS.includes('*')
+    ? '*'
+    : origin && ALLOWED_ORIGINS.includes(origin)
+      ? origin
+      : '';
+  if (!allowed) return {};
+  return {
+    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Max-Age': '86400',
+    ...(allowed !== '*' ? { Vary: 'Origin' } : {}),
+  };
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // CORS for public API routes
+  if (CORS_PATHS.some((p) => pathname.startsWith(p))) {
+    const headers = corsHeaders(request.headers.get('origin'));
+    if (request.method === 'OPTIONS') {
+      return new NextResponse(null, { status: 204, headers });
+    }
+    const response = NextResponse.next();
+    for (const [k, v] of Object.entries(headers)) response.headers.set(k, v);
+    return response;
+  }
 
   // Allow public paths and static files
   if (

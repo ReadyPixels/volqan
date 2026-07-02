@@ -41,6 +41,31 @@ All outstanding work identified across the codebase audit (May 2026).
 
 ---
 
+## Product Design Hardening
+
+### Critical
+
+- [x] **PD-001**: Restore admin typecheck health before design QA — all typecheck failures fixed: Installation billing fields added to Prisma schema (+ migration), `Prisma.InputJsonValue` namespaces, shared `src/lib/content.ts` repo/schema singletons, Sidebar nav typing, CSS/node-saml declarations in `src/types/globals.d.ts`, StorageProvider casing, `onManage` prop (`packages/admin`)
+- [x] **PD-002**: Fix Media Library real-data flow — mocks removed; upload/delete via real API with loading, error, retry, empty, filtered-empty, permission, and success states; delete uses ConfirmDialog (`packages/admin/src/app/media/page.tsx`)
+- [x] **PD-003**: Replace mock content entries with live API data — entries fetched from `/api/content/[type]`, status counts from real data, delete/bulk delete via API with confirm dialog, all async states covered (`packages/admin/src/app/content/[slug]/page.tsx`); entry editor also wired to real GET/PATCH/DELETE (`[id]/page.tsx`)
+- [x] **PD-004**: Replace mock page editor persistence with live API data — loads via `GET /api/pages/[id]`, saves via `PATCH`, publishes via `PATCH { status: 'published' }`, shows save/publish failure recovery banners (`packages/admin/src/app/pages/[id]/page.tsx`)
+
+### High
+
+- [x] **PD-005**: Add consistent admin status-state patterns — shared `LoadingState`/`ErrorState`/`EmptyState`/`PermissionDeniedState` components in `src/components/ui/async-states.tsx`, applied across media, content, page editor, and entry editor; success/error banners use `role="status"`/`role="alert"` (`packages/admin`)
+- [x] **PD-006**: Replace native destructive `confirm()` prompts with accessible Volqan dialogs — new `ConfirmDialog` (`src/components/ui/confirm-dialog.tsx`) with entity names, consequences, loading states; wired into content delete/bulk delete, media delete, user remove, API key revoke, billing cancel, extension uninstall (`packages/admin`)
+- [x] **PD-007**: Complete English/Arabic product support — `LocaleProvider` drives `<html lang>` and `dir` from saved `site.locale` (localStorage + settings API); RTL overrides in `globals.css` for sidebar/nav/tooltips/mono fields; settings save applies locale immediately; locale choices remain EN/AR only (`packages/admin`)
+- [x] **PD-008**: Complete mobile navigation coverage — Analytics, Billing, AI Assistant, and Profile added to the mobile More menu with `aria-expanded`/`aria-controls` (`packages/admin/src/components/layout/MobileNav.tsx`)
+- [x] **PD-009**: Remove fake operational affordances — top-bar notifications now show real audit-log activity; top-bar search is a working quick-nav across admin pages; installation info served live from new `GET /api/settings/installation`; storage tab limited to Local with S3 shown as clearly unavailable; inert "Send test email" disabled with explanation (`packages/admin`)
+
+### Medium
+
+- [x] **PD-010**: Add product-design regression tests — Playwright suite at `packages/admin/e2e/admin-regression.spec.ts` covering login, dashboard, content, media upload/delete, users invite, settings, theme switching, keyboard navigation, destructive dialogs, and mobile navigation; run via `pnpm --filter @volqan/admin test:e2e` (requires `playwright install` + live DB)
+- [x] **PD-011**: Add accessibility verification beyond static markup — `packages/admin/e2e/a11y.spec.ts` runs axe-core WCAG 2.1 AA scans on core pages plus keyboard operability, dialog focus/Escape, Arabic RTL flip, and reduced-motion checks
+- [x] **PD-012**: Add Product Design saved context for future audits — documented at `docs/product-design-context.md` (surfaces, routes, tokens, component paths, EN/AR requirement, test targets)
+
+---
+
 ## Infrastructure & DevOps
 
 - [x] Prisma migrations committed — initial migration SQL generated from schema at `packages/core/prisma/migrations/20260405000000_init/migration.sql`; `migration_lock.toml` added; run `prisma migrate deploy` against a live database to apply
@@ -155,7 +180,7 @@ All outstanding work identified across the codebase audit (May 2026).
 - [x] **H-2**: Use cryptographically random `oauth_state` with `Secure` flag in production
 - [x] **H-3**: Create `SECURITY.md` at repo root with vulnerability reporting instructions
 - [x] **H-5**: Fix user enumeration timing in OAuth callback
-- [ ] **H-1**: Switch password reset to code-based flow (token in POST body, not URL) — requires email provider integration
+- [x] **H-1**: Switch password reset to code-based flow — forgot-password now emails a 6-digit code (HMAC stored server-side with 15-min expiry and 5-attempt lockout); reset-password takes `{ email, code, password }` in the POST body, no token in URL; frontend pages updated (`packages/admin`)
 
 ### Medium
 
@@ -164,7 +189,7 @@ All outstanding work identified across the codebase audit (May 2026).
 - [x] **SEC-010**: Add `client_max_body_size` note to deployment docs for nginx
 - [x] **M-1**: Enforce `Content-Length` limits via middleware wrapper
 - [x] **M-2**: Ensure temp password response is HTTPS-only with change-on-first-login requirement
-- [ ] **SEC-009**: Add CORS configuration for public API routes
+- [x] **SEC-009**: Add CORS configuration for public API routes — middleware handles OPTIONS preflight and sets `Access-Control-*` headers on `/api/v1/*` and `/api/health`; origins configurable via `CORS_ALLOWED_ORIGINS` env (default `*` for credential-free public endpoints)
 
 ### Low
 

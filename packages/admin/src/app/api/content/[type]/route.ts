@@ -1,13 +1,11 @@
 import type { NextRequest } from 'next/server';
-import { ContentRepository, SchemaBuilder } from '@volqan/core';
+import type { SchemaBuilder } from '@volqan/core';
 import { getSessionUser, json, unauthorized, notFound, badRequest, internalError } from '@/lib/api-helpers';
 import { audit } from '@/lib/audit';
 import { fireWebhooks } from '@/lib/webhook';
 import { cached, cacheFlush } from '@/lib/cache';
 import { checkContentLength } from '@/lib/body-limit';
-
-const repo = new ContentRepository();
-const schemaBuilder = new SchemaBuilder();
+import { contentRepo as repo, schemaBuilder } from '@/lib/content';
 
 /** System columns that are always valid for orderBy */
 const SYSTEM_ORDERABLE_COLUMNS = new Set([
@@ -60,7 +58,8 @@ export async function GET(
   try {
     contentType = await schemaBuilder.getContentType(type);
     if (!contentType) return notFound(`Content type "${type}" not found.`);
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.name === 'ContentTypeNotFoundError') return notFound(`Content type "${type}" not found.`);
     console.error(`[content/${type} GET]`, err);
     return internalError();
   }
@@ -74,8 +73,21 @@ export async function GET(
   try {
     const cacheKey = `content:${type}:${page}:${perPage}:${status ?? ''}:${search ?? ''}:${orderBy}:${direction}`;
     const result = await cached(cacheKey, () =>
-      repo.findMany(type, { page, perPage, status: status as any, search, orderBy: [{ field: orderBy, direction }] }),
+      repo.findMany(type, {
+        page,
+        perPage,
+        where: status ? { status } : undefined,
+        orderBy: [{ field: orderBy, direction }],
+      }),
     );
+
+    // Search is applied to the current page (data is a JSON column; no full-text index yet)
+    if (search) {
+      const needle = search.toLowerCase();
+      result.data = result.data.filter((entry) =>
+        JSON.stringify(entry.data ?? {}).toLowerCase().includes(needle),
+      );
+    }
 
     return json(result);
   } catch (err) {

@@ -44,7 +44,7 @@ export async function POST(request: NextRequest): Promise<Response> {
         name: body.name,
         version: body.version ?? '1.0.0',
         enabled: false,
-        settings: body.settings ?? {},
+        settings: (body.settings ?? {}) as import('@prisma/client').Prisma.InputJsonValue,
       },
     });
     return json({ data: ext }, 201);

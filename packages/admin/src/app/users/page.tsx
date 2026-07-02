@@ -16,6 +16,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogDescription, DialogBody, DialogFooter,
 } from '@/components/ui/dialog';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { cn } from '@/lib/utils';
 
 type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'EDITOR' | 'VIEWER';
@@ -132,10 +133,26 @@ export default function UsersPage() {
 
   React.useEffect(() => { loadUsers(); }, [loadUsers]);
 
-  const handleDelete = async (id: string, name: string | null) => {
-    if (!confirm(`Remove ${name ?? 'this user'} from the team?`)) return;
-    await fetch(`/api/users/${id}`, { method: 'DELETE' });
-    setUsers((prev) => prev.filter((u) => u.id !== id));
+  const [pendingDelete, setPendingDelete] = React.useState<{ id: string; name: string | null } | null>(null);
+  const [deleting, setDeleting] = React.useState(false);
+  const [deleteError, setDeleteError] = React.useState<string | null>(null);
+
+  const handleDelete = (id: string, name: string | null) => setPendingDelete({ id, name });
+
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      const res = await fetch(`/api/users/${pendingDelete.id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`Delete failed (${res.status})`);
+      setUsers((prev) => prev.filter((u) => u.id !== pendingDelete.id));
+      setPendingDelete(null);
+    } catch {
+      setDeleteError('Could not remove this user. Try again.');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const roleCounts = React.useMemo(() => {
@@ -253,6 +270,20 @@ export default function UsersPage() {
       </Card>
 
       <InviteDialog open={inviteOpen} onOpenChange={setInviteOpen} onInvited={loadUsers} />
+      <ConfirmDialog
+        open={!!pendingDelete}
+        onOpenChange={(open) => !open && setPendingDelete(null)}
+        title="Remove user"
+        description={
+          <>
+            {pendingDelete?.name ?? 'This user'} will lose access to this installation immediately. This cannot be undone.
+            {deleteError && <span role="alert" className="block mt-2 text-[hsl(var(--destructive))]">{deleteError}</span>}
+          </>
+        }
+        confirmLabel="Remove"
+        loading={deleting}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

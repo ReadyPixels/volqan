@@ -3,20 +3,21 @@
 /**
  * @file app/media/page.tsx
  * @description Media library with grid/list view, upload dropzone, and preview modal.
+ * Data comes exclusively from /api/media — no mock fallbacks.
  */
 
 import * as React from 'react';
 import {
   Upload, Grid, List, Search, Folder, Image, File, Film,
-  Trash2, Download, Copy, X, ChevronLeft, Plus,
+  Trash2, Download, Copy, X,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { LoadingState, ErrorState, EmptyState, PermissionDeniedState } from '@/components/ui/async-states';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { cn } from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
-// Mock data
+// Types
 // ---------------------------------------------------------------------------
 
 type MediaFileType = 'image' | 'video' | 'file';
@@ -25,29 +26,38 @@ interface MediaFile {
   id: string;
   name: string;
   type: MediaFileType;
-  size: string;
-  dimensions?: string;
+  sizeBytes: number;
   folder: string | null;
   url: string;
   createdAt: string;
 }
 
-const FOLDERS = ['Images', 'Documents', 'Videos', 'Products'];
+interface ApiMediaRecord {
+  id: string;
+  originalName: string;
+  mimeType: string;
+  size: number;
+  url: string;
+  folder: string | null;
+  createdAt: string;
+}
 
-const MEDIA_FILES: MediaFile[] = [
-  { id: '1', name: 'hero-banner.jpg', type: 'image', size: '1.2 MB', dimensions: '1920×1080', folder: 'Images', url: 'https://images.unsplash.com/photo-1639762681057-408e52192e55?w=400', createdAt: '2d ago' },
-  { id: '2', name: 'product-01.jpg', type: 'image', size: '845 KB', dimensions: '800×800', folder: 'Products', url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', createdAt: '3d ago' },
-  { id: '3', name: 'team-photo.jpg', type: 'image', size: '2.1 MB', dimensions: '2400×1600', folder: 'Images', url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400', createdAt: '5d ago' },
-  { id: '4', name: 'report-q4.pdf', type: 'file', size: '4.3 MB', folder: 'Documents', url: '#', createdAt: '1w ago' },
-  { id: '5', name: 'demo-video.mp4', type: 'video', size: '24 MB', folder: 'Videos', url: '#', createdAt: '1w ago' },
-  { id: '6', name: 'logo-dark.png', type: 'image', size: '45 KB', dimensions: '400×120', folder: 'Images', url: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400', createdAt: '2w ago' },
-  { id: '7', name: 'product-02.jpg', type: 'image', size: '632 KB', dimensions: '800×800', folder: 'Products', url: 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=400', createdAt: '2w ago' },
-  { id: '8', name: 'terms.pdf', type: 'file', size: '156 KB', folder: 'Documents', url: '#', createdAt: '3w ago' },
-  { id: '9', name: 'product-03.jpg', type: 'image', size: '712 KB', dimensions: '800×800', folder: 'Products', url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400', createdAt: '3w ago' },
-  { id: '10', name: 'cover-art.jpg', type: 'image', size: '1.8 MB', dimensions: '1200×630', folder: 'Images', url: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=400', createdAt: '1mo ago' },
-  { id: '11', name: 'brand-guide.pdf', type: 'file', size: '8.2 MB', folder: 'Documents', url: '#', createdAt: '1mo ago' },
-  { id: '12', name: 'promo-video.mp4', type: 'video', size: '56 MB', folder: 'Videos', url: '#', createdAt: '1mo ago' },
-];
+function toMediaFile(f: ApiMediaRecord): MediaFile {
+  return {
+    id: f.id,
+    name: f.originalName,
+    type: f.mimeType.startsWith('image/') ? 'image' : f.mimeType.startsWith('video/') ? 'video' : 'file',
+    sizeBytes: f.size,
+    folder: f.folder && f.folder !== '/' ? f.folder.replace(/^\//, '') : null,
+    url: f.url,
+    createdAt: new Date(f.createdAt).toLocaleDateString(),
+  };
+}
+
+function formatSize(bytes: number): string {
+  if (bytes >= 1048576) return `${(bytes / 1048576).toFixed(1)} MB`;
+  return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+}
 
 const FILE_ICON: Record<MediaFileType, React.ComponentType<{ className?: string }>> = {
   image: Image,
@@ -59,15 +69,20 @@ const FILE_ICON: Record<MediaFileType, React.ComponentType<{ className?: string 
 // Dropzone
 // ---------------------------------------------------------------------------
 
-function UploadDropzone({ onDrop }: { onDrop: (files: FileList) => void }) {
+function UploadDropzone({ onDrop, uploading }: { onDrop: (files: FileList) => void; uploading: boolean }) {
   const [dragging, setDragging] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label="Upload files"
+      aria-busy={uploading}
       className={cn(
         'border-2 border-dashed rounded-lg p-8 text-center transition-colors duration-200',
         'cursor-pointer hover:border-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.03)]',
+        uploading && 'opacity-60 pointer-events-none',
         dragging
           ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.06)]'
           : 'border-[hsl(var(--border))]',
@@ -81,10 +96,16 @@ function UploadDropzone({ onDrop }: { onDrop: (files: FileList) => void }) {
         onDrop(e.dataTransfer.files);
       }}
       onClick={() => inputRef.current?.click()}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          inputRef.current?.click();
+        }
+      }}
     >
-      <Upload className="w-8 h-8 text-[hsl(var(--muted-foreground))] mx-auto mb-3" />
+      <Upload className="w-8 h-8 text-[hsl(var(--muted-foreground))] mx-auto mb-3" aria-hidden="true" />
       <p className="text-sm font-medium text-[hsl(var(--foreground))]">
-        Drop files here, or click to browse
+        {uploading ? 'Uploading…' : 'Drop files here, or click to browse'}
       </p>
       <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1">
         JPG, PNG, GIF, MP4, PDF up to 100MB
@@ -107,22 +128,31 @@ function UploadDropzone({ onDrop }: { onDrop: (files: FileList) => void }) {
 interface PreviewModalProps {
   file: MediaFile | null;
   onClose: () => void;
+  onCopied: () => void;
 }
 
-function PreviewModal({ file, onClose }: PreviewModalProps) {
+function PreviewModal({ file, onClose, onCopied }: PreviewModalProps) {
   if (!file) return null;
+
+  const absoluteUrl = typeof window !== 'undefined' ? new URL(file.url, window.location.origin).href : file.url;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-[hsl(var(--card))] rounded-xl border border-[hsl(var(--border))] shadow-2xl w-full max-w-2xl animate-fade-in overflow-hidden">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Preview of ${file.name}`}
+        className="relative bg-[hsl(var(--card))] rounded-xl border border-[hsl(var(--border))] shadow-2xl w-full max-w-2xl animate-fade-in overflow-hidden"
+      >
         <div className="flex items-center justify-between px-4 py-3 border-b border-[hsl(var(--border))]">
           <h3 className="text-sm font-semibold text-[hsl(var(--foreground))] truncate">{file.name}</h3>
           <button
             onClick={onClose}
+            aria-label="Close preview"
             className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-[hsl(var(--accent))] transition-colors"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
 
@@ -142,14 +172,8 @@ function PreviewModal({ file, onClose }: PreviewModalProps) {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-[hsl(var(--muted-foreground))]">Size</span>
-              <p className="font-medium">{file.size}</p>
+              <p className="font-medium">{formatSize(file.sizeBytes)}</p>
             </div>
-            {file.dimensions && (
-              <div>
-                <span className="text-[hsl(var(--muted-foreground))]">Dimensions</span>
-                <p className="font-medium">{file.dimensions}</p>
-              </div>
-            )}
             <div>
               <span className="text-[hsl(var(--muted-foreground))]">Folder</span>
               <p className="font-medium">{file.folder ?? 'Root'}</p>
@@ -160,11 +184,20 @@ function PreviewModal({ file, onClose }: PreviewModalProps) {
             </div>
           </div>
           <div className="flex items-center gap-2 pt-2 border-t border-[hsl(var(--border))]">
-            <Button size="sm" variant="outline" className="gap-1">
-              <Copy className="w-3.5 h-3.5" /> Copy URL
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1"
+              onClick={() => {
+                void navigator.clipboard.writeText(absoluteUrl).then(onCopied);
+              }}
+            >
+              <Copy className="w-3.5 h-3.5" aria-hidden="true" /> Copy URL
             </Button>
-            <Button size="sm" variant="outline" className="gap-1">
-              <Download className="w-3.5 h-3.5" /> Download
+            <Button size="sm" variant="outline" className="gap-1" asChild>
+              <a href={file.url} download={file.name}>
+                <Download className="w-3.5 h-3.5" aria-hidden="true" /> Download
+              </a>
             </Button>
           </div>
         </div>
@@ -177,41 +210,104 @@ function PreviewModal({ file, onClose }: PreviewModalProps) {
 // Page component
 // ---------------------------------------------------------------------------
 
-const activeFolder = 'All Files'; // placeholder for folder nav
-
 export default function MediaPage() {
   const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid');
   const [selectedFolder, setSelectedFolder] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [preview, setPreview] = React.useState<MediaFile | null>(null);
-  const [mediaFiles, setMediaFiles] = React.useState<MediaFile[]>(MEDIA_FILES);
-  const files = mediaFiles;
+  const [files, setFiles] = React.useState<MediaFile[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [loadError, setLoadError] = React.useState<string | null>(null);
+  const [forbidden, setForbidden] = React.useState(false);
+  const [uploading, setUploading] = React.useState(false);
+  const [actionMessage, setActionMessage] = React.useState<{ kind: 'success' | 'error'; text: string } | null>(null);
+  const [pendingDelete, setPendingDelete] = React.useState<MediaFile | null>(null);
+  const [deleting, setDeleting] = React.useState(false);
 
-  // Load real media on mount
-  React.useEffect(() => {
-    fetch('/api/media?perPage=100')
-      .then((r) => r.json())
-      .then((data: { data?: Array<{ id: string; originalName: string; mimeType: string; size: number; url: string; folder: string; createdAt: string }> }) => {
-        if (data.data && data.data.length > 0) {
-          setMediaFiles(data.data.map((f) => ({
-            id: f.id,
-            name: f.originalName,
-            type: f.mimeType.startsWith('image/') ? 'image' : f.mimeType.startsWith('video/') ? 'video' : 'document',
-            size: f.size > 1048576 ? `${(f.size / 1048576).toFixed(1)} MB` : `${Math.round(f.size / 1024)} KB`,
-            folder: f.folder === '/' ? 'Images' : f.folder.replace(/^\//, ''),
-            url: f.url,
-            createdAt: new Date(f.createdAt).toLocaleDateString(),
-          })));
-        }
-      })
-      .catch(() => null);
+  const announce = React.useCallback((kind: 'success' | 'error', text: string) => {
+    setActionMessage({ kind, text });
+    window.setTimeout(() => setActionMessage(null), 4000);
   }, []);
+
+  const load = React.useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
+    setForbidden(false);
+    try {
+      const res = await fetch('/api/media?perPage=100');
+      if (res.status === 401 || res.status === 403) {
+        setForbidden(true);
+        return;
+      }
+      if (!res.ok) throw new Error(`Request failed (${res.status})`);
+      const data = (await res.json()) as { data?: ApiMediaRecord[] };
+      setFiles((data.data ?? []).map(toMediaFile));
+    } catch {
+      setLoadError('Could not load your media library. Check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    void load();
+  }, [load]);
+
+  const handleUpload = React.useCallback(
+    async (fl: FileList) => {
+      setUploading(true);
+      let failures = 0;
+      for (const file of Array.from(fl)) {
+        const fd = new FormData();
+        fd.append('file', file);
+        if (selectedFolder) fd.append('folder', `/${selectedFolder.toLowerCase()}`);
+        try {
+          const res = await fetch('/api/media', { method: 'POST', body: fd });
+          if (!res.ok) failures++;
+        } catch {
+          failures++;
+        }
+      }
+      setUploading(false);
+      if (failures > 0) {
+        announce('error', `${failures} of ${fl.length} file(s) failed to upload.`);
+      } else {
+        announce('success', `${fl.length} file(s) uploaded.`);
+      }
+      await load();
+    },
+    [selectedFolder, announce, load],
+  );
+
+  const handleDelete = React.useCallback(async () => {
+    if (!pendingDelete) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/media/${pendingDelete.id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`Delete failed (${res.status})`);
+      setFiles((prev) => prev.filter((f) => f.id !== pendingDelete.id));
+      if (preview?.id === pendingDelete.id) setPreview(null);
+      announce('success', `"${pendingDelete.name}" deleted.`);
+      setPendingDelete(null);
+    } catch {
+      announce('error', `Could not delete "${pendingDelete.name}". Try again.`);
+    } finally {
+      setDeleting(false);
+    }
+  }, [pendingDelete, preview, announce]);
+
+  const folders = React.useMemo(
+    () => Array.from(new Set(files.map((f) => f.folder).filter((f): f is string => !!f))).sort((a, b) => a.localeCompare(b)),
+    [files],
+  );
 
   const filtered = files.filter((f) => {
     const matchFolder = selectedFolder === null || f.folder === selectedFolder;
     const matchSearch = !searchQuery || f.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchFolder && matchSearch;
   });
+
+  const totalBytes = files.reduce((sum, f) => sum + f.sizeBytes, 0);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -220,51 +316,48 @@ export default function MediaPage() {
         <div>
           <h1 className="text-2xl font-bold text-[hsl(var(--foreground))] tracking-tight">Media Library</h1>
           <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
-            {files.length} files · {(files.reduce((sum, f) => {
-              const num = parseFloat(f.size);
-              const unit = f.size.slice(-2);
-              return sum + (unit === 'MB' ? num : unit === 'KB' ? num / 1024 : num);
-            }, 0)).toFixed(1)} MB total
+            {files.length} files · {formatSize(totalBytes)} total
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
             size="icon"
+            aria-label="Grid view"
+            aria-pressed={viewMode === 'grid'}
             onClick={() => setViewMode('grid')}
           >
-            <Grid className="w-4 h-4" />
+            <Grid className="w-4 h-4" aria-hidden="true" />
           </Button>
           <Button
             variant={viewMode === 'list' ? 'secondary' : 'ghost'}
             size="icon"
+            aria-label="List view"
+            aria-pressed={viewMode === 'list'}
             onClick={() => setViewMode('list')}
           >
-            <List className="w-4 h-4" />
+            <List className="w-4 h-4" aria-hidden="true" />
           </Button>
         </div>
       </div>
 
+      {/* Action feedback */}
+      {actionMessage && (
+        <div
+          role={actionMessage.kind === 'error' ? 'alert' : 'status'}
+          className={cn(
+            'text-sm rounded-md border px-3 py-2',
+            actionMessage.kind === 'error'
+              ? 'border-[hsl(var(--destructive)/0.4)] text-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.06)]'
+              : 'border-[hsl(var(--border))] text-[hsl(var(--foreground))] bg-[hsl(var(--muted)/0.3)]',
+          )}
+        >
+          {actionMessage.text}
+        </div>
+      )}
+
       {/* Upload zone */}
-      <UploadDropzone onDrop={async (fl) => {
-        for (const file of Array.from(fl)) {
-          const fd = new FormData();
-          fd.append('file', file);
-          fd.append('folder', selectedFolder ? `/${selectedFolder.toLowerCase()}` : '/');
-          await fetch('/api/media', { method: 'POST', body: fd });
-        }
-        const res = await fetch('/api/media?perPage=100');
-        const data = (await res.json()) as { data?: Array<{ id: string; originalName: string; mimeType: string; size: number; url: string; folder: string; createdAt: string }> };
-        if (data.data) {
-          setMediaFiles(data.data.map((f) => ({
-            id: f.id, name: f.originalName,
-            type: f.mimeType.startsWith('image/') ? 'image' : f.mimeType.startsWith('video/') ? 'video' : 'document',
-            size: f.size > 1048576 ? `${(f.size / 1048576).toFixed(1)} MB` : `${Math.round(f.size / 1024)} KB`,
-            folder: f.folder === '/' ? 'Images' : f.folder.replace(/^\//, ''),
-            url: f.url, createdAt: new Date(f.createdAt).toLocaleDateString(),
-          })));
-        }
-      }} />
+      <UploadDropzone onDrop={(fl) => void handleUpload(fl)} uploading={uploading} />
 
       <div className="flex gap-6">
         {/* Sidebar folders */}
@@ -272,6 +365,7 @@ export default function MediaPage() {
           <p className="text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-2">Folders</p>
           <button
             onClick={() => setSelectedFolder(null)}
+            aria-pressed={selectedFolder === null}
             className={cn(
               'w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors',
               selectedFolder === null
@@ -279,12 +373,13 @@ export default function MediaPage() {
                 : 'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--accent))]',
             )}
           >
-            <Folder className="w-4 h-4" /> All Files
+            <Folder className="w-4 h-4" aria-hidden="true" /> All Files
           </button>
-          {FOLDERS.map((folder) => (
+          {folders.map((folder) => (
             <button
               key={folder}
               onClick={() => setSelectedFolder(folder === selectedFolder ? null : folder)}
+              aria-pressed={selectedFolder === folder}
               className={cn(
                 'w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors',
                 selectedFolder === folder
@@ -292,7 +387,7 @@ export default function MediaPage() {
                   : 'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--accent))]',
               )}
             >
-              <Folder className="w-4 h-4" /> {folder}
+              <Folder className="w-4 h-4" aria-hidden="true" /> {folder}
               <span className="ml-auto text-xs opacity-60">
                 {files.filter((f) => f.folder === folder).length}
               </span>
@@ -304,18 +399,38 @@ export default function MediaPage() {
         <div className="flex-1 min-w-0 space-y-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[hsl(var(--muted-foreground))]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[hsl(var(--muted-foreground))]" aria-hidden="true" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search files..."
+              aria-label="Search files"
               className="w-full max-w-xs h-9 pl-9 pr-3 text-sm rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--background))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))]"
             />
           </div>
 
-          {/* Files grid/list */}
-          {viewMode === 'grid' ? (
+          {/* Async states */}
+          {forbidden ? (
+            <PermissionDeniedState />
+          ) : loading ? (
+            <LoadingState label="Loading media…" />
+          ) : loadError ? (
+            <ErrorState message={loadError} onRetry={() => void load()} />
+          ) : filtered.length === 0 ? (
+            files.length === 0 ? (
+              <EmptyState
+                title="No media yet"
+                description="Upload your first file using the dropzone above."
+              />
+            ) : (
+              <EmptyState
+                filtered
+                title="No files match"
+                description="Try a different search term or folder."
+              />
+            )
+          ) : viewMode === 'grid' ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {filtered.map((file) => {
                 const Icon = FILE_ICON[file.type];
@@ -334,19 +449,20 @@ export default function MediaPage() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <Icon className="w-10 h-10 text-[hsl(var(--muted-foreground))]" />
+                        <Icon className="w-10 h-10 text-[hsl(var(--muted-foreground))]" aria-hidden="true" />
                       )}
                     </div>
                     <div className="p-2">
                       <p className="text-xs font-medium truncate">{file.name}</p>
-                      <p className="text-[10px] text-[hsl(var(--muted-foreground))]">{file.size}</p>
+                      <p className="text-[10px] text-[hsl(var(--muted-foreground))]">{formatSize(file.sizeBytes)}</p>
                     </div>
-                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                       <button
-                        onClick={(e) => { e.stopPropagation(); setFiles((prev) => prev.filter((f) => f.id !== file.id)); }}
+                        onClick={(e) => { e.stopPropagation(); setPendingDelete(file); }}
+                        aria-label={`Delete ${file.name}`}
                         className="w-6 h-6 bg-black/60 rounded text-white flex items-center justify-center hover:bg-red-600 transition-colors"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="w-3 h-3" aria-hidden="true" />
                       </button>
                     </div>
                   </div>
@@ -368,23 +484,24 @@ export default function MediaPage() {
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={file.url} alt="" className="w-full h-full object-cover rounded" />
                       ) : (
-                        <Icon className="w-4 h-4 text-[hsl(var(--muted-foreground))]" />
+                        <Icon className="w-4 h-4 text-[hsl(var(--muted-foreground))]" aria-hidden="true" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{file.name}</p>
                       <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                        {file.folder} · {file.size}{file.dimensions ? ` · ${file.dimensions}` : ''}
+                        {file.folder ?? 'Root'} · {formatSize(file.sizeBytes)}
                       </p>
                     </div>
                     <span className="text-xs text-[hsl(var(--muted-foreground))]">{file.createdAt}</span>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="w-7 h-7 opacity-0 group-hover:opacity-100 text-[hsl(var(--destructive))]"
-                      onClick={(e: any) => { e.stopPropagation(); setFiles((prev) => prev.filter((f) => f.id !== file.id)); }}
+                      aria-label={`Delete ${file.name}`}
+                      className="w-7 h-7 opacity-0 group-hover:opacity-100 focus:opacity-100 text-[hsl(var(--destructive))]"
+                      onClick={(e: React.MouseEvent) => { e.stopPropagation(); setPendingDelete(file); }}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                     </Button>
                   </div>
                 );
@@ -395,7 +512,25 @@ export default function MediaPage() {
       </div>
 
       {/* Preview modal */}
-      <PreviewModal file={preview} onClose={() => setPreview(null)} />
+      <PreviewModal
+        file={preview}
+        onClose={() => setPreview(null)}
+        onCopied={() => announce('success', 'URL copied to clipboard.')}
+      />
+
+      {/* Delete confirmation */}
+      <ConfirmDialog
+        open={!!pendingDelete}
+        onOpenChange={(open) => !open && setPendingDelete(null)}
+        title="Delete media file"
+        description={
+          pendingDelete
+            ? `"${pendingDelete.name}" will be permanently deleted. This cannot be undone.`
+            : ''
+        }
+        loading={deleting}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }

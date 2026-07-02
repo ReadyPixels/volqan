@@ -1,20 +1,24 @@
 import type { NextRequest } from 'next/server';
-import { createHmac } from 'node:crypto';
+import { createHmac, randomInt } from 'node:crypto';
 import { db } from '@volqan/core';
 import { json, badRequest, internalError } from '@/lib/api-helpers';
 import { rateLimit } from '@/lib/rate-limit';
 import { checkContentLength } from '@/lib/body-limit';
+import { sendEmail } from '@/lib/email';
 
 import { getRequiredSessionSecret } from '@/lib/session-secret';
 
 const SECRET = getRequiredSessionSecret();
 
-/** Creates a signed password-reset token valid for 1 hour. */
-export function createResetToken(userId: string): string {
-  const expiresAt = Date.now() + 60 * 60 * 1000;
-  const payload = `${userId}:${expiresAt}`;
-  const sig = createHmac('sha256', SECRET).update(payload).digest('hex');
-  return Buffer.from(`${payload}:${sig}`).toString('base64url');
+/** Reset codes are valid for 15 minutes. */
+export const RESET_CODE_TTL_MS = 15 * 60 * 1000;
+
+export function hashResetCode(userId: string, code: string): string {
+  return createHmac('sha256', SECRET).update(`${userId}:${code}`).digest('hex');
+}
+
+function resetSettingKey(userId: string): string {
+  return `auth.pwreset.${userId}`;
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
@@ -49,22 +53,39 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     // Always respond with success to avoid user enumeration
     if (!user) {
-      return json({ ok: true, message: 'If that email exists, a reset link has been sent.' });
+      return json({ ok: true, message: 'If that email exists, a reset code has been sent.' });
     }
 
-    const token = createResetToken(user.id);
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
-    const resetUrl = `${appUrl}/reset-password?token=${token}`;
+    // 6-digit code sent by email; only its HMAC is stored
+    const code = randomInt(0, 1_000_000).toString().padStart(6, '0');
+    const record = {
+      codeHash: hashResetCode(user.id, code),
+      expiresAt: Date.now() + RESET_CODE_TTL_MS,
+      attempts: 0,
+    };
+    await db.setting.upsert({
+      where: { key: resetSettingKey(user.id) },
+      create: { key: resetSettingKey(user.id), value: record, group: 'auth', isPublic: false },
+      update: { value: record },
+    });
 
-    // Log the reset URL in dev; in production wire up an email provider
-    if (process.env.NODE_ENV !== 'production') {
-      console.info(`[forgot-password] Reset URL for ${user.email}: ${resetUrl}`);
-    }
+    const greeting = user.name ? `Hi ${user.name},` : 'Hi,';
+    const codeHtml = `<p>${greeting}</p><p>Your password reset code is:</p><p style="font-size:24px;font-weight:bold;letter-spacing:4px">${code}</p><p>Enter this code on the reset page within 15 minutes. If you did not request this, you can safely ignore this email.</p>`;
+    await sendEmail({
+      to: user.email,
+      subject: 'Your Volqan password reset code',
+      html: codeHtml,
+      text: [
+        greeting,
+        '',
+        `Your password reset code is: ${code}`,
+        '',
+        'Enter this code on the reset page within 15 minutes.',
+        'If you did not request this, you can safely ignore this email.',
+      ].join('\n'),
+    });
 
-    // TODO: send email via configured email provider
-    // await sendEmail({ to: user.email, subject: 'Reset your Volqan password', html: `<a href="${resetUrl}">Reset password</a>` });
-
-    return json({ ok: true, message: 'If that email exists, a reset link has been sent.' });
+    return json({ ok: true, message: 'If that email exists, a reset code has been sent.' });
   } catch (err) {
     console.error('[forgot-password]', err);
     return internalError();

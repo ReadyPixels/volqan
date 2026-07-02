@@ -1,11 +1,14 @@
 import type { NextRequest } from 'next/server';
-import { ContentRepository } from '@volqan/core';
 import { getSessionUser, json, unauthorized, notFound, badRequest, internalError } from '@/lib/api-helpers';
 import { audit } from '@/lib/audit';
 import { fireWebhooks } from '@/lib/webhook';
 import { cacheFlush } from '@/lib/cache';
+import { contentRepo as repo } from '@/lib/content';
 
-const repo = new ContentRepository();
+function isNotFoundError(err: unknown): boolean {
+  const name = (err as { name?: string } | null)?.name;
+  return name === 'ContentEntryNotFoundError' || name === 'ContentTypeNotFoundError';
+}
 
 export async function GET(
   request: NextRequest,
@@ -17,9 +20,9 @@ export async function GET(
   const { type, id } = await params;
   try {
     const entry = await repo.findById(type, id);
-    if (!entry) return notFound('Entry not found.');
     return json({ data: entry });
   } catch (err) {
+    if (isNotFoundError(err)) return notFound('Entry not found.');
     console.error(`[content/${type}/${id} GET]`, err);
     return internalError();
   }
@@ -42,11 +45,10 @@ export async function PATCH(
   }
 
   try {
-    const entry = await repo.getById(type, id);
-    if (!entry) return notFound('Entry not found.');
+    const entry = await repo.findById(type, id);
 
     // EDITOR can only update own entries
-    if (user.role === 'EDITOR' && (entry as any).authorId !== user.id) {
+    if (user.role === 'EDITOR' && entry.authorId !== user.id) {
       return json({ error: 'Forbidden' }, 403);
     }
 
@@ -58,6 +60,7 @@ export async function PATCH(
     await fireWebhooks(action, { id, type, status }).catch(() => {});
     return json({ data: updated });
   } catch (err: any) {
+    if (isNotFoundError(err)) return notFound('Entry not found.');
     if (err?.name === 'ContentValidationError') return json({ error: err.message, fields: err.fields }, 422);
     console.error(`[content/${type}/${id} PATCH]`, err);
     return internalError();
@@ -74,10 +77,9 @@ export async function DELETE(
 
   const { type, id } = await params;
   try {
-    const entry = await repo.getById(type, id);
-    if (!entry) return notFound('Entry not found.');
+    const entry = await repo.findById(type, id);
 
-    if (user.role === 'EDITOR' && (entry as any).authorId !== user.id) {
+    if (user.role === 'EDITOR' && entry.authorId !== user.id) {
       return json({ error: 'Forbidden' }, 403);
     }
 
@@ -87,6 +89,7 @@ export async function DELETE(
     await fireWebhooks('content.deleted', { id, type }).catch(() => {});
     return json({ ok: true });
   } catch (err) {
+    if (isNotFoundError(err)) return notFound('Entry not found.');
     console.error(`[content/${type}/${id} DELETE]`, err);
     return internalError();
   }

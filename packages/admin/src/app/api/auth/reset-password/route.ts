@@ -1,29 +1,18 @@
 import type { NextRequest } from 'next/server';
-import { createHmac } from 'node:crypto';
+import { timingSafeEqual } from 'node:crypto';
 import { db, hashPassword, destroyAllUserSessions } from '@volqan/core';
 import { json, badRequest, internalError } from '@/lib/api-helpers';
 import { rateLimit } from '@/lib/rate-limit';
 import { checkContentLength } from '@/lib/body-limit';
+import { hashResetCode } from '../forgot-password/route';
 
-import { getRequiredSessionSecret } from '@/lib/session-secret';
+const MAX_CODE_ATTEMPTS = 5;
+const GENERIC_ERROR = 'Invalid email or reset code.';
 
-const SECRET = getRequiredSessionSecret();
-
-function verifyResetToken(token: string): { userId: string } | null {
-  try {
-    const decoded = Buffer.from(token, 'base64url').toString('utf8');
-    const parts = decoded.split(':');
-    if (parts.length !== 3) return null;
-    const [userId, expiresAtStr, sig] = parts;
-    const expiresAt = parseInt(expiresAtStr, 10);
-    if (isNaN(expiresAt) || Date.now() > expiresAt) return null;
-    const payload = `${userId}:${expiresAt}`;
-    const expected = createHmac('sha256', SECRET).update(payload).digest('hex');
-    if (sig !== expected) return null;
-    return { userId };
-  } catch {
-    return null;
-  }
+interface ResetRecord {
+  codeHash: string;
+  expiresAt: number;
+  attempts: number;
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
@@ -39,34 +28,62 @@ export async function POST(request: NextRequest): Promise<Response> {
   const bodySizeError = checkContentLength(request);
   if (bodySizeError) return bodySizeError;
 
-  let body: { token?: string; password?: string };
+  let body: { email?: string; code?: string; password?: string };
   try {
     body = (await request.json()) as typeof body;
   } catch {
     return badRequest('Invalid JSON body.');
   }
 
-  if (!body.token || typeof body.token !== 'string') {
-    return badRequest('token is required.');
+  if (!body.email || typeof body.email !== 'string') {
+    return badRequest('email is required.');
+  }
+  if (!body.code || typeof body.code !== 'string' || !/^\d{6}$/.test(body.code)) {
+    return badRequest('code must be the 6-digit code from your email.');
   }
   if (!body.password || typeof body.password !== 'string' || body.password.length < 8) {
     return badRequest('password must be at least 8 characters.');
   }
 
-  const verified = verifyResetToken(body.token);
-  if (!verified) {
-    return json({ error: 'Invalid or expired reset token.' }, 400);
-  }
-
   try {
+    const user = await db.user.findUnique({
+      where: { email: body.email.toLowerCase().trim() },
+      select: { id: true },
+    });
+    if (!user) return json({ error: GENERIC_ERROR }, 400);
+
+    const key = `auth.pwreset.${user.id}`;
+    const setting = await db.setting.findUnique({ where: { key } });
+    const record = setting?.value as ResetRecord | undefined;
+    if (!record?.codeHash || Date.now() > record.expiresAt) {
+      return json({ error: GENERIC_ERROR }, 400);
+    }
+    if (record.attempts >= MAX_CODE_ATTEMPTS) {
+      await db.setting.delete({ where: { key } }).catch(() => null);
+      return json({ error: 'Too many incorrect attempts. Request a new code.' }, 400);
+    }
+
+    const expected = Buffer.from(record.codeHash, 'hex');
+    const actual = Buffer.from(hashResetCode(user.id, body.code), 'hex');
+    const matches = expected.length === actual.length && timingSafeEqual(expected, actual);
+
+    if (!matches) {
+      await db.setting.update({
+        where: { key },
+        data: { value: { ...record, attempts: record.attempts + 1 } },
+      });
+      return json({ error: GENERIC_ERROR }, 400);
+    }
+
     const passwordHash = await hashPassword(body.password);
     await db.user.update({
-      where: { id: verified.userId },
+      where: { id: user.id },
       data: { password: passwordHash },
     });
 
-    // Invalidate all existing sessions for this user on password reset
-    await destroyAllUserSessions(verified.userId);
+    // The code is single-use, and all sessions are invalidated on reset
+    await db.setting.delete({ where: { key } }).catch(() => null);
+    await destroyAllUserSessions(user.id);
 
     return json({ ok: true, message: 'Password updated successfully.' });
   } catch (err) {

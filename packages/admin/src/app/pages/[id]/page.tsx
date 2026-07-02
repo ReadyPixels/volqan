@@ -3,148 +3,104 @@
 /**
  * @file app/pages/[id]/page.tsx
  * @description Edit an existing page with the visual builder.
+ * Loads from GET /api/pages/[id], saves via PATCH, publishes via PATCH { status }.
  */
 
 import * as React from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { PageBuilder } from '@/components/page-builder/PageBuilder';
+import { ErrorState } from '@/components/ui/async-states';
 import type { Block, Page } from '@/types/page-builder';
 
-// ---------------------------------------------------------------------------
-// Mock data (replace with API fetch)
-// ---------------------------------------------------------------------------
-
-const MOCK_PAGES: Record<string, Page> = {
-  '1': {
-    id: '1',
-    title: 'Home',
-    slug: '/',
-    status: 'published',
-    blocks: [
-      {
-        id: 'hero-1',
-        type: 'hero',
-        label: 'Hero',
-        props: {
-          title: 'Welcome to Our Amazing Site',
-          subtitle: 'Build beautiful pages with the Volqan visual editor',
-          ctaText: 'Get Started',
-          ctaHref: '#',
-        },
-        style: {},
-        advanced: {},
-      },
-      {
-        id: 'heading-1',
-        type: 'heading',
-        label: 'Heading',
-        props: { text: 'Our Features', level: 'h2', align: 'center' },
-        style: { marginTop: '2rem', marginBottom: '0.5rem' },
-        advanced: {},
-      },
-      {
-        id: 'grid-1',
-        type: 'grid-3col',
-        label: '3 Column Grid',
-        props: { gap: '1.5rem' },
-        style: {},
-        advanced: {},
-      },
-    ],
-    meta: { title: 'Home — My Site', description: 'Welcome to our site.' },
-    settings: {},
-    createdAt: new Date('2025-01-15'),
-    updatedAt: new Date('2025-01-20'),
-    publishedAt: new Date('2025-01-15'),
-  },
-  '2': {
-    id: '2',
-    title: 'About Us',
-    slug: '/about',
-    status: 'published',
-    blocks: [
-      {
-        id: 'h-about',
-        type: 'heading',
-        label: 'Heading',
-        props: { text: 'About Us', level: 'h1', align: 'center' },
-        style: { marginBottom: '1rem' },
-        advanced: {},
-      },
-      {
-        id: 'p-about',
-        type: 'paragraph',
-        label: 'Paragraph',
-        props: { text: 'We are a team of passionate developers building the future of headless CMS.', align: 'center' },
-        style: {},
-        advanced: {},
-      },
-    ],
-    meta: { title: 'About Us', description: 'Learn about our team.' },
-    settings: {},
-    createdAt: new Date('2025-01-10'),
-    updatedAt: new Date('2025-01-20'),
-    publishedAt: new Date('2025-01-10'),
-  },
-};
-
-// ---------------------------------------------------------------------------
-// Edit page
-// ---------------------------------------------------------------------------
+/** API returns dates serialized as strings; revive them for the builder. */
+function revivePage(raw: Record<string, unknown>): Page {
+  const page = raw as unknown as Page;
+  return {
+    ...page,
+    createdAt: new Date(raw.createdAt as string),
+    updatedAt: new Date(raw.updatedAt as string),
+    publishedAt: raw.publishedAt ? new Date(raw.publishedAt as string) : undefined,
+  } as Page;
+}
 
 export default function EditPagePage() {
   const params = useParams<{ id: string }>();
-  const router = useRouter();
   const [page, setPage] = React.useState<Page | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [notFound, setNotFound] = React.useState(false);
+  const [loadError, setLoadError] = React.useState<string | null>(null);
+  const [saveError, setSaveError] = React.useState<string | null>(null);
 
-  // Fetch page on mount
-  React.useEffect(() => {
-    // Simulate API fetch
-    const timer = setTimeout(() => {
-      const found = MOCK_PAGES[params.id];
-      if (found) {
-        setPage(found);
-      } else {
+  const load = React.useCallback(async () => {
+    setLoading(true);
+    setNotFound(false);
+    setLoadError(null);
+    try {
+      const res = await fetch(`/api/pages/${encodeURIComponent(params.id)}`);
+      if (res.status === 404) {
         setNotFound(true);
+        return;
       }
+      if (!res.ok) throw new Error(`Request failed (${res.status})`);
+      const body = (await res.json()) as { data: Record<string, unknown> };
+      setPage(revivePage(body.data));
+    } catch {
+      setLoadError('Could not load this page. Check your connection and try again.');
+    } finally {
       setLoading(false);
-    }, 300);
-    return () => clearTimeout(timer);
+    }
   }, [params.id]);
 
+  React.useEffect(() => {
+    void load();
+  }, [load]);
+
   async function handleSave(blocks: Block[], meta: Page['meta']) {
-    // In production: PATCH /api/pages/:id
     if (!page) return;
-    setPage((p: any) => p ? { ...p, blocks, meta, updatedAt: new Date() } : p);
-    await new Promise((r) => setTimeout(r, 600));
+    setSaveError(null);
+    const res = await fetch(`/api/pages/${encodeURIComponent(page.id)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ blocks, meta }),
+    });
+    if (!res.ok) {
+      setSaveError('Save failed. Your changes are still in the editor — try saving again.');
+      throw new Error(`Save failed (${res.status})`);
+    }
+    const body = (await res.json()) as { data: Record<string, unknown> };
+    setPage(revivePage(body.data));
   }
 
   async function handlePublish() {
-    // In production: PATCH /api/pages/:id { status: 'published' }
     if (!page) return;
-    setPage((p: any) => p ? { ...p, status: 'published', publishedAt: new Date() } : p);
-    await new Promise((r) => setTimeout(r, 400));
+    setSaveError(null);
+    const res = await fetch(`/api/pages/${encodeURIComponent(page.id)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'published' }),
+    });
+    if (!res.ok) {
+      setSaveError('Publish failed. The page was not published — try again.');
+      throw new Error(`Publish failed (${res.status})`);
+    }
+    const body = (await res.json()) as { data: Record<string, unknown> };
+    setPage(revivePage(body.data));
   }
-
-  // ---------------------------------------------------------------------------
-  // Loading state
-  // ---------------------------------------------------------------------------
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-6 h-6 animate-spin text-[hsl(var(--muted-foreground))]" />
+      <div className="flex items-center justify-center h-64" role="status" aria-live="polite">
+        <Loader2 className="w-6 h-6 animate-spin text-[hsl(var(--muted-foreground))]" aria-hidden="true" />
+        <span className="sr-only">Loading page…</span>
       </div>
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Not found
-  // ---------------------------------------------------------------------------
+  if (loadError) {
+    return <ErrorState message={loadError} onRetry={() => void load()} />;
+  }
 
   if (notFound || !page) {
     return (
@@ -155,7 +111,7 @@ export default function EditPagePage() {
         </p>
         <Link href="/pages">
           <button className="inline-flex items-center gap-2 text-sm text-[hsl(var(--primary))] hover:underline">
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4" aria-hidden="true" />
             Back to Pages
           </button>
         </Link>
@@ -163,12 +119,13 @@ export default function EditPagePage() {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Visual builder
-  // ---------------------------------------------------------------------------
-
   return (
     <div className="-m-6 h-[calc(100vh-56px)] flex flex-col">
+      {saveError && (
+        <div role="alert" className="text-sm border-b border-[hsl(var(--destructive)/0.4)] text-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.06)] px-4 py-2">
+          {saveError}
+        </div>
+      )}
       <PageBuilder
         page={page}
         onSave={handleSave}

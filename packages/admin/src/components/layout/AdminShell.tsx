@@ -10,6 +10,7 @@ import * as React from 'react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { ThemeProvider } from './ThemeProvider';
+import { LocaleProvider } from './LocaleProvider';
 import { MobileNav } from './MobileNav';
 import { MobileHeader } from './MobileHeader';
 import { AIAssistant } from '../ai/AIAssistant';
@@ -20,6 +21,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   return (
     <ThemeProvider defaultTheme="system">
+      <LocaleProvider>
       <div className="flex h-screen overflow-hidden bg-[hsl(var(--background))]">
         {/* Desktop sidebar (hidden on mobile) */}
         <div className="hidden md:flex">
@@ -53,6 +55,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
       {/* AI Assistant (floating, all screen sizes) */}
       <AIAssistant />
+      </LocaleProvider>
     </ThemeProvider>
   );
 }

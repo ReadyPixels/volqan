@@ -29,7 +29,9 @@ export async function PATCH(
       where: { id },
       data: {
         ...(typeof body.enabled === 'boolean' ? { enabled: body.enabled } : {}),
-        ...(body.settings !== undefined ? { settings: body.settings } : {}),
+        ...(body.settings !== undefined
+          ? { settings: body.settings as import('@prisma/client').Prisma.InputJsonValue }
+          : {}),
       },
     });
     return json({ data: updated });

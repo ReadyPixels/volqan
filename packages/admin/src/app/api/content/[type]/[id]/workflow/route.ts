@@ -102,7 +102,7 @@ export async function POST(
       data: {
         status: newStatus,
         publishedAt: newStatus === 'PUBLISHED' ? new Date() : entry.publishedAt,
-        data: { ...currentData, _workflow: newWorkflow } as unknown as import('@prisma/client').InputJsonValue,
+        data: { ...currentData, _workflow: newWorkflow } as unknown as import('@prisma/client').Prisma.InputJsonValue,
       },
     });
 

@@ -368,6 +368,14 @@ model Installation {
   licenseKey     String?
   plan           String   @default("community")
   domain         String?
+  /// Stripe customer for this installation's subscription
+  stripeCustomerId     String?
+  /// Active Stripe subscription id
+  stripeSubscriptionId String?
+  /// Purchased plan/price identifier from checkout metadata
+  planId               String?
+  /// License lifecycle: "active" | "past_due" | "canceled" | null (community)
+  licenseStatus        String?
   createdAt      DateTime @default(now())
 
   @@map("installations")
