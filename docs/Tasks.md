@@ -68,7 +68,10 @@ All outstanding work identified across the codebase audit (May 2026).
 
 ## Infrastructure & DevOps
 
-- [x] Prisma migrations committed — initial migration SQL generated from schema at `packages/core/prisma/migrations/20260405000000_init/migration.sql`; `migration_lock.toml` added; run `prisma migrate deploy` against a live database to apply
+- [x] Prisma migrations committed — initial migration SQL generated from schema at `packages/core/prisma/migrations/init/migration.sql`; `migration_lock.toml` added; run `prisma migrate deploy` against a live database to apply
+- [ ] Apply pending Prisma migration `installation_billing_fields` (Stripe billing fields on `Installation`) via `prisma migrate deploy` against the live database, same as the existing `init` migration
+- [x] Renamed all Prisma migration folders from timestamp-prefixed (`20260405000000_init`, etc.) to plain descriptive names (`init`, `webhooks_scheduling`, `installation_billing_fields`) (packages/core)
+- [ ] **Verify before next deploy**: if CI's `DATABASE_URL` points at a persistent database that already ran `prisma migrate deploy` under the old timestamped folder names, the `_prisma_migrations` table will show those migrations as unapplied under the new names. Either rename the corresponding rows in that table to match, or confirm the target database has never been migrated yet.
 
 ---
 
