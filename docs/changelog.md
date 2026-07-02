@@ -38,11 +38,13 @@ Changes not yet assigned to a date.
 - Mobile More menu now includes Analytics, Billing, AI Assistant, and Profile (packages/admin)
 - Native `confirm()` prompts replaced with accessible dialogs across users, settings, billing, extensions, media, and content (packages/admin)
 - Renamed all Prisma migration folders from timestamp-prefixed (`20260405000000_init`, `20260601000000_webhooks_scheduling`, `20260702000000_installation_billing_fields`) to plain descriptive names (`init`, `webhooks_scheduling`, `installation_billing_fields`); added a CLAUDE.md rule against date/number-prefixed migration names going forward (packages/core)
+- Verified renamed Prisma migrations apply cleanly by running `prisma migrate deploy` against a fresh local PostgreSQL 16 instance; `_prisma_migrations` table confirmed to track `init`, `webhooks_scheduling`, and `installation_billing_fields` correctly (packages/core)
 
 ### Fixed
 - All `@volqan/admin` typecheck failures: Prisma JSON value namespaces, content repository constructor usage, Sidebar nav typing, StorageProvider enum casing, billing schema mismatches, CSS side-effect import declarations, `node-saml` types (packages/admin, packages/core)
 
 ### Security
+- Hardened `.gitignore` for public repository hygiene and removed tracked private local tooling state from the index (repo)
 - Password reset switched to a code-based flow: 6-digit emailed code (HMAC stored, 15-minute expiry, 5-attempt lockout), verified with the new password in the POST body instead of a URL token; sessions invalidated on reset (packages/admin)
 - CORS configuration for public API routes (`/api/v1/*`, `/api/health`) with OPTIONS preflight handling and `CORS_ALLOWED_ORIGINS` env override (packages/admin)
 
