@@ -21,6 +21,39 @@ Changes not yet assigned to a date.
 
 ---
 
+## 2026-07-03
+
+### Added
+- Shared `ConfirmDialog` component for all destructive actions with entity names, consequences, and loading states (packages/admin)
+- Shared async state components: `LoadingState`, `ErrorState` with retry, `EmptyState`, `PermissionDeniedState` (packages/admin)
+- `LocaleProvider` driving `<html lang>` and `dir` from the saved `site.locale` setting, with RTL CSS overrides for Arabic (packages/admin)
+- `GET /api/settings/installation` returning live installation details (version, installation ID, plan, Node, database, environment, uptime) (packages/admin)
+- Playwright regression suite (`e2e/admin-regression.spec.ts`) and axe-core accessibility suite (`e2e/a11y.spec.ts`); new `test:e2e` script (packages/admin)
+- Product Design context document at `docs/product-design-context.md` (docs)
+- Prisma migration adding `stripeCustomerId`, `stripeSubscriptionId`, `planId`, `licenseStatus` to Installation (packages/core)
+
+### Changed
+- Media Library, content entries list, content entry editor, and page editor now use live API data exclusively with loading/error/retry/empty/permission states; all mock data removed (packages/admin)
+- Top-bar notifications now show real audit-log activity; top-bar search is a working quick-nav; storage settings limited to Local with S3 marked unavailable; inert test-email button disabled with explanation (packages/admin)
+- Mobile More menu now includes Analytics, Billing, AI Assistant, and Profile (packages/admin)
+- Native `confirm()` prompts replaced with accessible dialogs across users, settings, billing, extensions, media, and content (packages/admin)
+
+### Fixed
+- All `@volqan/admin` typecheck failures: Prisma JSON value namespaces, content repository constructor usage, Sidebar nav typing, StorageProvider enum casing, billing schema mismatches, CSS side-effect import declarations, `node-saml` types (packages/admin, packages/core)
+
+### Security
+- Password reset switched to a code-based flow: 6-digit emailed code (HMAC stored, 15-minute expiry, 5-attempt lockout), verified with the new password in the POST body instead of a URL token; sessions invalidated on reset (packages/admin)
+- CORS configuration for public API routes (`/api/v1/*`, `/api/health`) with OPTIONS preflight handling and `CORS_ALLOWED_ORIGINS` env override (packages/admin)
+
+---
+
+## 2026-07-02
+
+### Added
+- Added Product Design hardening tasks covering typecheck health, real-data admin flows, state handling, Arabic/RTL support, mobile navigation, operational affordances, and design regression testing (docs)
+
+---
+
 ## 2026-06-22
 
 ### Security

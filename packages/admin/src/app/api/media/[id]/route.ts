@@ -41,7 +41,7 @@ export async function DELETE(
     }
 
     // Attempt to remove the physical file (best-effort)
-    if (file.storageProvider === 'local' && file.url) {
+    if (file.storageProvider === 'LOCAL' && file.url) {
       const path = await import('node:path');
       const fs = await import('node:fs/promises');
       const uploadDir = process.env.VOLQAN_UPLOAD_DIR ?? './public/uploads';

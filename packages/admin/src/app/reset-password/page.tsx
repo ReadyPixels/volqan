@@ -8,25 +8,15 @@ import { Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const token = searchParams.get('token') ?? '';
 
+  const [email, setEmail] = React.useState(searchParams.get('email') ?? '');
+  const [code, setCode] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [confirm, setConfirm] = React.useState('');
   const [showPw, setShowPw] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [done, setDone] = React.useState(false);
-
-  if (!token) {
-    return (
-      <div className="w-full max-w-sm px-6 text-center space-y-4">
-        <p className="text-sm text-[hsl(var(--destructive))]">Invalid or missing reset token.</p>
-        <Link href="/forgot-password" className="text-sm text-[hsl(var(--primary))] hover:underline">
-          Request a new link
-        </Link>
-      </div>
-    );
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,7 +30,7 @@ export default function ResetPasswordPage() {
       const res = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, password }),
+        body: JSON.stringify({ email, code, password }),
       });
       const data = (await res.json()) as { ok?: boolean; error?: string };
       if (res.ok && data.ok) {
@@ -63,7 +53,7 @@ export default function ResetPasswordPage() {
         <h1 className="text-2xl font-bold text-[hsl(var(--foreground))] tracking-tight">
           New password
         </h1>
-        <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">Choose a new password for your account</p>
+        <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">Enter the 6-digit code from your email and choose a new password</p>
       </div>
 
       <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-xl shadow-sm p-6">
@@ -73,6 +63,41 @@ export default function ResetPasswordPage() {
           </div>
         ) : (
           <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
+            <div className="space-y-1.5">
+              <label htmlFor="email" className="text-sm font-medium text-[hsl(var(--foreground))]">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full h-9 px-3 text-sm rounded-md border border-[hsl(var(--input))] bg-[hsl(var(--background))] text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] focus:border-transparent transition"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="code" className="text-sm font-medium text-[hsl(var(--foreground))]">
+                Reset code
+              </label>
+              <input
+                id="code"
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                pattern="\d{6}"
+                maxLength={6}
+                required
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                placeholder="123456"
+                className="w-full h-9 px-3 text-sm rounded-md border border-[hsl(var(--input))] bg-[hsl(var(--background))] text-[hsl(var(--foreground))] placeholder:text-[hsl(var(--muted-foreground))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] focus:border-transparent transition font-mono tracking-widest"
+              />
+            </div>
+
             <div className="space-y-1.5">
               <label htmlFor="password" className="text-sm font-medium text-[hsl(var(--foreground))]">
                 New password
@@ -125,7 +150,7 @@ export default function ResetPasswordPage() {
 
             <button
               type="submit"
-              disabled={loading || !password || !confirm}
+              disabled={loading || !email || code.length !== 6 || !password || !confirm}
               className="w-full h-9 flex items-center justify-center gap-2 text-sm font-medium rounded-md bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}

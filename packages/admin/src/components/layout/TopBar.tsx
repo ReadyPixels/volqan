@@ -25,13 +25,34 @@ function getBreadcrumbs(pathname: string): Array<{ label: string; href: string }
   return crumbs;
 }
 
-interface Notification { id: string; title: string; description: string; time: string; read: boolean; }
+interface Notification { id: string; title: string; description: string; time: string; }
 
-const MOCK_NOTIFICATIONS: Notification[] = [
-  { id: '1', title: 'Extension updated', description: 'acme/seo updated to v2.1.0', time: '2m ago', read: false },
-  { id: '2', title: 'New user registered', description: 'jane@example.com joined', time: '1h ago', read: false },
-  { id: '3', title: 'Backup completed', description: 'Daily backup finished', time: '3h ago', read: true },
+/** Admin destinations searchable from the top bar quick-search. */
+const SEARCH_TARGETS: Array<{ label: string; href: string; keywords: string }> = [
+  { label: 'Dashboard', href: '/', keywords: 'home overview stats' },
+  { label: 'Content', href: '/content', keywords: 'entries posts articles' },
+  { label: 'Content Types', href: '/content/types', keywords: 'schema fields models' },
+  { label: 'Pages', href: '/pages', keywords: 'page builder blocks' },
+  { label: 'Media', href: '/media', keywords: 'images uploads files library' },
+  { label: 'Extensions', href: '/extensions', keywords: 'plugins addons marketplace' },
+  { label: 'Themes', href: '/themes', keywords: 'design tokens appearance' },
+  { label: 'Users', href: '/users', keywords: 'team members roles invite' },
+  { label: 'Analytics', href: '/analytics', keywords: 'traffic activity charts' },
+  { label: 'AI Assistant', href: '/ai', keywords: 'assistant chat bot' },
+  { label: 'Billing', href: '/billing', keywords: 'subscription plan invoices payment' },
+  { label: 'Settings', href: '/settings', keywords: 'configuration api keys email storage' },
+  { label: 'Profile', href: '/profile', keywords: 'account password avatar' },
 ];
+
+function timeAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
 
 interface UserData { name: string; email: string; initials: string; }
 
@@ -46,8 +67,25 @@ export function TopBar({ className }: Readonly<{ className?: string }>) {
   const [userOpen, setUserOpen] = React.useState(false);
   const [themeOpen, setThemeOpen] = React.useState(false);
   const [user, setUser] = React.useState<UserData>({ name: 'Admin', email: 'admin@example.com', initials: 'A' });
+  const [notifications, setNotifications] = React.useState<Notification[]>([]);
 
-  const unreadCount = MOCK_NOTIFICATIONS.filter((n) => !n.read).length;
+  // Recent activity from the audit log doubles as the notification feed
+  React.useEffect(() => {
+    fetch('/api/audit-log?perPage=5')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((body: { data?: Array<{ id: string; action: string; resource: string; createdAt: string }> } | null) => {
+        if (!body?.data) return;
+        setNotifications(
+          body.data.map((e) => ({
+            id: e.id,
+            title: e.action.replace(/\./g, ' '),
+            description: e.resource,
+            time: timeAgo(e.createdAt),
+          })),
+        );
+      })
+      .catch(() => null);
+  }, []);
 
   React.useEffect(() => {
     fetch('/api/auth/me').then(r => r.ok ? r.json() : null).then(d => {
@@ -89,19 +127,49 @@ export function TopBar({ className }: Readonly<{ className?: string }>) {
         ))}
       </nav>
 
-      {/* Search */}
-      <div className="relative flex-shrink-0">
+      {/* Search (quick navigation) */}
+      <div className="relative flex-shrink-0" data-dropdown>
         {searchOpen ? (
-          <input
-            autoFocus
-            type="search"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onBlur={() => { setSearchOpen(false); setSearchValue(''); }}
-            placeholder="Search…"
-            className="input"
-            style={{ width: 220, height: 32, fontSize: 13 }}
-          />
+          <>
+            <input
+              autoFocus
+              type="search"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onBlur={() => setTimeout(() => { setSearchOpen(false); setSearchValue(''); }, 150)}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') { setSearchOpen(false); setSearchValue(''); }
+                if (e.key === 'Enter') {
+                  const first = SEARCH_TARGETS.find((t) =>
+                    `${t.label} ${t.keywords}`.toLowerCase().includes(searchValue.toLowerCase()),
+                  );
+                  if (first) {
+                    globalThis.location.href = first.href;
+                  }
+                }
+              }}
+              placeholder="Go to…"
+              aria-label="Search admin pages"
+              className="input"
+              style={{ width: 220, height: 32, fontSize: 13 }}
+            />
+            {searchValue && (
+              <div className="dropdown" style={{ left: 0, top: 'calc(100% + 6px)', width: 220, maxHeight: 260, overflowY: 'auto' }}>
+                {SEARCH_TARGETS.filter((t) =>
+                  `${t.label} ${t.keywords}`.toLowerCase().includes(searchValue.toLowerCase()),
+                ).map((t) => (
+                  <Link key={t.href} href={t.href} className="dropdown-item" onClick={() => { setSearchOpen(false); setSearchValue(''); }}>
+                    {t.label}
+                  </Link>
+                ))}
+                {SEARCH_TARGETS.every((t) => !`${t.label} ${t.keywords}`.toLowerCase().includes(searchValue.toLowerCase())) && (
+                  <div className="dropdown-item" aria-disabled="true" style={{ color: 'hsl(var(--muted-foreground))' }}>
+                    No matching pages
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         ) : (
           <button
             onClick={() => setSearchOpen(true)}
@@ -148,19 +216,24 @@ export function TopBar({ className }: Readonly<{ className?: string }>) {
         <button
           onClick={() => setNotifOpen(v => !v)}
           className="topbar__action"
-          aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : 'Notifications'}
+          aria-label={notifications.length > 0 ? `Recent activity (${notifications.length})` : 'Recent activity'}
         >
           <Bell className="w-4 h-4" aria-hidden="true" />
-          {unreadCount > 0 && <span className="notif-dot" aria-hidden="true" />}
+          {notifications.length > 0 && <span className="notif-dot" aria-hidden="true" />}
         </button>
 
         {notifOpen && (
           <div className="dropdown" style={{ right: 0, top: 'calc(100% + 6px)', width: 300 }}>
             <div style={{ padding: '10px 14px 8px', borderBottom: '1px solid hsl(var(--border))' }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'hsl(var(--foreground))' }}>Notifications</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'hsl(var(--foreground))' }}>Recent activity</span>
             </div>
             <div style={{ maxHeight: 300, overflowY: 'auto' }}>
-              {MOCK_NOTIFICATIONS.map((n) => (
+              {notifications.length === 0 && (
+                <div className="dropdown-item" style={{ color: 'hsl(var(--muted-foreground))', fontSize: 12 }}>
+                  No recent activity.
+                </div>
+              )}
+              {notifications.map((n) => (
                 <div
                   key={n.id}
                   className="dropdown-item"
@@ -169,11 +242,10 @@ export function TopBar({ className }: Readonly<{ className?: string }>) {
                     alignItems: 'flex-start',
                     gap: 2,
                     borderBottom: '1px solid hsl(var(--border) / 0.5)',
-                    background: n.read ? undefined : 'hsl(var(--primary) / 0.04)',
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                    <span style={{ fontSize: 12.5, fontWeight: 550, color: n.read ? 'hsl(var(--foreground))' : 'hsl(var(--primary))' }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 550, color: 'hsl(var(--foreground))', textTransform: 'capitalize' }}>
                       {n.title}
                     </span>
                     <span style={{ fontSize: 10.5, fontFamily: 'var(--font-mono)', color: 'hsl(var(--muted-foreground))' }}>

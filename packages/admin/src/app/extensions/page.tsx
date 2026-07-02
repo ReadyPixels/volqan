@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 const MARKETPLACE_URL = `https://bazarix.link/extensions?source=volqan`;
 
@@ -135,10 +136,25 @@ export default function ExtensionsPage() {
     }
   };
 
-  const handleUninstall = async (id: string) => {
-    if (!confirm('Uninstall this extension? All extension data will be removed.')) return;
-    setExtensions((prev) => prev.filter((e) => e.id !== id));
-    await fetch(`/api/extensions/${id}`, { method: 'DELETE' });
+  const [pendingUninstall, setPendingUninstall] = React.useState<string | null>(null);
+  const [uninstalling, setUninstalling] = React.useState(false);
+
+  const handleUninstall = (id: string) => setPendingUninstall(id);
+
+  const confirmUninstall = async () => {
+    if (!pendingUninstall) return;
+    setUninstalling(true);
+    try {
+      const res = await fetch(`/api/extensions/${pendingUninstall}`, { method: 'DELETE' });
+      if (res.ok) {
+        setExtensions((prev) => prev.filter((e) => e.id !== pendingUninstall));
+      } else {
+        load();
+      }
+    } finally {
+      setUninstalling(false);
+      setPendingUninstall(null);
+    }
   };
 
   const enabledCount = extensions.filter((e) => e.enabled).length;
@@ -208,6 +224,16 @@ export default function ExtensionsPage() {
           </CardContent>
         </Card>
       )}
+
+      <ConfirmDialog
+        open={!!pendingUninstall}
+        onOpenChange={(open) => !open && setPendingUninstall(null)}
+        title="Uninstall extension"
+        description={`"${extensions.find((e) => e.id === pendingUninstall)?.name ?? 'This extension'}" and all of its data will be removed. This cannot be undone.`}
+        confirmLabel="Uninstall"
+        loading={uninstalling}
+        onConfirm={confirmUninstall}
+      />
     </div>
   );
 }

@@ -1,8 +1,6 @@
 import type { NextRequest } from 'next/server';
-import { SchemaBuilder } from '@volqan/core';
 import { getSessionUser, json, unauthorized, notFound, badRequest, internalError } from '@/lib/api-helpers';
-
-const schemaBuilder = new SchemaBuilder();
+import { schemaBuilder } from '@/lib/content';
 
 export async function GET(
   request: NextRequest,
@@ -16,7 +14,8 @@ export async function GET(
     const type = await schemaBuilder.getContentType(id);
     if (!type) return notFound('Content type not found.');
     return json({ data: type });
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.name === 'ContentTypeNotFoundError') return notFound('Content type not found.');
     console.error('[content/types/:id GET]', err);
     return internalError();
   }

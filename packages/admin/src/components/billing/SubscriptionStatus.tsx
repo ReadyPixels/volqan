@@ -35,6 +35,8 @@ export interface SubscriptionStatusProps {
   attributionRemoved?: boolean;
   billingPortalUrl?: string;
   onCancel?: () => void;
+  /** Opens the Stripe billing portal; used instead of billingPortalUrl when a session must be created on demand */
+  onManage?: () => void;
   onReactivate?: () => void;
   loading?: boolean;
 }
@@ -102,6 +104,7 @@ export function SubscriptionStatus({
   attributionRemoved = false,
   billingPortalUrl,
   onCancel,
+  onManage,
   onReactivate,
   loading = false,
 }: SubscriptionStatusProps) {
@@ -187,7 +190,20 @@ export function SubscriptionStatus({
         {/* Actions */}
         {hasActivePlan && (
           <div className="flex flex-wrap gap-2 pt-1">
-            {billingPortalUrl && (
+            {onManage && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                onClick={onManage}
+                loading={loading}
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                Manage billing
+              </Button>
+            )}
+
+            {!onManage && billingPortalUrl && (
               <Button
                 variant="outline"
                 size="sm"

@@ -104,7 +104,7 @@ export async function POST(request: NextRequest): Promise<Response> {
         url: publicUrl,
         folder,
         uploadedById: user.id,
-        storageProvider: 'local',
+        storageProvider: 'LOCAL',
       },
     });
 

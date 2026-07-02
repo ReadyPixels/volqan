@@ -10,10 +10,11 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface NavChild { key: string; label: string; href: string; icon: React.ComponentType<{ className?: string }>; }
-interface NavItem  { key: string; label: string; href: string; icon: React.ComponentType<{ className?: string }>; external?: boolean; badge?: string; children?: NavChild[]; }
+type NavIcon = React.ComponentType<{ className?: string; style?: React.CSSProperties; 'aria-hidden'?: boolean | 'true' | 'false' }>;
+interface NavChild { key: string; label: string; href: string; icon: NavIcon; }
+interface NavItem  { key: string; label: string; href: string; icon: NavIcon; external?: boolean; badge?: string; children?: NavChild[]; }
 
-const NAV_SECTIONS = [
+const NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
   {
     label: 'Workspace',
     items: [
@@ -47,7 +48,7 @@ const NAV_SECTIONS = [
       { key: 'bazarix',  label: 'Bazarix',  href: 'https://bazarix.link', icon: ExternalLink, external: true },
     ],
   },
-] satisfies { label: string; items: NavItem[] }[];
+];
 
 interface SidebarContextValue { collapsed: boolean; setCollapsed: (v: boolean) => void; }
 export const SidebarContext = React.createContext<SidebarContextValue>({ collapsed: false, setCollapsed: () => {} });

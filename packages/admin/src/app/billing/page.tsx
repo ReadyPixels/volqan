@@ -8,6 +8,7 @@ import { InvoiceTable } from '@/components/billing/InvoiceTable';
 import { FeeBreakdown } from '@/components/billing/FeeBreakdown';
 import type { InvoiceRow } from '@/components/billing/InvoiceTable';
 import type { SubscriptionStatusType } from '@/components/billing/SubscriptionStatus';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 const PLAN_FEATURES = [
   'Priority email support',
@@ -57,8 +58,11 @@ export default function BillingPage() {
     router.push(`/billing/checkout?plan=${planId}`);
   };
 
-  const handleCancel = async () => {
-    if (!confirm('Cancel your subscription at the end of the current billing period?')) return;
+  const [cancelOpen, setCancelOpen] = React.useState(false);
+
+  const handleCancel = () => setCancelOpen(true);
+
+  const confirmCancel = async () => {
     setActionLoading(true);
     try {
       await fetch('/api/billing/cancel', { method: 'POST' });
@@ -67,6 +71,7 @@ export default function BillingPage() {
       setStatus(data);
     } finally {
       setActionLoading(false);
+      setCancelOpen(false);
     }
   };
 
@@ -165,6 +170,17 @@ export default function BillingPage() {
           )}
         </>
       )}
+
+      <ConfirmDialog
+        open={cancelOpen}
+        onOpenChange={setCancelOpen}
+        title="Cancel subscription"
+        description="Your subscription will remain active until the end of the current billing period, then it will not renew."
+        confirmLabel="Cancel subscription"
+        cancelLabel="Keep plan"
+        loading={actionLoading}
+        onConfirm={confirmCancel}
+      />
     </div>
   );
 }

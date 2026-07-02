@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { useLocale } from '@/components/layout/LocaleProvider';
 import { cn } from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
@@ -107,7 +109,27 @@ function ApiKeyRow({ name, value, onRevoke }: { name: string; value: string; onR
 
 interface ApiKey { id: string; name: string; prefix: string; scopes: string[]; createdAt: string; key?: string; }
 
+interface InstallationInfo {
+  version: string;
+  installationId: string | null;
+  plan: string;
+  nodeVersion: string;
+  database: string;
+  environment: string;
+  uptimeSeconds: number;
+}
+
+function formatUptime(seconds: number): string {
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  if (days > 0) return `${days} day${days === 1 ? '' : 's'}, ${hours} hour${hours === 1 ? '' : 's'}`;
+  if (hours > 0) return `${hours} hour${hours === 1 ? '' : 's'}, ${minutes} min`;
+  return `${minutes} min`;
+}
+
 export default function SettingsPage() {
+  const { setLocale } = useLocale();
   const [saving, setSaving] = React.useState<Record<string, boolean>>({});
   const [loaded, setLoaded] = React.useState(false);
 
@@ -125,6 +147,18 @@ export default function SettingsPage() {
 
   // Storage settings
   const [storageProvider, setStorageProvider] = React.useState('local');
+
+  // Installation info
+  const [installInfo, setInstallInfo] = React.useState<InstallationInfo | null>(null);
+
+  React.useEffect(() => {
+    fetch('/api/settings/installation')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((body: { data?: InstallationInfo } | null) => {
+        if (body?.data) setInstallInfo(body.data);
+      })
+      .catch(() => null);
+  }, []);
 
   // API keys
   const [apiKeys, setApiKeys] = React.useState<ApiKey[]>([]);
@@ -156,11 +190,15 @@ export default function SettingsPage() {
   const handleSave = async (group: string, data: Record<string, string>) => {
     setSaving((s) => ({ ...s, [group]: true }));
     try {
-      await fetch('/api/settings', {
+      const res = await fetch('/api/settings', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
+      // Apply locale (lang + text direction) immediately after a successful save
+      if (res.ok && data['site.locale'] && (data['site.locale'] === 'en' || data['site.locale'] === 'ar')) {
+        setLocale(data['site.locale'] as 'en' | 'ar');
+      }
     } finally {
       setSaving((s) => ({ ...s, [group]: false }));
     }
@@ -186,10 +224,24 @@ export default function SettingsPage() {
     }
   };
 
-  const handleRevokeKey = async (id: string) => {
-    if (!confirm('Revoke this API key? This cannot be undone.')) return;
-    await fetch(`/api/settings/api-keys/${id}`, { method: 'DELETE' });
-    setApiKeys((prev) => prev.filter((k) => k.id !== id));
+  const [pendingRevoke, setPendingRevoke] = React.useState<ApiKey | null>(null);
+  const [revoking, setRevoking] = React.useState(false);
+
+  const handleRevokeKey = (id: string) => {
+    setPendingRevoke(apiKeys.find((k) => k.id === id) ?? null);
+  };
+
+  const confirmRevokeKey = async () => {
+    if (!pendingRevoke) return;
+    setRevoking(true);
+    try {
+      const res = await fetch(`/api/settings/api-keys/${pendingRevoke.id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`Revoke failed (${res.status})`);
+      setApiKeys((prev) => prev.filter((k) => k.id !== pendingRevoke.id));
+    } finally {
+      setRevoking(false);
+      setPendingRevoke(null);
+    }
   };
 
   return (
@@ -291,7 +343,9 @@ export default function SettingsPage() {
               onChange={(e: any) => setFromEmail(e.target.value)}
               hint="The sender address for all outbound emails."
             />
-            <Button variant="outline" size="sm">Send test email</Button>
+            <Button variant="outline" size="sm" disabled title="Available once SMTP settings are saved and verified">
+              Send test email (coming soon)
+            </Button>
           </SettingSection>
         </TabsContent>
 
@@ -303,46 +357,33 @@ export default function SettingsPage() {
             onSave={() => handleSave('storage', { 'storage.provider': storageProvider })}
             saving={saving.storage}
           >
-            <div className="grid grid-cols-3 gap-3">
-              {['local', 's3', 'gcs'].map((provider) => (
-                <button
-                  key={provider}
-                  onClick={() => setStorageProvider(provider)}
-                  className={cn(
-                    'p-3 rounded-lg border text-sm font-medium transition-colors text-left',
-                    storageProvider === provider
-                      ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.08)] text-[hsl(var(--primary))]'
-                      : 'border-[hsl(var(--border))] hover:bg-[hsl(var(--accent))]',
-                  )}
-                >
-                  {provider === 'local' && 'Local Disk'}
-                  {provider === 's3' && 'AWS S3'}
-                  {provider === 'gcs' && 'Google Cloud'}
-                </button>
-              ))}
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setStorageProvider('local')}
+                aria-pressed={storageProvider === 'local'}
+                className={cn(
+                  'p-3 rounded-lg border text-sm font-medium transition-colors text-left',
+                  storageProvider === 'local'
+                    ? 'border-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.08)] text-[hsl(var(--primary))]'
+                    : 'border-[hsl(var(--border))] hover:bg-[hsl(var(--accent))]',
+                )}
+              >
+                Local Disk
+              </button>
+              <div
+                aria-disabled="true"
+                className="p-3 rounded-lg border border-dashed border-[hsl(var(--border))] text-sm font-medium text-[hsl(var(--muted-foreground))] cursor-not-allowed"
+              >
+                AWS S3
+                <span className="block text-xs font-normal mt-0.5">Not yet available — S3 uploads land in a future release.</span>
+              </div>
             </div>
-
-            {storageProvider === 's3' && (
-              <div className="space-y-4 mt-2 p-4 rounded-lg bg-[hsl(var(--muted)/0.3)] border border-[hsl(var(--border))]">
-                <Input label="S3 Bucket Name" placeholder="my-volqan-bucket" />
-                <Input label="AWS Region" placeholder="us-east-1" />
-                <Input label="AWS Access Key ID" placeholder="AKIAIOSFODNN7EXAMPLE" />
-                <Input label="AWS Secret Access Key" type="password" placeholder="••••••••" />
-              </div>
-            )}
-
-            {storageProvider === 'gcs' && (
-              <div className="space-y-4 mt-2 p-4 rounded-lg bg-[hsl(var(--muted)/0.3)] border border-[hsl(var(--border))]">
-                <Input label="GCS Bucket Name" placeholder="my-volqan-bucket" />
-                <Input label="Service Account JSON" type="textarea" placeholder='{"type": "service_account", ...}' />
-              </div>
-            )}
 
             {storageProvider === 'local' && (
               <div className="mt-2 p-3 rounded-lg bg-[hsl(var(--muted)/0.3)] border border-[hsl(var(--border))] text-sm">
                 <p className="text-[hsl(var(--muted-foreground))]">
-                  Files are stored at <code className="font-mono text-xs bg-[hsl(var(--muted))] px-1 py-0.5 rounded">/public/uploads</code>.
-                  Not recommended for production.
+                  Files are stored at the path set by <code className="font-mono text-xs bg-[hsl(var(--muted))] px-1 py-0.5 rounded">VOLQAN_UPLOAD_DIR</code>
+                  {' '}(default <code className="font-mono text-xs bg-[hsl(var(--muted))] px-1 py-0.5 rounded">/public/uploads</code>).
                 </p>
               </div>
             )}
@@ -405,13 +446,17 @@ export default function SettingsPage() {
               <CardDescription>Details about this Volqan instance.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {[
-                { label: 'Volqan Version', value: '1.0.0', badge: <Badge variant="success">Latest</Badge> },
-                { label: 'Installation ID', value: 'inst_a1b2c3d4e5f6', mono: true },
-                { label: 'Node.js Version', value: 'v22.4.0' },
-                { label: 'Database', value: 'PostgreSQL 16.2' },
-                { label: 'Environment', value: 'Production', badge: <Badge variant="secondary">production</Badge> },
-                { label: 'Uptime', value: '14 days, 3 hours' },
+              {!installInfo && (
+                <p className="text-sm text-[hsl(var(--muted-foreground))]">Loading installation details…</p>
+              )}
+              {installInfo && [
+                { label: 'Volqan Version', value: installInfo.version },
+                { label: 'Installation ID', value: installInfo.installationId ?? 'not initialized', mono: true },
+                { label: 'Plan', value: installInfo.plan, badge: <Badge variant="secondary">{installInfo.plan}</Badge> },
+                { label: 'Node.js Version', value: installInfo.nodeVersion },
+                { label: 'Database', value: installInfo.database },
+                { label: 'Environment', value: installInfo.environment, badge: <Badge variant="secondary">{installInfo.environment}</Badge> },
+                { label: 'Uptime', value: formatUptime(installInfo.uptimeSeconds) },
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between py-2 border-b border-[hsl(var(--border))] last:border-0 text-sm">
                   <span className="text-[hsl(var(--muted-foreground))]">{item.label}</span>
@@ -436,6 +481,16 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <ConfirmDialog
+        open={!!pendingRevoke}
+        onOpenChange={(open) => !open && setPendingRevoke(null)}
+        title="Revoke API key"
+        description={`The key "${pendingRevoke?.name ?? ''}" will stop working immediately. This cannot be undone.`}
+        confirmLabel="Revoke"
+        loading={revoking}
+        onConfirm={confirmRevokeKey}
+      />
     </div>
   );
 }

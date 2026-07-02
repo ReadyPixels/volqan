@@ -21,6 +21,10 @@ import {
   Settings,
   LayoutTemplate,
   ExternalLink,
+  TrendingUp,
+  CreditCard,
+  Bot,
+  UserCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -43,6 +47,10 @@ const MORE_ITEMS = [
   { label: 'Pages', href: '/pages', icon: LayoutTemplate },
   { label: 'Themes', href: '/themes', icon: Palette },
   { label: 'Users', href: '/users', icon: Users },
+  { label: 'Analytics', href: '/analytics', icon: TrendingUp },
+  { label: 'Billing', href: '/billing', icon: CreditCard },
+  { label: 'AI Assistant', href: '/ai', icon: Bot },
+  { label: 'Profile', href: '/profile', icon: UserCircle },
   { label: 'Settings', href: '/settings', icon: Settings },
   { label: 'Bazarix Marketplace', href: 'https://bazarix.link', icon: ExternalLink, external: true },
 ];
@@ -63,7 +71,7 @@ export function MobileNav() {
   return (
     <>
       {/* Bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[hsl(var(--card))] border-t border-[hsl(var(--border))] md:hidden">
+      <nav aria-label="Mobile navigation" className="fixed bottom-0 left-0 right-0 z-40 bg-[hsl(var(--card))] border-t border-[hsl(var(--border))] md:hidden">
         <div className="flex items-stretch">
           {TABS.map((tab) => {
             const Icon = tab.icon;
@@ -93,6 +101,8 @@ export function MobileNav() {
           {/* More button */}
           <button
             onClick={() => setMoreOpen((v) => !v)}
+            aria-expanded={moreOpen}
+            aria-controls="mobile-more-menu"
             className={cn(
               'flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors',
               moreOpen
@@ -134,7 +144,7 @@ export function MobileNav() {
             onClick={() => setMoreOpen(false)}
           />
           {/* Sheet */}
-          <div className="fixed bottom-16 left-4 right-4 z-40 bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] shadow-2xl p-2 md:hidden">
+          <div id="mobile-more-menu" className="fixed bottom-16 left-4 right-4 z-40 bg-[hsl(var(--card))] rounded-2xl border border-[hsl(var(--border))] shadow-2xl p-2 md:hidden">
             <div className="grid grid-cols-2 gap-1">
               {MORE_ITEMS.map((item) => {
                 const Icon = item.icon;

@@ -1,8 +1,7 @@
 import type { NextRequest } from 'next/server';
-import { SchemaBuilder } from '@volqan/core';
+import { toSlug } from '@volqan/core';
 import { getSessionUser, json, unauthorized, badRequest, internalError } from '@/lib/api-helpers';
-
-const schemaBuilder = new SchemaBuilder();
+import { schemaBuilder } from '@/lib/content';
 
 export async function GET(request: NextRequest): Promise<Response> {
   const user = await getSessionUser(request);
@@ -36,6 +35,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   try {
     const contentType = await schemaBuilder.createContentType({
       name: body.name as string,
+      slug: typeof body.slug === 'string' && body.slug ? toSlug(body.slug) : toSlug(body.name as string),
       fields: (body.fields as any[]) ?? [],
       settings: (body.settings as any) ?? {},
     });

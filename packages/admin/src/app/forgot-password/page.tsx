@@ -2,9 +2,11 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Loader2, ArrowLeft } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [email, setEmail] = React.useState('');
   const [loading, setLoading] = React.useState(false);
   const [sent, setSent] = React.useState(false);
@@ -40,7 +42,7 @@ export default function ForgotPasswordPage() {
           Reset password
         </h1>
         <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1 text-center">
-          Enter your email and we&apos;ll send a reset link
+          Enter your email and we&apos;ll send a 6-digit reset code
         </p>
       </div>
 
@@ -48,8 +50,14 @@ export default function ForgotPasswordPage() {
         {sent ? (
           <div className="text-center space-y-4">
             <p className="text-sm text-[hsl(var(--foreground))]">
-              If that email exists, a reset link has been sent. Check your inbox.
+              If that email exists, a 6-digit reset code has been sent. Check your inbox.
             </p>
+            <button
+              onClick={() => router.push(`/reset-password?email=${encodeURIComponent(email)}`)}
+              className="w-full h-9 flex items-center justify-center gap-2 text-sm font-medium rounded-md bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:opacity-90 transition"
+            >
+              Enter reset code
+            </button>
             <Link
               href="/login"
               className="inline-flex items-center gap-1.5 text-sm text-[hsl(var(--primary))] hover:underline"
@@ -87,7 +95,7 @@ export default function ForgotPasswordPage() {
               className="w-full h-9 flex items-center justify-center gap-2 text-sm font-medium rounded-md bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-              {loading ? 'Sending…' : 'Send reset link'}
+              {loading ? 'Sending…' : 'Send reset code'}
             </button>
 
             <div className="text-center">

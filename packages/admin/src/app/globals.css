@@ -892,3 +892,43 @@ body {
   border: 2px solid hsl(var(--card));
   animation: vq-pulse-dot 2s ease infinite;
 }
+
+/* ===========================================================================
+   RTL support (Arabic)
+   Flex layouts mirror automatically under dir="rtl"; these rules cover the
+   pieces that use physical properties.
+   =========================================================================== */
+
+[dir='rtl'] .nav-item {
+  text-align: right;
+}
+
+[dir='rtl'] .nav-item--active::before {
+  left: auto;
+  right: 0;
+  border-radius: 2px 0 0 2px;
+}
+
+[dir='rtl'] .nav-item__tooltip {
+  left: auto;
+  right: calc(100% + 8px);
+}
+
+[dir='rtl'] .sidebar {
+  border-right: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+[dir='rtl'] .attribution-footer {
+  direction: rtl;
+}
+
+/* Keep code, slugs, and URLs left-to-right even in Arabic UI */
+[dir='rtl'] code,
+[dir='rtl'] pre,
+[dir='rtl'] .font-mono,
+[dir='rtl'] input[type='url'],
+[dir='rtl'] input[type='email'] {
+  direction: ltr;
+  unicode-bidi: embed;
+}
