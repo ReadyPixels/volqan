@@ -1,6 +1,8 @@
 # dependencies
 node_modules/
 .pnpm-store/
+.yarn/
+.npm/
 
 # builds
 build/
@@ -9,11 +11,57 @@ dist/
 out/
 coverage/
 *.tsbuildinfo
+.turbo/
+.vercel/
+.netlify/
+.output/
+.parcel-cache/
+.eslintcache
 
-# env
+# environment and secrets
 .env
 .env.*
 !.env.example
+!.env.*.example
+*.env.local
+*.local.env
+.envrc
+.env.vault
+*.secret
+*.secrets
+secrets/
+config/secrets/
+
+# credentials and certificates
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+*.crt
+*.cer
+*.csr
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+*.kubeconfig
+*.mobileprovision
+
+# databases, dumps, and backups
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+*.dump
+*.bak
+*.backup
+*.old
+/backups/
+/dumps/
+*.sql.gz
+*.sql.bak
 
 # logs
 npm-debug.log*
@@ -21,6 +69,7 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 *.log
+/logs/
 
 # editors
 .DS_Store
@@ -33,26 +82,44 @@ yarn-error.log*
 .tmp/
 tmp/
 .cache/
+.nyc_output/
+.local/
+/uploads/
+/storage/
+/media/
+public/uploads/
+packages/admin/public/uploads/
 
 # docker
-postgres-data/
+/postgres-data/
+/docker-data/
+/data/
 
 # testing
 playwright-report/
 test-results/
+blob-report/
+screenshots/
+videos/
 
 # local package artifacts
 *.tgz
+*.tar.gz
 
-# AI tooling (private project files)
-.playwright-mcp
-.kilo
-.claude
+# private local tooling state
+.playwright-mcp/
+.kilo/
+.claude/
+.claire/
+.codex/
+.cursor/
+.windsurf/
 CLAUDE.md
-dogfood-output
+dogfood-output/
 
 # personal notes
-.remember
+.remember/
+*.notes.local
 
 # docs archive
 docs/archive/
