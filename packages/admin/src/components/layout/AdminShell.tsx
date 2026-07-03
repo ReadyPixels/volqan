@@ -7,6 +7,7 @@
 'use client';
 
 import * as React from 'react';
+import { usePathname } from 'next/navigation';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { ThemeProvider } from './ThemeProvider';
@@ -16,8 +17,25 @@ import { MobileHeader } from './MobileHeader';
 import { AIAssistant } from '../ai/AIAssistant';
 import { ClientPageContent } from './ClientPageContent';
 
+/** Routes that render their own standalone page chrome instead of the admin sidebar shell. */
+const STANDALONE_ROUTES = ['/login', '/forgot-password', '/reset-password', '/install'];
+
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = React.useState(false);
+  const pathname = usePathname();
+
+  if (STANDALONE_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`))) {
+    return (
+      <ThemeProvider defaultTheme="system">
+        <LocaleProvider>
+          <div className="min-h-screen flex items-center justify-center bg-[hsl(var(--background))]">
+            {children}
+          </div>
+          <AIAssistant />
+        </LocaleProvider>
+      </ThemeProvider>
+    );
+  }
 
   return (
     <ThemeProvider defaultTheme="system">

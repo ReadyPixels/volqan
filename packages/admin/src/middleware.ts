@@ -5,6 +5,8 @@ const SESSION_COOKIE = 'volqan_session';
 
 /** Routes that are accessible without authentication. */
 const PUBLIC_PATHS = [
+  '/install',
+  '/api/install',
   '/login',
   '/forgot-password',
   '/reset-password',
