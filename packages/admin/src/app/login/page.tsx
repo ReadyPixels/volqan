@@ -20,6 +20,15 @@ export default function LoginPage() {
     oauthError ? 'OAuth sign-in failed. Please try again or use email and password.' : null,
   );
 
+  React.useEffect(() => {
+    fetch('/api/install/status')
+      .then((r) => r.json() as Promise<{ installed: boolean }>)
+      .then(({ installed }) => {
+        if (!installed) router.replace('/install');
+      })
+      .catch(() => null);
+  }, [router]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);

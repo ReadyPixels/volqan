@@ -272,3 +272,24 @@ the full setup/verification log.
 
 All eight findings from the 2026-07-03 Playwright MCP audit (T-001–T-008) are now fixed and
 re-verified live against the running dev server.
+
+---
+
+## First-Run Installer & Auth Layout Fix (2026-07-03)
+
+- [x] **INS-001**: Added a first-run web installer wizard at `/install` — no terminal/script setup
+      required. On first launch (no `User` rows yet), visiting the app redirects
+      `/` → `/login` → `/install`, which shows a live database-connection status check, then a
+      single form (site name, language, admin name/email/password) that creates the `Installation`
+      record, the first `SUPER_ADMIN` user, and default settings in one submit, and logs the new
+      admin straight into the dashboard. Once installed, `/install` redirects to `/login` and
+      refuses to run again (`packages/admin/src/app/install/`, `packages/admin/src/app/api/install/`)
+- [x] **INS-002**: Found and fixed a pre-existing bug while building the installer: `/login`,
+      `/forgot-password`, and `/reset-password` each had their own nested `layout.tsx` defining a
+      standalone `<html>`/`<body>`, but Next.js App Router only honors the true root layout's
+      `<html>`/`<body>` — these nested ones were silently discarded, so all three auth pages were
+      actually rendering inside the full admin sidebar/topbar shell the whole time, not standalone
+      as intended. Fixed by making `AdminShell` pathname-aware (skips the sidebar shell for
+      `/login`, `/forgot-password`, `/reset-password`, `/install`) and removing the dead
+      `<html>`/`<body>` markup from the four nested layouts (`packages/admin/src/components/layout/AdminShell.tsx`,
+      and the four `layout.tsx` files under `login/`, `forgot-password/`, `reset-password/`, `install/`)

@@ -31,6 +31,7 @@ Changes not yet assigned to a date.
 - Playwright regression suite (`e2e/admin-regression.spec.ts`) and axe-core accessibility suite (`e2e/a11y.spec.ts`); new `test:e2e` script (packages/admin)
 - Product Design context document at `docs/product-design-context.md` (docs)
 - Prisma migration adding `stripeCustomerId`, `stripeSubscriptionId`, `planId`, `licenseStatus` to Installation (packages/core)
+- First-run web installer wizard at `/install` — checks database connectivity, then creates the initial installation record, first `SUPER_ADMIN` user, and default settings from a single form, logging the new admin in immediately; new instances are routed here automatically until setup completes (`GET /api/install/status`, `POST /api/install`) (packages/admin)
 
 ### Changed
 - Media Library, content entries list, content entry editor, and page editor now use live API data exclusively with loading/error/retry/empty/permission states; all mock data removed (packages/admin)
@@ -50,6 +51,7 @@ Changes not yet assigned to a date.
 - Dashboard `StatsCards` trend badges (`+12%`, `+5%`, `+3%`) replaced hardcoded fake percentages with genuine 7-day vs. prior-7-day deltas computed server-side; shows `—` when there's no baseline period to compare against (packages/admin)
 - Media Library file-size total no longer shows a stale "1 KB" after deleting the last file; `formatSize` now correctly renders "0 KB" for zero bytes (packages/admin)
 - Added a hidden `autoComplete="username"` field to the profile password-change form, resolving a browser accessibility advisory (packages/admin)
+- `/login`, `/forgot-password`, and `/reset-password` were silently rendering inside the full admin sidebar/topbar shell instead of standalone — their nested `layout.tsx` files defined their own `<html>`/`<body>`, but Next.js App Router only honors the true root layout's; `AdminShell` is now pathname-aware and skips the sidebar shell for these routes plus the new `/install` (packages/admin)
 
 ### Security
 - Hardened `.gitignore` for public repository hygiene and removed tracked private local tooling state from the index (repo)
