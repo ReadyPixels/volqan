@@ -71,7 +71,7 @@ All outstanding work identified across the codebase audit (May 2026).
 - [x] Prisma migrations committed — initial migration SQL generated from schema at `packages/core/prisma/migrations/init/migration.sql`; `migration_lock.toml` added; run `prisma migrate deploy` against a live database to apply
 - [x] Applied all pending Prisma migrations (`init`, `webhooks_scheduling`, `installation_billing_fields`) via `prisma migrate deploy` against a local PostgreSQL 16 instance (WSL); `_prisma_migrations` table confirmed to track all three under their plain folder names with no legacy timestamped entries (packages/core)
 - [x] Renamed all Prisma migration folders from timestamp-prefixed (`20260405000000_init`, etc.) to plain descriptive names (`init`, `webhooks_scheduling`, `installation_billing_fields`) (packages/core)
-- [ ] **Verify production/CI database before next deploy**: the rename was validated against a fresh local database only. If the CI `DATABASE_URL` secret (or any other live/persistent database) already ran `prisma migrate deploy` under the old timestamped folder names, its `_prisma_migrations` table will show those migrations as unapplied under the new names. Either rename the corresponding rows in that table to match, or confirm the target database has never been migrated yet. Requires direct access to that database/secret, which is not available from a local dev session.
+- [x] Verified no remote/hosted database exists for this project — testing is local-only in WSL, so the migration-folder rename carries no `_prisma_migrations` desync risk against any live deployment
 
 ---
 
