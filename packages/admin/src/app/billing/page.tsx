@@ -28,12 +28,12 @@ function calculateFee(baseCents: number): number {
 interface BillingStatus {
   status: SubscriptionStatusType | 'none';
   plan: string;
-  planName: string | null;
-  nextBillingDate: string | null;
-  cancelAtPeriodEnd: boolean;
-  attributionRemoved: boolean;
-  billingPortalUrl: string | null;
-  invoices: InvoiceRow[];
+  planName?: string | null;
+  nextBillingDate?: string | null;
+  cancelAtPeriodEnd?: boolean;
+  attributionRemoved?: boolean;
+  billingPortalUrl?: string | null;
+  invoices?: InvoiceRow[];
 }
 
 const YEARLY_PRICE_CENTS = 4800;
@@ -162,7 +162,7 @@ export default function BillingPage() {
             </div>
           </section>
 
-          {status.invoices.length > 0 && (
+          {status.invoices && status.invoices.length > 0 && (
             <section>
               <h2 className="text-lg font-semibold text-[hsl(var(--foreground))] mb-4">Invoices</h2>
               <InvoiceTable invoices={status.invoices} />

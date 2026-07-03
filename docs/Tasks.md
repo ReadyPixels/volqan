@@ -215,3 +215,60 @@ All outstanding work identified across the codebase audit (May 2026).
 
 - [x] **DOC-001**: Refactor `docs/changelog.md` from version-based to date-based format
 - [x] **DOC-002**: Update `CLAUDE.md` changelog section to reference date-based format
+
+---
+
+## End-to-End Testing (2026-07-03 Playwright MCP audit)
+
+Full admin panel walkthrough performed with the Playwright MCP browser plugin against a real
+local dev server (WSL-hosted PostgreSQL, seeded admin account). See `.claude/testing.md` for
+the full setup/verification log.
+
+### Fixed
+
+- [x] **T-001**: `Content-Security-Policy`'s `script-src` included `'strict-dynamic'` with no nonce
+      infrastructure — per spec this disables all `'self'`/host-based script allowlisting, so
+      *every* script (including Next.js's own core bundle) was blocked and the app was completely
+      non-functional in a real browser. Removed `'strict-dynamic'`; also added
+      `fonts.googleapis.com`/`fonts.gstatic.com` to `style-src`/`font-src` since Google Fonts is
+      genuinely used (`packages/admin/next.config.ts`)
+- [x] **T-002**: `hashPassword`/`getBcrypt` dynamically `import('bcryptjs')` and called `.hash`
+      directly on the module namespace; under ESM interop bcryptjs's (CommonJS) named exports load
+      under `.default`, so `bcrypt.hash` was `undefined` and silently fell through to an
+      `UNHASHED:` marker — passwords were never actually hashed via this path. Fixed to unwrap
+      `mod.default ?? mod` (`packages/core/src/auth/password.ts`, `packages/core/src/database/seed.ts`)
+- [x] **T-003**: `/billing` crashed with `TypeError: Cannot read properties of undefined (reading
+      'length')` — `status.invoices.length` was read unconditionally, but `GET /api/billing/status`
+      never returns an `invoices` field (nor `planName`, `nextBillingDate`, `cancelAtPeriodEnd`,
+      `attributionRemoved`, `billingPortalUrl` — all client-assumed fields the route doesn't send).
+      Guarded the `invoices` read and made all of these fields optional on the client
+      `BillingStatus` type to match reality (`packages/admin/src/app/billing/page.tsx`)
+- [x] **T-004**: Missing Prisma migration for `User.requirePasswordChange` — the column existed in
+      `schema.prisma` but no migration ever created it, so `prisma migrate deploy` against a fresh
+      database left the seed script (and any login) failing with `column does not exist`. Added
+      migration `user_require_password_change` (`packages/core/prisma/migrations`)
+- [x] **T-005**: Dashboard `StorageUsage` component rendered entirely hardcoded mock data
+      (`USED_GB = 13.6`, per-type breakdown, fake "20 GB" quota, "Upgrade storage plan" nudge)
+      regardless of actual media usage. `GET /api/dashboard/stats` now aggregates real byte totals
+      per MIME-type category (`image/`, `video/`, `application/`, `audio/`) from the `Media` table;
+      the component was rewritten to render that data with no fabricated quota, since this
+      self-hosted product has no real total-storage-limit concept — only a per-file size cap
+      (`packages/admin/src/app/api/dashboard/stats/route.ts`, `packages/admin/src/components/dashboard/StorageUsage.tsx`)
+- [x] **T-006**: Dashboard `StatsCards` showed hardcoded trend badges (`+12%`, `+5%`, `+3%`, `—`)
+      next to live counts, implying real week-over-week deltas that didn't exist. The stats API now
+      computes genuine 7-day vs. prior-7-day percent changes for content entries, media files, and
+      users (returns `null` — rendered as `—` — when there's no prior-period baseline to compare
+      against); `activeExtensions` has no comparable growth metric and always shows `—`. The
+      sparkline's start point is now derived from the real trend percentage instead of an arbitrary
+      formula (`packages/admin/src/app/api/dashboard/stats/route.ts`, `packages/admin/src/components/dashboard/StatsCards.tsx`)
+- [x] **T-007**: Media Library file-size total did not update after a delete — after removing the
+      only uploaded file, the header still read "0 files · 1 KB total" instead of "0 KB", because
+      `formatSize` floored any byte count to a minimum of "1 KB". Fixed to special-case exactly
+      `0` bytes (`packages/admin/src/app/media/page.tsx`)
+- [x] **T-008**: `/profile` password-change form triggered a browser accessibility advisory
+      ("Password forms should have (optionally hidden) username fields"). Added a hidden,
+      `autoComplete="username"` input populated with the user's email alongside the password
+      inputs (`packages/admin/src/app/profile/page.tsx`)
+
+All eight findings from the 2026-07-03 Playwright MCP audit (T-001–T-008) are now fixed and
+re-verified live against the running dev server.

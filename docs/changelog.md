@@ -42,6 +42,14 @@ Changes not yet assigned to a date.
 
 ### Fixed
 - All `@volqan/admin` typecheck failures: Prisma JSON value namespaces, content repository constructor usage, Sidebar nav typing, StorageProvider enum casing, billing schema mismatches, CSS side-effect import declarations, `node-saml` types (packages/admin, packages/core)
+- `Content-Security-Policy`'s `script-src 'strict-dynamic'` (with no nonce infrastructure) was blocking all scripts from loading in a real browser, making the app non-functional; removed `strict-dynamic` and added Google Fonts origins to `style-src`/`font-src` (packages/admin)
+- `hashPassword`/`getBcrypt` read `.hash` directly off the dynamic-imported `bcryptjs` module namespace, which is `undefined` under ESM interop (CommonJS named exports land on `.default`) — passwords were silently stored unhashed; unwrapped `mod.default ?? mod` (packages/core)
+- `/billing` crashed with a `TypeError` reading `status.invoices.length` when the API response omits `invoices` (and other client-assumed fields); guarded the read and made those `BillingStatus` fields optional to match the actual API response (packages/admin)
+- Added missing Prisma migration for `User.requirePasswordChange`, which existed in `schema.prisma` but had no corresponding migration, breaking `prisma migrate deploy`/seeding against a fresh database (packages/core)
+- Dashboard `StorageUsage` widget replaced hardcoded mock storage stats (13.6/20 GB, fake per-type breakdown) with a real byte-total aggregation by MIME-type category from the `Media` table, with no fabricated storage quota (packages/admin)
+- Dashboard `StatsCards` trend badges (`+12%`, `+5%`, `+3%`) replaced hardcoded fake percentages with genuine 7-day vs. prior-7-day deltas computed server-side; shows `—` when there's no baseline period to compare against (packages/admin)
+- Media Library file-size total no longer shows a stale "1 KB" after deleting the last file; `formatSize` now correctly renders "0 KB" for zero bytes (packages/admin)
+- Added a hidden `autoComplete="username"` field to the profile password-change form, resolving a browser accessibility advisory (packages/admin)
 
 ### Security
 - Hardened `.gitignore` for public repository hygiene and removed tracked private local tooling state from the index (repo)

@@ -203,6 +203,14 @@ export default function ProfilePage() {
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Change password</span>
         </div>
         <div className="space-y-3">
+          <input
+            type="text"
+            name="username"
+            autoComplete="username"
+            value={profile.email}
+            readOnly
+            hidden
+          />
           <div>
             <label htmlFor="currentPassword" className="block text-sm font-medium mb-1">
               Current password

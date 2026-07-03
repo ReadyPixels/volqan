@@ -55,6 +55,7 @@ function toMediaFile(f: ApiMediaRecord): MediaFile {
 }
 
 function formatSize(bytes: number): string {
+  if (bytes === 0) return '0 KB';
   if (bytes >= 1048576) return `${(bytes / 1048576).toFixed(1)} MB`;
   return `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
