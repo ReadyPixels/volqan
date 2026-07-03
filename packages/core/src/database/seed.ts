@@ -41,7 +41,10 @@ async function hashPassword(plain: string): Promise<string> {
   // Dynamic import avoids bundling bcryptjs into the core module at build time.
   // If bcryptjs is not installed the seed will fail with a clear error.
   try {
-    const bcrypt = await import('bcryptjs');
+    const mod = await import('bcryptjs');
+    // bcryptjs is CommonJS; under ESM interop its named exports land on
+    // `.default` instead of the module namespace itself.
+    const bcrypt = mod.default ?? mod;
     return bcrypt.hash(plain, 12);
   } catch {
     // Fallback: warn loudly and use a clearly unsafe marker so seeded data is

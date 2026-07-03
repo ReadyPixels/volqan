@@ -39,7 +39,10 @@ let _bcrypt: BcryptModule | null = null;
 async function getBcrypt(): Promise<BcryptModule> {
   if (_bcrypt) return _bcrypt;
   try {
-    _bcrypt = await import('bcryptjs');
+    const mod = await import('bcryptjs');
+    // bcryptjs is CommonJS; under ESM interop its named exports land on
+    // `.default` instead of the module namespace itself.
+    _bcrypt = mod.default ?? mod;
     return _bcrypt;
   } catch {
     throw new Error(

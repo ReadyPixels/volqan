@@ -36,7 +36,13 @@ function SparklineChart({ data, color }: Readonly<Sparkline>) {
   );
 }
 
-interface DashboardStats { contentEntries: number; mediaFiles: number; users: number; activeExtensions: number; }
+interface DashboardStats {
+  contentEntries: number;
+  mediaFiles: number;
+  users: number;
+  activeExtensions: number;
+  trends: { contentEntries: number | null; mediaFiles: number | null; users: number | null };
+}
 
 const STAT_META = [
   {
@@ -47,7 +53,6 @@ const STAT_META = [
     bg: '#eff6ff',
     darkBg: 'rgba(37,99,235,0.12)',
     href: '/content',
-    trend: +12,
   },
   {
     key: 'mediaFiles' as const,
@@ -57,7 +62,6 @@ const STAT_META = [
     bg: '#f5f3ff',
     darkBg: 'rgba(124,58,237,0.12)',
     href: '/media',
-    trend: +5,
   },
   {
     key: 'activeExtensions' as const,
@@ -67,7 +71,6 @@ const STAT_META = [
     bg: '#fef3e2',
     darkBg: 'rgba(232,130,12,0.12)',
     href: '/extensions',
-    trend: 0,
   },
   {
     key: 'users' as const,
@@ -77,12 +80,11 @@ const STAT_META = [
     bg: '#ecfdf5',
     darkBg: 'rgba(5,150,105,0.12)',
     href: '/users',
-    trend: +3,
   },
 ] as const;
 
-function TrendBadge({ value }: Readonly<{ value: number }>) {
-  if (value === 0) {
+function TrendBadge({ value }: Readonly<{ value: number | null }>) {
+  if (value === null || value === 0) {
     return (
       <span style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: 11, fontFamily: 'var(--font-mono)', color: 'hsl(var(--muted-foreground))' }}>
         <Minus style={{ width: 10, height: 10 }} aria-hidden="true" /> —
@@ -126,7 +128,11 @@ export function StatsCards() {
       {STAT_META.map((meta) => {
         const Icon = meta.icon;
         const value = stats?.[meta.key] ?? 0;
-        const sparkData = stats ? [Math.max(0, value - Math.round(value * 0.3)), Math.max(0, value - Math.round(value * 0.15)), value] : [0, 0, 0];
+        const trend = meta.key === 'activeExtensions' ? null : stats?.trends[meta.key] ?? null;
+        // Derive the sparkline's starting point from the real trend percentage
+        // rather than an arbitrary formula, so it never implies data we don't have.
+        const priorValue = trend === null ? value : Math.max(0, Math.round(value / (1 + trend / 100)));
+        const sparkData = stats ? [priorValue, Math.round((priorValue + value) / 2), value] : [0, 0, 0];
 
         return (
           <Link
@@ -143,7 +149,7 @@ export function StatsCards() {
                 >
                   <Icon style={{ width: 16, height: 16, color: meta.color }} aria-hidden="true" />
                 </div>
-                <TrendBadge value={meta.trend} />
+                <TrendBadge value={trend} />
               </div>
 
               <div className="stat-card__value">
