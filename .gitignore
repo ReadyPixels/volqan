@@ -81,6 +81,7 @@ yarn-error.log*
 # runtime
 .tmp/
 tmp/
+.temp/
 .cache/
 .nyc_output/
 .local/
