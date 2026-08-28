@@ -122,5 +122,8 @@ dogfood-output/
 .remember/
 *.notes.local
 
+# stray files from mangled shell hook paths
+*claude-notify-signals*
+
 # docs archive
 docs/archive/
