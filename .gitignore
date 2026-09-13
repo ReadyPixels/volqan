@@ -127,3 +127,7 @@ dogfood-output/
 
 # docs archive
 docs/archive/
+
+
+# personal task tracking (not for the public repo)
+docs/Tasks.md
