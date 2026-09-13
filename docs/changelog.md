@@ -21,9 +21,22 @@ Changes not yet assigned to a date.
 
 ---
 
+## 2026-09-10
+
+### Added
+
+- Root repository README, attribution license, contributing guide, code of conduct, and business model files for public launch hygiene (docs)
+
+### Changed
+
+- Quick start now uses the currently working clone/install/dev path instead of unpublished `create-volqan-app`; README license wording now describes Volqan as source-available and attribution-required (docs)
+
+---
+
 ## 2026-07-03
 
 ### Added
+
 - Shared `ConfirmDialog` component for all destructive actions with entity names, consequences, and loading states (packages/admin)
 - Shared async state components: `LoadingState`, `ErrorState` with retry, `EmptyState`, `PermissionDeniedState` (packages/admin)
 - `LocaleProvider` driving `<html lang>` and `dir` from the saved `site.locale` setting, with RTL CSS overrides for Arabic (packages/admin)
@@ -34,6 +47,7 @@ Changes not yet assigned to a date.
 - First-run web installer wizard at `/install` — checks database connectivity, then creates the initial installation record, first `SUPER_ADMIN` user, and default settings from a single form, logging the new admin in immediately; new instances are routed here automatically until setup completes (`GET /api/install/status`, `POST /api/install`) (packages/admin)
 
 ### Changed
+
 - Media Library, content entries list, content entry editor, and page editor now use live API data exclusively with loading/error/retry/empty/permission states; all mock data removed (packages/admin)
 - Top-bar notifications now show real audit-log activity; top-bar search is a working quick-nav; storage settings limited to Local with S3 marked unavailable; inert test-email button disabled with explanation (packages/admin)
 - Mobile More menu now includes Analytics, Billing, AI Assistant, and Profile (packages/admin)
@@ -42,6 +56,7 @@ Changes not yet assigned to a date.
 - Verified renamed Prisma migrations apply cleanly by running `prisma migrate deploy` against a fresh local PostgreSQL 16 instance; `_prisma_migrations` table confirmed to track `init`, `webhooks_scheduling`, and `installation_billing_fields` correctly (packages/core)
 
 ### Fixed
+
 - All `@volqan/admin` typecheck failures: Prisma JSON value namespaces, content repository constructor usage, Sidebar nav typing, StorageProvider enum casing, billing schema mismatches, CSS side-effect import declarations, `node-saml` types (packages/admin, packages/core)
 - `Content-Security-Policy`'s `script-src 'strict-dynamic'` (with no nonce infrastructure) was blocking all scripts from loading in a real browser, making the app non-functional; removed `strict-dynamic` and added Google Fonts origins to `style-src`/`font-src` (packages/admin)
 - `hashPassword`/`getBcrypt` read `.hash` directly off the dynamic-imported `bcryptjs` module namespace, which is `undefined` under ESM interop (CommonJS named exports land on `.default`) — passwords were silently stored unhashed; unwrapped `mod.default ?? mod` (packages/core)
@@ -54,6 +69,7 @@ Changes not yet assigned to a date.
 - `/login`, `/forgot-password`, and `/reset-password` were silently rendering inside the full admin sidebar/topbar shell instead of standalone — their nested `layout.tsx` files defined their own `<html>`/`<body>`, but Next.js App Router only honors the true root layout's; `AdminShell` is now pathname-aware and skips the sidebar shell for these routes plus the new `/install` (packages/admin)
 
 ### Security
+
 - Hardened `.gitignore` for public repository hygiene and removed tracked private local tooling state from the index (repo)
 - Password reset switched to a code-based flow: 6-digit emailed code (HMAC stored, 15-minute expiry, 5-attempt lockout), verified with the new password in the POST body instead of a URL token; sessions invalidated on reset (packages/admin)
 - CORS configuration for public API routes (`/api/v1/*`, `/api/health`) with OPTIONS preflight handling and `CORS_ALLOWED_ORIGINS` env override (packages/admin)
@@ -63,6 +79,7 @@ Changes not yet assigned to a date.
 ## 2026-07-02
 
 ### Added
+
 - Added Product Design hardening tasks covering typecheck health, real-data admin flows, state handling, Arabic/RTL support, mobile navigation, operational affordances, and design regression testing (docs)
 
 ---
@@ -70,11 +87,13 @@ Changes not yet assigned to a date.
 ## 2026-06-22
 
 ### Security
+
 - Hardened API key management routes to enforce admin-only access and prevent `ADMIN` users from managing other users' keys (packages/admin)
 - Unified session cookie issue/clear handling through shared helpers, preserving production `Secure` attributes across login, logout, OAuth callback, and SAML ACS flows (packages/admin, packages/core)
 - Added focused regression tests for API key permission filtering and session cookie formatting (packages/admin, packages/core)
 
 ### Changed
+
 - Excluded `*.test.ts` and `*.spec.ts` files from package typecheck in admin and core packages so runtime-focused node tests do not block package compilation (packages/admin, packages/core)
 
 ---
@@ -82,6 +101,7 @@ Changes not yet assigned to a date.
 ## 2026-06-14
 
 ### Security
+
 - Added `Content-Security-Policy` header to `next.config.ts` — strict CSP with `strict-dynamic`, `frame-ancestors 'none'`, and `form-action 'self'` (packages/admin)
 - Added `orderBy`/`direction` whitelist validation to content list route — validates against content type field names and system columns to prevent SQL injection (packages/admin)
 - Replaced in-memory rate limiter with Redis-backed implementation — uses Redis when `REDIS_URL` is set, falls back to in-memory for development (packages/admin)
@@ -97,12 +117,14 @@ Changes not yet assigned to a date.
 - Added cleanup infrastructure — `.tmp/` directory, `.claude/cleanup.ps1` script, and session cleanup instructions in `CLAUDE.md`
 
 ### Changed
+
 - Added `requirePasswordChange` field to `User` Prisma schema (packages/core)
 - Removed `CLAUDE.md` from `.gitignore` — it is a project file that should be tracked
 - Added warning comment to `docker-compose.yml` about default PostgreSQL credentials being for development only
 - Added comment to `docker-compose.prod.yml` documenting that `scripts/postgres/init.sql` is optional
 
 ### Fixed
+
 - Fixed `rateLimit` function to be async-compatible with Redis backend — updated all callers to `await` (packages/admin)
 
 ---
@@ -110,6 +132,7 @@ Changes not yet assigned to a date.
 ## 2026-06-11 (v1.5.0)
 
 ### Added
+
 - Added `GET /api/analytics` — activity overview with totals, daily activity buckets, and top audit actions (packages/admin)
 - Added `/analytics` page — bar chart, top actions list, stat cards, period selector (packages/admin)
 - Added `GET/POST /api/settings/webhooks` and `PATCH/DELETE /api/settings/webhooks/[id]` — full outbound webhook CRUD with HMAC-signed delivery (packages/admin)
@@ -134,6 +157,7 @@ Changes not yet assigned to a date.
 - Added `docs/enterprise-license.md` — Enterprise tier feature set, pricing, SLA commitments, white-label scope
 
 ### Fixed
+
 - Fixed `UnhandledSchemeError: Reading from "node:child_process"` build error — removed `@volqan/core` import from middleware (packages/admin)
 - Fixed `useState in Server Component` error — added `'use client'` directive to `AdminShell.tsx` (packages/admin)
 - Removed runtime `@volqan/core` imports from client-rendered components to prevent Node.js module leakage into browser bundles (packages/admin)
@@ -194,6 +218,7 @@ Changes not yet assigned to a date.
 - Updated roadmap, README, and changelog to replace multilingual/i18n references with English/Arabic scope
 
 ### Security
+
 - Added magic bytes content validation to media upload route — rejects files whose binary signature doesn't match the declared extension (packages/admin)
 - Added in-memory sliding-window rate limiter applied to login, forgot-password, and reset-password endpoints (packages/admin)
 - Extended `PUBLIC_PATHS` in middleware to allow OAuth, forgot-password, reset-password, and verify-email routes without session (packages/admin)
@@ -213,6 +238,7 @@ Changes not yet assigned to a date.
 ## 2026-05-22
 
 ### Added
+
 - Added `api-helpers.ts` — `getSessionUser`, response helpers (packages/admin)
 - Added `/api/auth/login`, `/api/auth/logout`, `/api/auth/me` endpoints (packages/admin)
 - Added `/api/content/types`, `/api/content/types/[id]` endpoints (packages/admin)
@@ -232,6 +258,7 @@ Changes not yet assigned to a date.
 ## 2026-05-20
 
 ### Security
+
 - Fixed XSS vulnerabilities in `AIMessage.tsx` (escapeHtml, safeHref) (packages/admin)
 - Added HTML sanitizer in page builder (`sanitizeHtml` allowlist) (packages/admin)
 - Fixed open redirect in billing checkout page (packages/admin)
@@ -248,6 +275,7 @@ Changes not yet assigned to a date.
 ## 2026-05-19
 
 ### Added
+
 - Added complete admin panel layout and components — sidebar, top bar, dashboard, content types, entries, media, extensions, themes, users, billing, settings pages (packages/admin)
 - Added visual page builder with 28-block drag-and-drop and live preview (packages/admin)
 - Added AI assistant panel with swappable LLM provider configuration (packages/admin)
@@ -275,6 +303,7 @@ Changes not yet assigned to a date.
 - Added developer documentation: extension and theme getting-started, API references, publishing guides (docs/)
 
 ### Fixed
+
 - Resolved webpack build error (`Can't resolve 'child_process'`) — added `sharp: false` / `detect-libc: false` webpack aliases for client builds (packages/admin)
 - Fixed React hydration mismatch on dashboard — moved data generation into `useState` + `useEffect` (packages/admin)
 - Added `public/favicon.svg` and wired it via `metadata.icons` in `app/layout.tsx` (packages/admin)
@@ -285,6 +314,7 @@ Changes not yet assigned to a date.
 ## 2026-04-08
 
 ### Changed
+
 - Replaced all `volqan.dev` / `bazarix.dev` domain references with `volqan.link` / `bazarix.link` across CLI templates, core auth constants, and documentation
 - Added Volqan logo (`logo.png`) to repository root and updated `README.md` header
 - Updated `packages/admin/tsconfig.json` — stricter compiler options, formatted consistently
@@ -295,6 +325,7 @@ Changes not yet assigned to a date.
 ## 2026-04-05 (v0.0.1 — v0.5.0-beta)
 
 ### Added
+
 - Initialized pnpm workspace monorepo: `packages/core/`, `packages/admin/`, `packages/cli/`, `packages/extension-sdk/`, `packages/theme-sdk/`, `packages/cloud-bridge/`
 - Root `package.json` with workspace configuration and shared scripts
 - `pnpm-workspace.yaml` defining monorepo workspace glob patterns
@@ -316,12 +347,12 @@ Changes not yet assigned to a date.
 
 ## Upcoming Releases
 
-| Version | Phase | Target | Description |
-|---|---|---|---|
-| v0.1.0-alpha | Phase 1 | June 2026 | First runnable release — database layer, auth, CRUD, APIs, Docker, CLI |
-| v0.5.0-beta | Phase 2 | August 2026 | Full-featured beta — page builder, AI assistant, Stripe, first-party extensions |
-| v1.0.0 | Phase 3 | December 2026 | Stable release — marketplace live, SDK on npm, community ecosystem |
-| v1.5.0 | Phase 4 | June 2027 | Enterprise features — Arabic/English locale, workflows, audit log, SSO, Redis |
+| Version      | Phase   | Target        | Description                                                                     |
+| ------------ | ------- | ------------- | ------------------------------------------------------------------------------- |
+| v0.1.0-alpha | Phase 1 | June 2026     | First runnable release — database layer, auth, CRUD, APIs, Docker, CLI          |
+| v0.5.0-beta  | Phase 2 | August 2026   | Full-featured beta — page builder, AI assistant, Stripe, first-party extensions |
+| v1.0.0       | Phase 3 | December 2026 | Stable release — marketplace live, SDK on npm, community ecosystem              |
+| v1.5.0       | Phase 4 | June 2027     | Enterprise features — Arabic/English locale, workflows, audit log, SSO, Redis   |
 
 ---
 
