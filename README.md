@@ -6,7 +6,7 @@
 
 <p align="center">The universal source-available application framework</p>
 
-[![License: Open Core Attribution License v1.0](https://img.shields.io/badge/license-Open%20Core%20Attribution%20License%20v1.0-0f766e.svg)](./LICENSE-ATTRIBUTION.md)
+[![License: Open Core Attribution License v1.0](https://img.shields.io/badge/license-Open%20Core%20Attribution%20License%20v1.0-0f766e.svg)](./LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D22-3c873a.svg)](https://nodejs.org)
 [![pnpm](https://img.shields.io/badge/pnpm-%3E%3D9-f69220.svg)](https://pnpm.io)
 [![TypeScript](https://img.shields.io/badge/typescript-5.x-3178c6.svg)](https://www.typescriptlang.org)
@@ -158,7 +158,7 @@ Volqan is an open-core, source-available project. Commercial planning lives in [
 
 ## License
 
-Volqan is distributed under the **Open Core Attribution License v1.0**. It is source-available and attribution-required, not OSI-licensed open source. See [LICENSE-ATTRIBUTION.md](./LICENSE-ATTRIBUTION.md).
+Volqan is distributed under the **Open Core Attribution License v1.0**. It is source-available and attribution-required, not OSI-licensed open source. See [LICENSE](./LICENSE).
 
 ## Attribution
 
