@@ -73,10 +73,13 @@ yarn-error.log*
 
 # editors
 .DS_Store
+Thumbs.db
 .idea/
 .vscode/
 *.swp
 *.swo
+*.orig
+*.rej
 
 # runtime
 .tmp/
@@ -110,13 +113,31 @@ videos/
 # private local tooling state
 .playwright-mcp/
 .kilo/
+.kilocode/
 .claude/
 .claire/
 .codex/
 .cursor/
 .windsurf/
+.continue/
+.roo/
+.gemini/
+.trae/
+.augment/
+.zed/
+.aider*
+.opencode/
+.cline/
+.clinerules
+.junie/
+.amazonq/
+.mcp.local.json
 CLAUDE.md
 dogfood-output/
+
+# local machine config
+local.settings.json
+*.local.json
 
 # personal notes
 .remember/
@@ -127,6 +148,10 @@ dogfood-output/
 
 # docs archive
 docs/archive/
+
+# note: docs/images/ is intentionally tracked. The README and docs/tutorial.md
+# reference those screenshots, so ignoring them breaks both pages on GitHub.
+# The `screenshots/` rule above targets test-run output, not these.
 
 
 # personal task tracking (not for the public repo)

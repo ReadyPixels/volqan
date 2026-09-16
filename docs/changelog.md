@@ -1,5 +1,5 @@
 ---
-title: Changelog — Volqan
+title: Volqan Changelog
 description: Version history and release notes for the Volqan framework.
 ---
 
@@ -18,6 +18,43 @@ Versions with neither label are stable.
 ## [Unreleased]
 
 Changes not yet assigned to a date.
+
+---
+
+## 2026-09-15
+
+### Added
+
+- `contentCreatedDaily` field on `GET /api/analytics`, a daily count of `ContentEntry` rows created, aggregated straight off `createdAt` (packages/admin)
+- `GET /api/dashboard/health`, an authenticated endpoint reporting real database latency, cache backend status and installed/active extension counts (packages/admin)
+- `getCacheStatus()` in `lib/cache.ts` to report whether the active cache backend is Redis or the in-process fallback, and whether it's connected (packages/admin)
+- `VOLQAN_SHOT_ONLY` env var for `scripts/screenshots.mjs` to recapture a single named screenshot instead of the full set (scripts)
+
+### Fixed
+
+- Dashboard's Content Activity chart no longer generates random bars on every page load; it now reads real per-day content-creation counts from `/api/analytics` and shows an empty state when there's no data (packages/admin)
+- Dashboard's System Health panel no longer claims Redis and seven extensions are healthy regardless of reality; it now shows real database, cache and extension status from `/api/dashboard/health` (packages/admin)
+- `scripts/screenshots.mjs` no longer bakes a stray hover tooltip into screenshots of hover-driven charts, by parking the cursor off-canvas before capture (scripts)
+
+### Changed
+
+- `docs/tutorial.md` dashboard section now describes the Content Activity chart and System Health panel as real data instead of hard-coded sample data (docs)
+
+---
+
+## 2026-09-14
+
+### Added
+
+- Visual getting-started tutorial at `docs/tutorial.md`, verified line by line against the install, auth, content, pages, media, themes and extensions code, with retina admin screenshots under `docs/images/` (docs)
+- `scripts/screenshots.mjs` to recapture the tutorial and README screenshots against a running dev server (scripts)
+
+### Fixed
+
+- "Create Type" on `/content/types/new` now saves through `POST /api/content/types` and opens the new type's entry list; it used to wait 800 ms and discard the form (packages/admin)
+- "Save" on `/content/[slug]/new` now builds the form from the type's real field definitions and saves through `POST /api/content/[type]`, then opens the entry in the editor; failed saves keep the input and show the server error (packages/admin)
+- "Start Building" on `/pages/new` now creates the page through `POST /api/pages` and opens it in the real builder at `/pages/[id]`, so blocks, SEO fields and publish state persist (packages/admin)
+- `/content/types` lists live content types from `/api/content/types` instead of a hardcoded Post/Product/Page sample, and delete now calls `DELETE /api/content/types/[slug]` behind a confirm dialog (packages/admin)
 
 ---
 

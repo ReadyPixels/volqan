@@ -112,6 +112,13 @@ export async function cacheFlush(prefix: string): Promise<void> {
   } catch { /* non-fatal */ }
 }
 
+/** Reports which cache backend is active and whether it's reachable. */
+export async function getCacheStatus(): Promise<{ backend: 'redis' | 'memory'; connected: boolean }> {
+  if (!process.env.REDIS_URL) return { backend: 'memory', connected: true };
+  const r = await getRedis();
+  return { backend: 'redis', connected: r !== null };
+}
+
 /** Wrap an async loader with cache-aside pattern. */
 export async function cached<T>(
   key: string,

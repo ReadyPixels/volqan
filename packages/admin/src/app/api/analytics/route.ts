@@ -21,6 +21,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       newMedia,
       topActions,
       dailyActivity,
+      contentCreatedDaily,
     ] = await Promise.all([
       db.auditLog.count({ where: { createdAt: { gte: since } } }),
       db.user.count({ where: { createdAt: { gte: since } } }),
@@ -39,6 +40,12 @@ export async function GET(request: NextRequest): Promise<Response> {
         where: { createdAt: { gte: since } },
         orderBy: { createdAt: 'asc' },
       }),
+      db.contentEntry.groupBy({
+        by: ['createdAt'],
+        _count: { createdAt: true },
+        where: { createdAt: { gte: since } },
+        orderBy: { createdAt: 'asc' },
+      }),
     ]);
 
     // Bucket daily activity by date string
@@ -48,12 +55,22 @@ export async function GET(request: NextRequest): Promise<Response> {
       buckets[date] = (buckets[date] ?? 0) + row._count.createdAt;
     }
 
+    // Bucket content-entry creation counts by date string. auditLog rows cover
+    // every admin action, not just content creation, so entries created gets
+    // its own aggregate straight off ContentEntry.createdAt.
+    const contentBuckets: Record<string, number> = {};
+    for (const row of contentCreatedDaily) {
+      const date = row.createdAt.toISOString().slice(0, 10);
+      contentBuckets[date] = (contentBuckets[date] ?? 0) + row._count.createdAt;
+    }
+
     return json({
       data: {
         period: { days, since: since.toISOString() },
         totals: { apiRequests, newUsers, newContent, newMedia },
         topActions: topActions.map((a) => ({ action: a.action, count: a._count.action })),
         dailyActivity: Object.entries(buckets).map(([date, count]) => ({ date, count })),
+        contentCreatedDaily: Object.entries(contentBuckets).map(([date, count]) => ({ date, count })),
       },
     });
   } catch (err) {

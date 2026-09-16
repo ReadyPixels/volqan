@@ -17,6 +17,31 @@ Volqan is a CMS, admin panel generator, visual GUI builder, and backend framewor
 
 Volqan is source-available under the Open Core Attribution License v1.0. Deployments must keep a visible "Powered by Volqan" attribution unless attribution removal is covered by an active validated support plan.
 
+<p align="center">
+  <img src="docs/images/admin-dashboard.png" alt="Volqan admin dashboard with stat cards for content entries, media files, extensions and users, a recent entries list, an activity feed and storage usage" width="900" />
+</p>
+
+## A quick tour
+
+Sign in and you land on the dashboard. The four cards at the top count your content
+entries, media files, enabled extensions and users, straight from the database. Under
+them sit recent entries, an activity feed built from the audit log, and a storage
+breakdown by file type.
+
+From the sidebar you can:
+
+- **Content.** Define a content type as a list of fields and get an entry list, an
+  editor and REST routes for it.
+- **Pages.** Open a page in the visual builder, drag blocks from the palette onto the
+  canvas, set SEO fields, save and publish.
+- **Media.** Drop files onto the library. Uploads are checked by size, extension and
+  file signature before anything is written.
+- **Themes and Extensions.** Install, activate and configure them from the Bazarix
+  marketplace or by hand through the API.
+
+The [getting started tutorial](docs/tutorial.md) walks through all of it with
+screenshots, from a clean clone to a published page.
+
 ## Why Volqan
 
 Volqan is built for teams that want one engine to power websites, internal tools, SaaS products, dashboards, directories, portals, and commerce experiences without stitching together a dozen unrelated systems.
@@ -53,11 +78,14 @@ Volqan is built for teams that want one engine to power websites, internal tools
 git clone https://github.com/ReadyPixels/volqan.git my-project
 cd my-project
 pnpm install
-cp .env.example .env.local
+cp .env.example packages/admin/.env
+cp .env.example packages/core/.env
+pnpm --filter @volqan/core exec prisma generate
+pnpm --filter @volqan/core exec prisma migrate deploy
 pnpm dev
 ```
 
-Open `http://localhost:3001` to access the admin experience. On a fresh local database, Volqan redirects you to `/install` to create the first administrator account.
+Set `DATABASE_URL` in both `.env` files before the Prisma steps. Open `http://localhost:3001` to access the admin experience. On a fresh local database, Volqan redirects you to `/install` to create the first administrator account. The [tutorial](docs/tutorial.md) covers each step in more detail.
 
 ## Tech stack
 

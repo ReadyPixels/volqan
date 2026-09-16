@@ -3,6 +3,7 @@
 /**
  * @file app/content/types/new/page.tsx
  * @description Create a new content type with visual field builder.
+ * Saves via POST /api/content/types and opens the new type's entry list.
  */
 
 import * as React from 'react';
@@ -18,7 +19,25 @@ import { Badge } from '@/components/ui/badge';
 // Types
 // ---------------------------------------------------------------------------
 
-type FieldType = 'text' | 'textarea' | 'richtext' | 'number' | 'boolean' | 'date' | 'datetime' | 'select' | 'image' | 'file' | 'url' | 'email' | 'json';
+/** Builder-side field types. Each maps 1:1 onto a core FieldType enum value. */
+type FieldType = 'text' | 'richtext' | 'slug' | 'number' | 'boolean' | 'date' | 'datetime' | 'select' | 'image' | 'file' | 'url' | 'email' | 'json';
+
+/** Core FieldType values accepted by the API (see @volqan/core FieldType). */
+const API_FIELD_TYPE: Record<FieldType, string> = {
+  text: 'TEXT',
+  richtext: 'RICHTEXT',
+  slug: 'SLUG',
+  number: 'NUMBER',
+  boolean: 'BOOLEAN',
+  date: 'DATE',
+  datetime: 'DATETIME',
+  select: 'SELECT',
+  image: 'IMAGE',
+  file: 'FILE',
+  url: 'URL',
+  email: 'EMAIL',
+  json: 'JSON',
+};
 
 interface FieldBuilder {
   id: string;
@@ -30,19 +49,32 @@ interface FieldBuilder {
 
 const FIELD_TYPES: Array<{ value: FieldType; label: string; description: string }> = [
   { value: 'text', label: 'Text', description: 'Short text input' },
-  { value: 'textarea', label: 'Textarea', description: 'Multi-line text' },
   { value: 'richtext', label: 'Rich Text', description: 'WYSIWYG editor' },
+  { value: 'slug', label: 'Slug', description: 'URL-safe, auto-filled from title' },
   { value: 'number', label: 'Number', description: 'Numeric value' },
   { value: 'boolean', label: 'Boolean', description: 'True/false toggle' },
   { value: 'date', label: 'Date', description: 'Date picker' },
   { value: 'datetime', label: 'Datetime', description: 'Date + time picker' },
   { value: 'select', label: 'Select', description: 'Single option' },
-  { value: 'image', label: 'Image', description: 'Image upload' },
-  { value: 'file', label: 'File', description: 'File upload' },
+  { value: 'image', label: 'Image', description: 'Image from media library' },
+  { value: 'file', label: 'File', description: 'File from media library' },
   { value: 'url', label: 'URL', description: 'URL input' },
   { value: 'email', label: 'Email', description: 'Email input' },
   { value: 'json', label: 'JSON', description: 'Structured data' },
 ];
+
+/** Human label derived from a snake_case or camelCase field name, e.g. "publishedAt" -> "Published At". */
+function toLabel(name: string): string {
+  return name
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .trim();
+}
+
+function toApiSlug(name: string): string {
+  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
 
 // ---------------------------------------------------------------------------
 // Field row component
@@ -122,13 +154,13 @@ export default function NewContentTypePage() {
   const router = useRouter();
 
   const [typeName, setTypeName] = React.useState('');
-  const [typeDescription, setTypeDescription] = React.useState('');
   const [fields, setFields] = React.useState<FieldBuilder[]>([
     { id: '1', name: 'title', type: 'text', required: true, description: '' },
-    { id: '2', name: 'slug', type: 'text', required: true, description: 'URL-friendly identifier' },
+    { id: '2', name: 'slug', type: 'slug', required: false, description: 'URL-friendly identifier, filled from the title when left empty' },
   ]);
   const [saving, setSaving] = React.useState(false);
   const [errors, setErrors] = React.useState<{ name?: string; fields?: string }>({});
+  const [saveError, setSaveError] = React.useState<string | null>(null);
 
   const addField = (type: FieldType = 'text') => {
     setFields((prev) => [
@@ -149,14 +181,50 @@ export default function NewContentTypePage() {
     const newErrors: typeof errors = {};
     if (!typeName.trim()) newErrors.name = 'Type name is required';
     if (fields.length === 0) newErrors.fields = 'At least one field is required';
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
+    const namedFields = fields.filter((f) => f.name.trim());
+    if (fields.length > 0 && namedFields.length !== fields.length) {
+      newErrors.fields = 'Every field needs a name';
     }
+    const names = namedFields.map((f) => f.name.trim());
+    if (new Set(names).size !== names.length) {
+      newErrors.fields = 'Field names must be unique';
+    }
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
     setSaving(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setSaving(false);
-    router.push('/content/types');
+    setSaveError(null);
+    try {
+      const res = await fetch('/api/content/types', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: typeName.trim(),
+          fields: namedFields.map((f) => ({
+            name: f.name.trim(),
+            label: toLabel(f.name.trim()),
+            type: API_FIELD_TYPE[f.type],
+            required: f.required,
+          })),
+          settings: {},
+        }),
+      });
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as { error?: string };
+        setSaveError(
+          res.status === 403
+            ? 'You do not have permission to create content types.'
+            : body.error ?? 'Save failed. Try again.',
+        );
+        return;
+      }
+      const body = (await res.json()) as { data: { slug: string } };
+      router.push(`/content/${body.data.slug}`);
+    } catch {
+      setSaveError('Network error. The content type was not created.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -182,6 +250,12 @@ export default function NewContentTypePage() {
         </Button>
       </div>
 
+      {saveError && (
+        <div role="alert" className="text-sm rounded-md border border-[hsl(var(--destructive)/0.4)] text-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.06)] px-3 py-2">
+          {saveError}
+        </div>
+      )}
+
       {/* Basic info */}
       <Card>
         <CardHeader>
@@ -197,17 +271,11 @@ export default function NewContentTypePage() {
             error={errors.name}
             hint="The display name of this content type."
           />
-          <Input
-            label="Description"
-            placeholder="Brief description of what this content type is for"
-            value={typeDescription}
-            onChange={(e: any) => setTypeDescription(e.target.value)}
-          />
           {typeName && (
             <div className="flex items-center gap-2 text-sm">
               <span className="text-[hsl(var(--muted-foreground))]">API slug:</span>
               <Badge variant="secondary" className="font-mono text-xs">
-                {typeName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}
+                {toApiSlug(typeName)}
               </Badge>
             </div>
           )}

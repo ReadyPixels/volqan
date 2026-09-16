@@ -10,19 +10,26 @@ import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 // ---------------------------------------------------------------------------
-// Mock data: last 30 days
+// Data fetching: last 30 days of content-entry creation, from /api/analytics
 // ---------------------------------------------------------------------------
 
-function generateData(days: number) {
+const DAYS = 30;
+
+interface AnalyticsResponse {
+  data?: {
+    contentCreatedDaily: Array<{ date: string; count: number }>;
+  };
+}
+
+/** Fills in the requested day range with 0s for days the API returned no rows for. */
+function fillRange(counts: Map<string, number>, days: number) {
   const data: Array<{ date: string; count: number }> = [];
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
     const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const dow = d.getDay();
-    const base = dow === 0 || dow === 6 ? 1 : 5;
-    const count = Math.max(0, Math.floor(base + Math.random() * 8 - 1));
-    data.push({ date: label, count });
+    data.push({ date: label, count: counts.get(key) ?? 0 });
   }
   return data;
 }
@@ -39,19 +46,36 @@ const CHART_HEIGHT = SVG_HEIGHT - PADDING.top - PADDING.bottom;
 
 export function ContentChart() {
   const [hovered, setHovered] = React.useState<number | null>(null);
-  const [data, setData] = React.useState<Array<{ date: string; count: number }>>([]);
+  const [data, setData] = React.useState<Array<{ date: string; count: number }> | null>(null);
+  const [error, setError] = React.useState(false);
 
   React.useEffect(() => {
-    setData(generateData(30));
+    let cancelled = false;
+    fetch(`/api/analytics?days=${DAYS}`)
+      .then((r) => r.json() as Promise<AnalyticsResponse>)
+      .then((res) => {
+        if (cancelled) return;
+        const rows = res.data?.contentCreatedDaily ?? [];
+        const counts = new Map(rows.map((r) => [r.date, r.count]));
+        setData(fillRange(counts, DAYS));
+      })
+      .catch(() => {
+        if (!cancelled) setError(true);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const DATA = data;
+  const DATA = data ?? [];
   const maxCount = DATA.length > 0 ? Math.max(...DATA.map((d) => d.count), 1) : 1;
   const barWidth = DATA.length > 0 ? CHART_WIDTH / DATA.length : 0;
   const barGap = barWidth * 0.25;
 
   const total = DATA.reduce((s, d) => s + d.count, 0);
   const avg = DATA.length > 0 ? Math.round(total / DATA.length) : 0;
+  const loading = data === null && !error;
+  const empty = data !== null && total === 0;
 
   // X-axis labels: show every 5th
   const xLabels = DATA.filter((_, i) => i % 5 === 0 || i === DATA.length - 1);
@@ -64,13 +88,31 @@ export function ContentChart() {
             <CardTitle>Content Activity</CardTitle>
             <CardDescription>Entries created over the last 30 days</CardDescription>
           </div>
-          <div className="text-right">
-            <p className="text-lg font-bold text-[hsl(var(--foreground))]">{total}</p>
-            <p className="text-xs text-[hsl(var(--muted-foreground))]">total entries · {avg}/day avg</p>
-          </div>
+          {!loading && !error && (
+            <div className="text-right">
+              <p className="text-lg font-bold text-[hsl(var(--foreground))]">{total}</p>
+              <p className="text-xs text-[hsl(var(--muted-foreground))]">total entries · {avg}/day avg</p>
+            </div>
+          )}
         </div>
       </CardHeader>
       <CardContent>
+        {loading && (
+          <div className="flex items-center justify-center text-sm text-[hsl(var(--muted-foreground))]" style={{ height: SVG_HEIGHT }}>
+            Loading…
+          </div>
+        )}
+        {error && (
+          <div className="flex items-center justify-center text-sm text-[hsl(var(--muted-foreground))]" style={{ height: SVG_HEIGHT }}>
+            Couldn&apos;t load content activity.
+          </div>
+        )}
+        {empty && (
+          <div className="flex items-center justify-center text-sm text-[hsl(var(--muted-foreground))]" style={{ height: SVG_HEIGHT }}>
+            No entries created in the last 30 days.
+          </div>
+        )}
+        {!loading && !error && !empty && (
         <div className="relative w-full overflow-hidden">
           <svg
             viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
@@ -175,6 +217,7 @@ export function ContentChart() {
             })}
           </svg>
         </div>
+        )}
       </CardContent>
     </Card>
   );
