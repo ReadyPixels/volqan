@@ -21,6 +21,15 @@ Changes not yet assigned to a date.
 
 ---
 
+## 2026-09-20 (v1.6.1)
+
+### Changed
+
+- Vulnerability reporting in `SECURITY.md` and `docs/SECURITY.md` now points to the GitHub Security Advisory form instead of an email address (docs)
+- Direct email contact replaced with the `readypixels.com` contact form across attribution policy, contributor license agreement, fee disclosure, terms of service, both privacy policy files, refund policy, acceptable use policy, buyer terms, seller agreement, pricing, and the code of conduct; the DMCA policy keeps its registered agent email unchanged (docs)
+
+---
+
 ## 2026-09-20 (v1.6.0)
 
 ### Added
