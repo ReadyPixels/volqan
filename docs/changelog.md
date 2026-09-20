@@ -21,6 +21,20 @@ Changes not yet assigned to a date.
 
 ---
 
+## 2026-09-20 (v1.6.0)
+
+### Added
+
+- `README.md` "quick tour" section with a dashboard screenshot, plus updated Quick Start steps covering separate `packages/admin/.env` and `packages/core/.env` files and the `prisma generate` / `prisma migrate deploy` steps needed before `pnpm dev` (docs)
+- `--force` / `-f` flag on the CLI scaffold command to overwrite existing files in a non-empty target directory (packages/cli)
+- `skipIfExists` option on `writeFileWithDirs` and `copyTemplate` in `utils/files.ts`, returning whether each file was actually written (packages/cli)
+
+### Fixed
+
+- CLI scaffolding no longer silently overwrites files already present in the target directory; by default existing files are kept and a warning lists what was skipped, with `--force` available to restore the old overwrite behavior (packages/cli)
+
+---
+
 ## 2026-09-15
 
 ### Added
