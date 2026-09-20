@@ -7,6 +7,10 @@
  * Usage:
  *   npx create-volqan-app
  *   pnpm create volqan-app
+ * 
+ * Flags:
+ *   --force, -f   Overwrite existing files in a non-empty target directory instead of
+ *                 leaving them in place.
  *
  * What it does:
  * 1. Shows the Volqan banner
@@ -53,6 +57,7 @@ interface ScaffoldOptions {
   installDeps: boolean;
   runMigrations: boolean;
   targetDir: string;
+  force: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -83,6 +88,7 @@ async function scaffold(opts: ScaffoldOptions): Promise<void> {
     installDeps,
     runMigrations,
     targetDir,
+    force,
   } = opts;
 
   const projectNameSnake = projectName.replace(/[-\s]/g, '_').toLowerCase();
@@ -108,51 +114,78 @@ async function scaffold(opts: ScaffoldOptions): Promise<void> {
   if (!existsSync(targetDir)) {
     mkdirSync(targetDir, { recursive: true });
   }
-
   // -------------------------------------------------------------------------
   // Step 2: Write template files
   // -------------------------------------------------------------------------
 
   logger.step(2, 'Writing project files...');
 
-  await copyTemplate('package.json.template', join(targetDir, 'package.json'), templateVars);
-  await copyTemplate('tsconfig.json.template', join(targetDir, 'tsconfig.json'), templateVars);
-  await copyTemplate('env.template', join(targetDir, '.env'), templateVars);
+  // Files below are only written if absent, unless --force is passed. This is the
+  // fix for the scaffold path silently overwriting an existing project's files when
+  // someone answers yes to the non-empty-directory 'Continue anyway?' prompt.
+  const skipOpt = { skipIfExists: !force };
+  const skipped: string[] = [];
+  const track = (relPath: string, wasWritten: boolean): void => {
+    if (!wasWritten) skipped.push(relPath);
+  };
+
+  track(
+    'package.json',
+    await copyTemplate('package.json.template', join(targetDir, 'package.json'), templateVars, skipOpt),
+  );
+  track(
+    'tsconfig.json',
+    await copyTemplate('tsconfig.json.template', join(targetDir, 'tsconfig.json'), templateVars, skipOpt),
+  );
+  track('.env', await copyTemplate('env.template', join(targetDir, '.env'), templateVars, skipOpt));
 
   // Write volqan.config.ts (template uses simple {{VAR}} syntax with inline conditionals)
   const configContent = buildVolqanConfig(templateVars);
-  await writeFileWithDirs(join(targetDir, 'volqan.config.ts'), configContent);
+  track(
+    'volqan.config.ts',
+    await writeFileWithDirs(join(targetDir, 'volqan.config.ts'), configContent, skipOpt),
+  );
 
   // Create minimal src/index.ts entry point
-  await writeFileWithDirs(
-    join(targetDir, 'src/index.ts'),
-    buildServerEntry(projectName),
+  track(
+    'src/index.ts',
+    await writeFileWithDirs(join(targetDir, 'src/index.ts'), buildServerEntry(projectName), skipOpt),
   );
 
   // Create prisma/schema.prisma
-  await writeFileWithDirs(
-    join(targetDir, 'prisma/schema.prisma'),
-    buildPrismaSchema(dbProvider, databaseUrl),
+  track(
+    'prisma/schema.prisma',
+    await writeFileWithDirs(
+      join(targetDir, 'prisma/schema.prisma'),
+      buildPrismaSchema(dbProvider, databaseUrl),
+      skipOpt,
+    ),
   );
 
-  // Create empty extensions and themes directories with .gitkeep
+  // Empty placeholder directories, harmless to touch either way, always written
   await writeFileWithDirs(join(targetDir, 'extensions/.gitkeep'), '');
   await writeFileWithDirs(join(targetDir, 'themes/.gitkeep'), '');
   await writeFileWithDirs(join(targetDir, 'public/uploads/.gitkeep'), '');
 
   // .gitignore
-  await writeFileWithDirs(
-    join(targetDir, '.gitignore'),
-    GITIGNORE_CONTENT,
-  );
+  track('.gitignore', await writeFileWithDirs(join(targetDir, '.gitignore'), GITIGNORE_CONTENT, skipOpt));
 
   // README.md
-  await writeFileWithDirs(
-    join(targetDir, 'README.md'),
-    buildReadme(projectName, dbProvider, authProviders),
+  track(
+    'README.md',
+    await writeFileWithDirs(
+      join(targetDir, 'README.md'),
+      buildReadme(projectName, dbProvider, authProviders),
+      skipOpt,
+    ),
   );
 
-  logger.success('Project files created.');
+  if (skipped.length > 0) {
+    logger.warn(`Kept ${skipped.length} existing file(s) instead of overwriting: ${skipped.join(', ')}`);
+    logger.warn('Re-run with --force to overwrite them instead.');
+  } else {
+    logger.success('Project files created.');
+  }
 
   // -------------------------------------------------------------------------
   // Step 3: Install dependencies
@@ -361,6 +394,8 @@ Thumbs.db
 // ---------------------------------------------------------------------------
 
 async function main(): Promise<void> {
+  const force = process.argv.includes('--force') || process.argv.includes('-f');
+
   logger.banner();
 
   console.log('  Welcome to create-volqan-app!\n');
@@ -374,6 +409,7 @@ async function main(): Promise<void> {
 
     if (!await isEmptyOrAbsent(targetDir)) {
       logger.warn(`Directory "${projectName}" already exists and is not empty.`);
+      logger.info('Existing files will be kept as-is unless you re-run with --force.');
       const proceed = await promptConfirm('Continue anyway?', false);
       if (!proceed) {
         logger.info('Aborted.');
@@ -423,6 +459,7 @@ async function main(): Promise<void> {
       installDeps,
       runMigrations,
       targetDir,
+      force,
     });
 
     logger.nextSteps(projectName);

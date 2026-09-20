@@ -60,12 +60,28 @@ export async function renderTemplateFile(
 /**
  * Write content to a file, creating parent directories as needed.
  *
+ * By default this overwrites whatever is already at `filePath`. Pass
+ * `{ skipIfExists: true }` to leave an existing file untouched instead, useful when
+ * scaffolding into a non-empty directory where files already there shouldn't be
+ * clobbered without the caller asking for it explicitly.
+ *
  * @param filePath - Absolute path to the output file.
  * @param content - Content to write.
+ * @param opts - `skipIfExists` leaves an existing file alone instead of overwriting it.
+ * @returns `true` if the file was written, `false` if it was skipped because it already
+ *   existed and `skipIfExists` was set.
  */
-export async function writeFileWithDirs(filePath: string, content: string): Promise<void> {
+export async function writeFileWithDirs(
+  filePath: string,
+  content: string,
+  opts: { skipIfExists?: boolean } = {},
+): Promise<boolean> {
+  if (opts.skipIfExists && existsSync(filePath)) {
+    return false;
+  }
   await mkdir(dirname(filePath), { recursive: true });
   await writeFile(filePath, content, 'utf-8');
+  return true;
 }
 
 /**
@@ -74,15 +90,18 @@ export async function writeFileWithDirs(filePath: string, content: string): Prom
  * @param templateName - Filename in the templates directory (e.g. "package.json.template").
  * @param targetPath - Absolute output path.
  * @param vars - Template variables.
+ * @param opts - `skipIfExists` leaves an existing file alone instead of overwriting it.
+ * @returns `true` if the file was written, `false` if it was skipped.
  */
 export async function copyTemplate(
   templateName: string,
   targetPath: string,
   vars: TemplateVariables,
-): Promise<void> {
+  opts: { skipIfExists?: boolean } = {},
+): Promise<boolean> {
   const templatePath = join(TEMPLATES_DIR, templateName);
   const content = await renderTemplateFile(templatePath, vars);
-  await writeFileWithDirs(targetPath, content);
+  return writeFileWithDirs(targetPath, content, opts);
 }
 
 /**
