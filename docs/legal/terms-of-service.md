@@ -7,7 +7,7 @@
 **Last Updated:** April 5, 2026
 **Governing Jurisdiction:** Wyoming, United States of America
 
-**Owner and Operator:** Sharif / ReadyPixels
+**Owner and Operator:** ReadyPixels LLC, a Wyoming limited liability company
 **Contact:** https://new.readypixels.com/contact
 **Project URL:** https://volqan.link
 
@@ -408,8 +408,7 @@ Nothing in these Terms creates a partnership, joint venture, agency, employment,
 
 For questions about these Terms of Service, please contact:
 
-**ReadyPixels**
-**Attn:** Sharif
+**ReadyPixels LLC**
 **Contact form:** https://new.readypixels.com/contact
 **Project:** https://volqan.link
 **Marketplace:** https://bazarix.link
@@ -418,4 +417,4 @@ For questions about these Terms of Service, please contact:
 
 *These Terms of Service are effective as of April 5, 2026.*
 *Governing Law: Wyoming, USA*
-*© 2026 ReadyPixels / Sharif. All rights reserved.*
+*© 2026 ReadyPixels LLC. All rights reserved.*

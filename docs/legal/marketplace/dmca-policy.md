@@ -5,7 +5,7 @@
 **Effective Date:** April 5, 2026
 **Last Revised:** April 5, 2026
 **Platform:** Bazarix — bazarix.link
-**Operator:** ReadyPixels, sole proprietorship operated by Sharif ("ReadyPixels," "we," "us," or "Platform")
+**Operator:** ReadyPixels LLC, a Wyoming limited liability company ("ReadyPixels," "we," "us," or "Platform")
 **Designated DMCA Agent Contact:** sharif@readypixels.com
 **Governing Law:** State of Wyoming, United States of America
 

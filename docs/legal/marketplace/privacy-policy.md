@@ -5,7 +5,7 @@
 **Effective Date:** April 5, 2026
 **Last Revised:** April 5, 2026
 **Platform:** Bazarix — bazarix.link
-**Operator:** ReadyPixels, sole proprietorship operated by Sharif ("ReadyPixels," "we," "us," or "our")
+**Operator:** ReadyPixels LLC, a Wyoming limited liability company ("ReadyPixels," "we," "us," or "our")
 **Contact:** https://new.readypixels.com/contact
 **Governing Law:** State of Wyoming, United States of America
 
@@ -25,7 +25,7 @@ By using the Platform, you acknowledge that you have read, understood, and agree
 
 The data controller responsible for your personal information collected through the Bazarix Marketplace is:
 
-**ReadyPixels (operated by Sharif)**
+**ReadyPixels LLC**
 Contact form: https://new.readypixels.com/contact
 Website: bazarix.link
 

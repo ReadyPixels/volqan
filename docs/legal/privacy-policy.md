@@ -6,7 +6,7 @@
 **Effective Date:** April 5, 2026
 **Last Updated:** April 5, 2026
 
-**Data Controller:** Sharif / ReadyPixels
+**Data Controller:** ReadyPixels LLC, a Wyoming limited liability company
 **Contact:** https://new.readypixels.com/contact
 **Project URL:** https://volqan.link
 
@@ -30,7 +30,7 @@ This Privacy Policy is incorporated into and forms part of our Terms of Service.
 
 The entity responsible for the processing of your personal data under this Privacy Policy is:
 
-**ReadyPixels / Sharif**
+**ReadyPixels LLC**
 **Contact:** https://new.readypixels.com/contact (select Privacy Request as the topic for data subject requests)
 
 For questions, concerns, or requests related to this Privacy Policy or your personal data, please contact us through the form above.
@@ -286,7 +286,7 @@ We reserve the right to modify this Privacy Policy at any time. We will notify y
 
 For all privacy-related inquiries, requests, or complaints, please contact:
 
-**ReadyPixels / Sharif**
+**ReadyPixels LLC**
 **Contact form:** https://new.readypixels.com/contact (select Privacy Request as the topic)
 **Project URL:** https://volqan.link
 
@@ -296,4 +296,4 @@ We will endeavor to respond to all legitimate privacy inquiries within the timef
 
 *This Privacy Policy is effective as of April 5, 2026.*
 *Governing Law: Wyoming, USA*
-*© 2026 ReadyPixels / Sharif. All rights reserved.*
+*© 2026 ReadyPixels LLC. All rights reserved.*

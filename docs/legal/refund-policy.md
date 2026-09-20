@@ -6,7 +6,7 @@
 **Effective Date:** April 5, 2026
 **Last Updated:** April 5, 2026
 
-**Owner and Operator:** Sharif / ReadyPixels
+**Owner and Operator:** ReadyPixels LLC, a Wyoming limited liability company
 **Contact:** https://new.readypixels.com/contact
 **Project URL:** https://volqan.link
 
@@ -218,7 +218,7 @@ ReadyPixels reserves the right to update this Refund Policy at any time. Refund 
 
 ## 12. Contact Information
 
-**ReadyPixels / Sharif**
+**ReadyPixels LLC**
 **Contact form:** https://new.readypixels.com/contact
 **Project URL:** https://volqan.link
 **Marketplace URL:** https://bazarix.link
@@ -227,4 +227,4 @@ ReadyPixels reserves the right to update this Refund Policy at any time. Refund 
 
 *This Refund Policy is effective as of April 5, 2026.*
 *Governing Law: Wyoming, USA*
-*© 2026 ReadyPixels / Sharif. All rights reserved.*
+*© 2026 ReadyPixels LLC. All rights reserved.*

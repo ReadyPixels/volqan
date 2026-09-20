@@ -6,7 +6,7 @@
 **Effective Date:** April 5, 2026
 **Last Updated:** April 5, 2026
 
-**Project Owner:** Sharif / ReadyPixels ("Licensor")
+**Project Owner:** ReadyPixels LLC, a Wyoming limited liability company ("Licensor")
 **Contact:** https://new.readypixels.com/contact
 **Project URL:** https://volqan.link
 **Repository:** https://github.com/ReadyPixels/volqan
@@ -16,7 +16,7 @@
 
 ## Recitals
 
-This Contributor License Agreement ("Agreement" or "CLA") is entered into between ReadyPixels ("Licensor," "Company," "we," or "us"), operated by Sharif (reachable at https://new.readypixels.com/contact), and the individual or legal entity submitting a Contribution (as defined below) to the Volqan project ("Contributor," "you," or "your").
+This Contributor License Agreement ("Agreement" or "CLA") is entered into between ReadyPixels LLC, a Wyoming limited liability company ("Licensor," "Company," "we," or "us") (reachable at https://new.readypixels.com/contact), and the individual or legal entity submitting a Contribution (as defined below) to the Volqan project ("Contributor," "you," or "your").
 
 **WHEREAS,** Licensor operates and maintains the Volqan open-source application framework (the "Project") under the Open Core Attribution License v1.0;
 
@@ -60,7 +60,7 @@ This Contributor License Agreement ("Agreement" or "CLA") is entered into betwee
 
 ### 1.5 "Licensor"
 
-"Licensor" means ReadyPixels, operated by Sharif (reachable at https://new.readypixels.com/contact), its successors, assigns, and any entity that controls, is controlled by, or is under common control with ReadyPixels.
+"Licensor" means ReadyPixels LLC (reachable at https://new.readypixels.com/contact), its successors, assigns, and any entity that controls, is controlled by, or is under common control with ReadyPixels.
 
 ---
 
@@ -251,7 +251,7 @@ Individual contributors indicate acceptance through GitHub pull request submissi
 
 ## Contact
 
-**ReadyPixels / Sharif**
+**ReadyPixels LLC**
 **Contact form:** https://new.readypixels.com/contact (select CLA as the topic)
 **Repository:** https://github.com/ReadyPixels/volqan
 **Project URL:** https://volqan.link
@@ -261,4 +261,4 @@ Individual contributors indicate acceptance through GitHub pull request submissi
 *Contributor License Agreement v1.0*
 *Effective Date: April 5, 2026*
 *Governing Law: Wyoming, USA*
-*© 2026 ReadyPixels / Sharif. All rights reserved.*
+*© 2026 ReadyPixels LLC. All rights reserved.*

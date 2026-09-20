@@ -1,5 +1,5 @@
 Open Core Attribution License v1.0
-Copyright (c) 2026 Sharif / ReadyPixels
+Copyright (c) 2026 ReadyPixels LLC
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation

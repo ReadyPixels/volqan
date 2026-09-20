@@ -6,7 +6,7 @@
 **Effective Date:** April 5, 2026
 **Last Updated:** April 5, 2026
 
-**Owner and Operator:** Sharif / ReadyPixels
+**Owner and Operator:** ReadyPixels LLC, a Wyoming limited liability company
 **Contact:** https://new.readypixels.com/contact
 **Project URL:** https://volqan.link
 **Marketplace URL:** https://bazarix.link
@@ -238,7 +238,7 @@ ReadyPixels reserves the right to modify the Platform Service Fee formula with t
 
 If you have questions about any fee assessed on your account or a specific transaction, please contact:
 
-**ReadyPixels / Sharif**
+**ReadyPixels LLC**
 **Contact form:** https://new.readypixels.com/contact (select Fee Inquiry as the topic, note the transaction date and amount)
 **Project URL:** https://volqan.link
 
@@ -246,4 +246,4 @@ If you have questions about any fee assessed on your account or a specific trans
 
 *This Fee Disclosure is effective as of April 5, 2026.*
 *Governing Law: Wyoming, USA*
-*© 2026 ReadyPixels / Sharif. All rights reserved.*
+*© 2026 ReadyPixels LLC. All rights reserved.*

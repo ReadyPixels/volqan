@@ -6,7 +6,7 @@
 **Effective Date:** April 5, 2026
 **Last Updated:** April 5, 2026
 
-**Owner and Operator:** Sharif / ReadyPixels
+**Owner and Operator:** ReadyPixels LLC, a Wyoming limited liability company
 **Contact:** https://new.readypixels.com/contact
 **Project URL:** https://volqan.link
 **License API:** https://bazarix.link/api/v1/license
@@ -226,7 +226,7 @@ If you fork the Volqan repository and create a derivative work:
 
 (c) If you rename the product in your fork, the required notice must still reference the original: e.g., "Powered by [Your Fork Name], based on Volqan — https://volqan.link";
 
-(d) You may not remove, modify, or obscure the original copyright notice of ReadyPixels / Sharif;
+(d) You may not remove, modify, or obscure the original copyright notice of ReadyPixels LLC;
 
 (e) Commercial redistribution of a fork of the core Software requires prior written permission from ReadyPixels.
 
@@ -250,7 +250,7 @@ Any extension or theme found to include functionality that circumvents the attri
 
 For questions about attribution compliance, license verification, or to report a violation:
 
-**ReadyPixels / Sharif**
+**ReadyPixels LLC**
 **Contact form:** https://new.readypixels.com/contact (select Attribution as the topic)
 **License API:** https://bazarix.link/api/v1/license
 **Support Plans:** https://volqan.link/pricing
@@ -259,4 +259,4 @@ For questions about attribution compliance, license verification, or to report a
 
 *This Attribution Policy is effective as of April 5, 2026.*
 *Governing Law: Wyoming, USA*
-*© 2026 ReadyPixels / Sharif. All rights reserved.*
+*© 2026 ReadyPixels LLC. All rights reserved.*
