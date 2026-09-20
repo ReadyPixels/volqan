@@ -21,6 +21,14 @@ Changes not yet assigned to a date.
 
 ---
 
+## 2026-09-20 (v1.6.2)
+
+### Added
+
+- `volqan` CLI now supports `volqan create extension <name>` and `volqan create theme <name>` as real, callable commands. The underlying `createExtension`/`createTheme` functions already existed in the package but were never wired to a command or a built entry point, so neither command actually ran before this (packages/cli)
+
+---
+
 ## 2026-09-20 (v1.6.1)
 
 ### Changed
