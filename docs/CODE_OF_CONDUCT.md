@@ -36,7 +36,7 @@ This Code of Conduct applies within all Volqan community spaces, and also applie
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at **sharif@readypixels.com**.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement through the [contact form at readypixels.com](https://new.readypixels.com/contact).
 
 All complaints will be reviewed and investigated promptly and fairly.
 

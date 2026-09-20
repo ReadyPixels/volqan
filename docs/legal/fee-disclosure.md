@@ -7,7 +7,7 @@
 **Last Updated:** April 5, 2026
 
 **Owner and Operator:** Sharif / ReadyPixels
-**Contact:** sharif@readypixels.com
+**Contact:** https://new.readypixels.com/contact
 **Project URL:** https://volqan.link
 **Marketplace URL:** https://bazarix.link
 
@@ -239,8 +239,7 @@ ReadyPixels reserves the right to modify the Platform Service Fee formula with t
 If you have questions about any fee assessed on your account or a specific transaction, please contact:
 
 **ReadyPixels / Sharif**
-**Email:** sharif@readypixels.com
-**Subject Line:** Fee Inquiry — [Transaction Date and Amount]
+**Contact form:** https://new.readypixels.com/contact (select Fee Inquiry as the topic, note the transaction date and amount)
 **Project URL:** https://volqan.link
 
 ---

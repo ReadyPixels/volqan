@@ -6,7 +6,7 @@
 **Last Revised:** April 5, 2026
 **Platform:** Bazarix — bazarix.link
 **Operator:** ReadyPixels, sole proprietorship operated by Sharif ("ReadyPixels," "we," "us," or "Platform")
-**Contact:** sharif@readypixels.com
+**Contact:** https://new.readypixels.com/contact
 **Governing Law:** State of Wyoming, United States of America
 
 ---
@@ -224,7 +224,7 @@ The PayPal surcharge of $0.50 applies only when the Buyer selects PayPal as thei
 
 ## 12. Termination
 
-12.1 **Termination by Seller.** You may terminate your Seller account at any time by submitting a written termination request to sharif@readypixels.com. Upon termination: (a) all of your active Listings will be delisted from the Platform within five (5) business days; (b) any pending unpaid balance meeting the minimum payout threshold (Section 6.4) will be disbursed to your Stripe Connect account in the next scheduled payout cycle; and (c) your access to the Seller dashboard will be revoked upon confirmation of termination.
+12.1 **Termination by Seller.** You may terminate your Seller account at any time by submitting a written termination request through https://new.readypixels.com/contact. Upon termination: (a) all of your active Listings will be delisted from the Platform within five (5) business days; (b) any pending unpaid balance meeting the minimum payout threshold (Section 6.4) will be disbursed to your Stripe Connect account in the next scheduled payout cycle; and (c) your access to the Seller dashboard will be revoked upon confirmation of termination.
 
 12.2 **Termination by Platform for Cause.** The Platform may terminate your Seller account immediately and without prior notice in any of the following circumstances:
 
@@ -308,7 +308,7 @@ The PayPal surcharge of $0.50 applies only when the Buyer selects PayPal as thei
 
 18.4 **Assignment.** You may not assign or transfer your rights or obligations under this Agreement without the prior written consent of ReadyPixels. ReadyPixels may assign this Agreement without restriction in connection with a merger, acquisition, or sale of all or substantially all of its assets.
 
-18.5 **Notices.** All legal notices required or permitted under this Agreement must be in writing and delivered to: (a) ReadyPixels at sharif@readypixels.com; (b) Seller at the email address on file in the Seller's account. Notices are deemed delivered upon confirmed email receipt.
+18.5 **Notices.** All legal notices required or permitted under this Agreement must be in writing and delivered to: (a) ReadyPixels through https://new.readypixels.com/contact; (b) Seller at the email address on file in the Seller's account. Notices to ReadyPixels are deemed delivered upon confirmed submission through the contact form; notices to Seller are deemed delivered upon confirmed email receipt.
 
 18.6 **Independent Contractors.** The parties are independent contractors. Nothing in this Agreement creates an employment, partnership, joint venture, franchise, or agency relationship between ReadyPixels and any Seller.
 
@@ -320,5 +320,5 @@ The PayPal surcharge of $0.50 applies only when the Buyer selects PayPal as thei
 
 *Bazarix Marketplace — Seller Agreement v1.0*
 *Effective: April 5, 2026*
-*Operator: ReadyPixels / sharif@readypixels.com*
+*Operator: ReadyPixels ([new.readypixels.com/contact](https://new.readypixels.com/contact))*
 *Domain: bazarix.link*

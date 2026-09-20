@@ -7,7 +7,7 @@
 **Last Updated:** April 5, 2026
 
 **Owner and Operator:** Sharif / ReadyPixels
-**Contact:** sharif@readypixels.com
+**Contact:** https://new.readypixels.com/contact
 **Project URL:** https://volqan.link
 
 ---
@@ -42,7 +42,7 @@ To be eligible for a prorated refund on a Yearly Support Plan, you must:
 
 (a) Submit a refund request within fourteen (14) calendar days of the original payment date;
 
-(b) Contact ReadyPixels at sharif@readypixels.com with the subject line "Refund Request — Yearly Plan" and provide your account email, Installation ID, and the reason for the refund request;
+(b) Contact ReadyPixels through https://new.readypixels.com/contact (select Refund Request — Yearly Plan as the topic) and provide your account email, Installation ID, and the reason for the refund request;
 
 (c) Not have initiated a payment dispute or chargeback with your financial institution or payment processor with respect to the payment in question — doing so will render you ineligible for a refund under this policy.
 
@@ -66,7 +66,7 @@ This non-refundable policy for monthly plans reflects the 25% monthly pricing up
 
 ### 2.5 Automatic Renewal Refunds
 
-If you were charged for an automatic subscription renewal and did not receive advance notice of the renewal as required by applicable law, please contact us at sharif@readypixels.com within seven (7) days of the charge. ReadyPixels will review such requests and, where required by applicable law, process a refund for the unauthorized renewal charge.
+If you were charged for an automatic subscription renewal and did not receive advance notice of the renewal as required by applicable law, please contact us through https://new.readypixels.com/contact within seven (7) days of the charge. ReadyPixels will review such requests and, where required by applicable law, process a refund for the unauthorized renewal charge.
 
 ---
 
@@ -84,7 +84,7 @@ You may be eligible for a refund of a Marketplace purchase if you can demonstrat
 
 To request a misrepresentation refund:
 
-(a) Contact ReadyPixels at sharif@readypixels.com within seven (7) calendar days of purchase;
+(a) Contact ReadyPixels through https://new.readypixels.com/contact within seven (7) calendar days of purchase;
 
 (b) Provide a detailed description of the defect, evidence that the product fails to perform as described, and documentation of any communications with the seller;
 
@@ -189,7 +189,7 @@ Initiating a chargeback or payment dispute with your financial institution witho
 
 ## 9. Exceptions and Statutory Rights
 
-Nothing in this Refund Policy limits or excludes any rights you have under applicable consumer protection law that cannot be waived by contract. If you believe you have statutory refund rights that this policy does not address, please contact us at sharif@readypixels.com.
+Nothing in this Refund Policy limits or excludes any rights you have under applicable consumer protection law that cannot be waived by contract. If you believe you have statutory refund rights that this policy does not address, please contact us through https://new.readypixels.com/contact.
 
 Residents of certain jurisdictions (including the European Union and United Kingdom) may have statutory cancellation rights for digital services under applicable consumer law. Where such rights apply and cannot be waived, they take precedence over this policy.
 
@@ -199,7 +199,7 @@ Residents of certain jurisdictions (including the European Union and United King
 
 To submit a refund request:
 
-1. Email **sharif@readypixels.com** with the subject line: `Refund Request — [Plan/Product Name]`
+1. Use https://new.readypixels.com/contact (select Refund Request as the topic, and note the plan or product name)
 2. Include in your email:
    - Your account email address
    - Your Installation ID (found in your Volqan admin panel under Settings > License)
@@ -219,7 +219,7 @@ ReadyPixels reserves the right to update this Refund Policy at any time. Refund 
 ## 12. Contact Information
 
 **ReadyPixels / Sharif**
-**Email:** sharif@readypixels.com
+**Contact form:** https://new.readypixels.com/contact
 **Project URL:** https://volqan.link
 **Marketplace URL:** https://bazarix.link
 

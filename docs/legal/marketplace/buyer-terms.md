@@ -6,7 +6,7 @@
 **Last Revised:** April 5, 2026
 **Platform:** Bazarix — bazarix.link
 **Operator:** ReadyPixels, sole proprietorship operated by Sharif ("ReadyPixels," "we," "us," or "Platform")
-**Contact:** sharif@readypixels.com
+**Contact:** https://new.readypixels.com/contact
 **Governing Law:** State of Wyoming, United States of America
 
 ---
@@ -49,7 +49,7 @@
 
 3.2 **Account Accuracy.** You agree to provide accurate, current, and complete information when registering your account and to keep your account information updated. You are responsible for maintaining the confidentiality of your account credentials and for all activity that occurs under your account.
 
-3.3 **Account Security.** You agree to notify ReadyPixels immediately at sharif@readypixels.com if you suspect any unauthorized use of your account or any breach of your account credentials.
+3.3 **Account Security.** You agree to notify ReadyPixels immediately through https://new.readypixels.com/contact if you suspect any unauthorized use of your account or any breach of your account credentials.
 
 ---
 
@@ -115,7 +115,7 @@ Total Amount Charged = Listing Price
 
 7.1 **Download Access.** Upon completing a Purchase, you will receive access to download the Digital Product through your Buyer account dashboard at bazarix.link/dashboard/purchases.
 
-7.2 **Download Limit.** You may download the Digital Product files up to five (5) times from the Platform's content delivery system. After five downloads of a given version, you may contact sharif@readypixels.com to request an additional download allotment, which ReadyPixels will assess at its discretion.
+7.2 **Download Limit.** You may download the Digital Product files up to five (5) times from the Platform's content delivery system. After five downloads of a given version, you may contact ReadyPixels through https://new.readypixels.com/contact to request an additional download allotment, which ReadyPixels will assess at its discretion.
 
 7.3 **Download Responsibility.** You are responsible for saving and backing up the downloaded Digital Product files. ReadyPixels is not responsible for loss of downloaded files due to device failure, accidental deletion, or any other cause outside of the Platform's control.
 
@@ -146,7 +146,7 @@ Total Amount Charged = Listing Price
 
 8.4 **Refund Request Process.** To request a refund on grounds of material misrepresentation, you must:
 
-1. Contact ReadyPixels at sharif@readypixels.com within **fourteen (14) days** of the purchase date.
+1. Contact ReadyPixels through https://new.readypixels.com/contact within **fourteen (14) days** of the purchase date.
 2. State the Order ID, the name of the Listing, and a clear, specific description of how the Listing was materially misrepresented.
 3. Provide any supporting evidence available (screenshots, error messages, documentation comparison).
 
@@ -164,7 +164,7 @@ ReadyPixels will investigate your claim within ten (10) business days. If the cl
 
 9.2 **Platform-Provided Infrastructure.** ReadyPixels is responsible for providing and maintaining: (a) the Bazarix Marketplace website and Buyer account dashboard; (b) the payment processing infrastructure for completing purchases; (c) the content delivery infrastructure for downloading purchased Digital Products; (d) the license validation API (`https://bazarix.link/api/v1/license`) used by the Volqan framework to verify purchased extension licenses; and (e) general customer service regarding billing, account access, and refund requests.
 
-9.3 **How to Contact the Platform.** For all platform-level support (billing, account access, refund requests), contact ReadyPixels at sharif@readypixels.com.
+9.3 **How to Contact the Platform.** For all platform-level support (billing, account access, refund requests), contact ReadyPixels through https://new.readypixels.com/contact.
 
 9.4 **Response Times.** ReadyPixels will endeavor to respond to platform-level support requests within three (3) business days. Response times for Seller-provided support are governed by the Seller's own policies.
 
@@ -212,7 +212,7 @@ ReadyPixels will investigate your claim within ten (10) business days. If the cl
 
 ## 13. Dispute Resolution
 
-13.1 **Informal Resolution.** Before initiating any formal proceeding, you agree to contact ReadyPixels at sharif@readypixels.com and attempt to resolve any dispute through good-faith negotiation for at least thirty (30) days.
+13.1 **Informal Resolution.** Before initiating any formal proceeding, you agree to contact ReadyPixels through https://new.readypixels.com/contact and attempt to resolve any dispute through good-faith negotiation for at least thirty (30) days.
 
 13.2 **Binding Arbitration.** If informal resolution is unsuccessful, any dispute arising out of or relating to these Buyer Terms shall be resolved by binding arbitration administered by the American Arbitration Association (AAA) under its Consumer Arbitration Rules (for individual consumers) or Commercial Arbitration Rules (for business purchasers), before a single arbitrator, with the seat of arbitration in Wyoming, United States.
 
@@ -236,11 +236,11 @@ ReadyPixels will investigate your claim within ten (10) business days. If the cl
 
 15.3 **Waiver.** No waiver of any provision of these Buyer Terms shall be effective unless in writing.
 
-15.4 **Contact.** For all queries relating to these Buyer Terms, contact ReadyPixels at: sharif@readypixels.com.
+15.4 **Contact.** For all queries relating to these Buyer Terms, contact ReadyPixels through: https://new.readypixels.com/contact.
 
 ---
 
 *Bazarix Marketplace — Buyer Terms of Service v1.0*
 *Effective: April 5, 2026*
-*Operator: ReadyPixels / sharif@readypixels.com*
+*Operator: ReadyPixels ([new.readypixels.com/contact](https://new.readypixels.com/contact))*
 *Domain: bazarix.link*

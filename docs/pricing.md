@@ -53,7 +53,7 @@ All Support Plans include:
 
 - **Attribution removal** — Remove the "Powered by Volqan" footer from your installation via the licensing API. The removal is automatic and takes effect within 24 hours.
 - **Priority support** — Your GitHub issues and discussions are triaged first. Expect a response within one business day.
-- **Direct maintainer access** — Email the maintainer directly at [sharif@readypixels.com](mailto:sharif@readypixels.com) for architecture questions, upgrade guidance, and deployment troubleshooting.
+- **Direct maintainer access** — Reach the maintainer directly through the [contact form at readypixels.com](https://new.readypixels.com/contact) for architecture questions, upgrade guidance, and deployment troubleshooting.
 - **Early access** — Access to release candidates and beta features before they ship publicly.
 - **Roadmap input** — Vote on and influence which roadmap items get prioritized next.
 
@@ -193,5 +193,5 @@ These will be separate products with their own pricing. The open-source version 
 ## Questions?
 
 - [GitHub Discussions — Q&A](https://github.com/ReadyPixels/volqan/discussions/categories/q-a) — public questions answered by the community and maintainer
-- [Email the maintainer](mailto:sharif@readypixels.com) — for Support Plan holders and private inquiries
+- [Contact the maintainer](https://new.readypixels.com/contact) — for Support Plan holders and private inquiries
 - [GitHub Sponsors](https://github.com/sponsors/ReadyPixels) — alternative way to support the project without a Support Plan

@@ -6,7 +6,7 @@
 **Last Revised:** April 5, 2026
 **Platform:** Bazarix — bazarix.link
 **Operator:** ReadyPixels, sole proprietorship operated by Sharif ("ReadyPixels," "we," "us," or "Platform")
-**Contact:** sharif@readypixels.com
+**Contact:** https://new.readypixels.com/contact
 **Governing Law:** State of Wyoming, United States of America
 
 ---
@@ -163,11 +163,9 @@ For violations involving readily correctable non-compliance (such as missing dis
 
 ### 5.1 How to Report
 
-Any user — whether a Buyer, Seller, or general visitor — who observes or suspects a violation of this AUP is encouraged to report it to ReadyPixels. Reports should be submitted by email to:
+Any user — whether a Buyer, Seller, or general visitor — who observes or suspects a violation of this AUP is encouraged to report it to ReadyPixels. Reports should be submitted through:
 
-**sharif@readypixels.com**
-
-Subject line: `AUP Violation Report — [Listing Name or Issue Description]`
+**https://new.readypixels.com/contact** (select AUP Violation Report as the topic)
 
 ### 5.2 Information to Include
 
@@ -198,11 +196,9 @@ Any Seller whose Listing has been removed or whose account has been suspended or
 
 ### 6.2 How to Submit an Appeal
 
-Appeals must be submitted in writing by email to:
+Appeals must be submitted through:
 
-**sharif@readypixels.com**
-
-Subject line: `AUP Enforcement Appeal — [Account Username or Listing Name]`
+**https://new.readypixels.com/contact** (select AUP Enforcement Appeal as the topic)
 
 ### 6.3 Information Required
 
@@ -244,12 +240,12 @@ ReadyPixels reserves the right to modify this AUP at any time to address new ris
 For all AUP-related inquiries, violation reports, and appeals:
 
 **ReadyPixels — AUP Enforcement**
-Email: sharif@readypixels.com
+Contact form: https://new.readypixels.com/contact
 Platform: bazarix.link
 
 ---
 
 *Bazarix Marketplace — Acceptable Use Policy v1.0*
 *Effective: April 5, 2026*
-*Operator: ReadyPixels / sharif@readypixels.com*
+*Operator: ReadyPixels ([new.readypixels.com/contact](https://new.readypixels.com/contact))*
 *Domain: bazarix.link*

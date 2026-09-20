@@ -6,7 +6,7 @@
 **Last Revised:** April 5, 2026
 **Platform:** Bazarix — bazarix.link
 **Operator:** ReadyPixels, sole proprietorship operated by Sharif ("ReadyPixels," "we," "us," or "our")
-**Contact:** sharif@readypixels.com
+**Contact:** https://new.readypixels.com/contact
 **Governing Law:** State of Wyoming, United States of America
 
 ---
@@ -26,7 +26,7 @@ By using the Platform, you acknowledge that you have read, understood, and agree
 The data controller responsible for your personal information collected through the Bazarix Marketplace is:
 
 **ReadyPixels (operated by Sharif)**
-Email: sharif@readypixels.com
+Contact form: https://new.readypixels.com/contact
 Website: bazarix.link
 
 For GDPR purposes, ReadyPixels is the "Controller" of personal data collected on the Platform. For CCPA purposes, ReadyPixels is the "Business" to which this Policy applies.
@@ -174,7 +174,7 @@ We may share aggregated, de-identified data (such as overall marketplace statist
 
 The Platform is operated from and subject to the laws of the United States (Wyoming). If you access the Platform from outside the United States, your personal information may be transferred to, stored in, and processed in the United States or other countries where our service providers maintain infrastructure.
 
-For users in the European Economic Area (EEA), United Kingdom, or Switzerland: transfers of personal data to countries not recognized by the European Commission as providing an adequate level of data protection are carried out under appropriate safeguards, including Standard Contractual Clauses (SCCs) approved by the European Commission or equivalent mechanisms. To request a copy of the applicable transfer mechanism, contact us at sharif@readypixels.com.
+For users in the European Economic Area (EEA), United Kingdom, or Switzerland: transfers of personal data to countries not recognized by the European Commission as providing an adequate level of data protection are carried out under appropriate safeguards, including Standard Contractual Clauses (SCCs) approved by the European Commission or equivalent mechanisms. To request a copy of the applicable transfer mechanism, contact us through https://new.readypixels.com/contact.
 
 ---
 
@@ -235,11 +235,11 @@ If you are a California resident, you have the following rights under the Califo
 
 ### 9.4 How to Exercise Your Rights
 
-To exercise any of the rights described in this Section, submit your request by email to:
+To exercise any of the rights described in this Section, submit your request through:
 
-**sharif@readypixels.com**
+**https://new.readypixels.com/contact**
 
-Please include in your email: (a) your full name as registered on the Platform; (b) the email address associated with your account; (c) a description of the right you wish to exercise; and (d) sufficient information to allow us to verify your identity (e.g., confirmation of recent purchase details or account registration information).
+Please include: (a) your full name as registered on the Platform; (b) the email address associated with your account; (c) a description of the right you wish to exercise; and (d) sufficient information to allow us to verify your identity (e.g., confirmation of recent purchase details or account registration information).
 
 We will respond to verified requests within **thirty (30) days** (or within the timeframe required by applicable law). If we require additional time, we will notify you within the initial response window.
 
@@ -276,7 +276,7 @@ Strictly necessary cookies do not require consent. For all other categories, we 
 
 ## 12. Children's Privacy
 
-The Platform is intended solely for use by individuals aged eighteen (18) or older. We do not knowingly collect personal information from children under the age of thirteen (13) (or the applicable age of digital consent in your jurisdiction). If you believe that a child has provided us with personal information without appropriate parental consent, please contact us at sharif@readypixels.com and we will take steps to delete such information promptly.
+The Platform is intended solely for use by individuals aged eighteen (18) or older. We do not knowingly collect personal information from children under the age of thirteen (13) (or the applicable age of digital consent in your jurisdiction). If you believe that a child has provided us with personal information without appropriate parental consent, please contact us through https://new.readypixels.com/contact and we will take steps to delete such information promptly.
 
 ---
 
@@ -302,7 +302,7 @@ Continued use of the Platform following the effective date of any update constit
 For any questions, concerns, or requests relating to this Privacy Policy or the handling of your personal data, contact us at:
 
 **ReadyPixels — Privacy Inquiries**
-Email: sharif@readypixels.com
+Contact form: https://new.readypixels.com/contact
 Platform: bazarix.link
 
 For GDPR-specific complaints, you also have the right to lodge a complaint with the data protection authority in your country of residence.
@@ -311,5 +311,5 @@ For GDPR-specific complaints, you also have the right to lodge a complaint with 
 
 *Bazarix Marketplace — Privacy Policy v1.0*
 *Effective: April 5, 2026*
-*Operator: ReadyPixels / sharif@readypixels.com*
+*Operator: ReadyPixels ([new.readypixels.com/contact](https://new.readypixels.com/contact))*
 *Domain: bazarix.link*

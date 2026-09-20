@@ -7,7 +7,7 @@
 **Last Updated:** April 5, 2026
 
 **Data Controller:** Sharif / ReadyPixels
-**Contact:** sharif@readypixels.com
+**Contact:** https://new.readypixels.com/contact
 **Project URL:** https://volqan.link
 
 ---
@@ -31,10 +31,9 @@ This Privacy Policy is incorporated into and forms part of our Terms of Service.
 The entity responsible for the processing of your personal data under this Privacy Policy is:
 
 **ReadyPixels / Sharif**
-**Email:** sharif@readypixels.com
-**Data Subject Requests:** sharif@readypixels.com (Subject line: "Privacy Request")
+**Contact:** https://new.readypixels.com/contact (select Privacy Request as the topic for data subject requests)
 
-For questions, concerns, or requests related to this Privacy Policy or your personal data, please contact us at the email address above.
+For questions, concerns, or requests related to this Privacy Policy or your personal data, please contact us through the form above.
 
 ---
 
@@ -204,7 +203,7 @@ If you are a California resident, the California Consumer Privacy Act ("CCPA") a
 
 To exercise any of the rights described in this Section 7, please submit a request by:
 
-- **Email:** sharif@readypixels.com (Subject line: "Privacy Request — [Right Requested]")
+- **Contact form:** https://new.readypixels.com/contact (select Privacy Request as the topic, and note which right you are exercising)
 
 We will respond to verified requests within:
 - **GDPR:** 30 days of receipt (extendable by a further 60 days where necessary, with notice)
@@ -253,7 +252,7 @@ For transfers of personal data from the European Economic Area, United Kingdom, 
 
 ## 12. Children's Privacy
 
-The Platform is not directed to individuals under the age of sixteen (16). We do not knowingly collect personal information from children under 16. If we become aware that we have collected personal information from a child under 16 without verified parental consent, we will take steps to delete such information. If you believe we have inadvertently collected information from a minor, please contact us at sharif@readypixels.com.
+The Platform is not directed to individuals under the age of sixteen (16). We do not knowingly collect personal information from children under 16. If we become aware that we have collected personal information from a child under 16 without verified parental consent, we will take steps to delete such information. If you believe we have inadvertently collected information from a minor, please contact us through https://new.readypixels.com/contact.
 
 ---
 
@@ -288,8 +287,7 @@ We reserve the right to modify this Privacy Policy at any time. We will notify y
 For all privacy-related inquiries, requests, or complaints, please contact:
 
 **ReadyPixels / Sharif**
-**Email:** sharif@readypixels.com
-**Subject Line:** Privacy Request
+**Contact form:** https://new.readypixels.com/contact (select Privacy Request as the topic)
 **Project URL:** https://volqan.link
 
 We will endeavor to respond to all legitimate privacy inquiries within the timeframes specified in Section 7.3.

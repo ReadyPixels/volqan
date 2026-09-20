@@ -8,7 +8,7 @@
 **Governing Jurisdiction:** Wyoming, United States of America
 
 **Owner and Operator:** Sharif / ReadyPixels
-**Contact:** sharif@readypixels.com
+**Contact:** https://new.readypixels.com/contact
 **Project URL:** https://volqan.link
 
 ---
@@ -112,7 +112,7 @@ This premium reflects higher administrative overhead, payment processing costs, 
 
 ### 4.3 Subscription Renewal and Cancellation
 
-Subscriptions automatically renew at the end of each billing period unless canceled prior to the renewal date. You may cancel your subscription at any time through your account dashboard or by contacting sharif@readypixels.com. Cancellation takes effect at the end of the then-current billing period. No partial-period refunds are issued upon cancellation, except as provided in the Refund Policy.
+Subscriptions automatically renew at the end of each billing period unless canceled prior to the renewal date. You may cancel your subscription at any time through your account dashboard or by contacting us through https://new.readypixels.com/contact. Cancellation takes effect at the end of the then-current billing period. No partial-period refunds are issued upon cancellation, except as provided in the Refund Policy.
 
 ### 4.4 Effect of Cancellation or Non-Renewal
 
@@ -156,7 +156,7 @@ Certain features of the Platform require you to create an account. You agree to 
 
 ### 6.2 Account Security
 
-You are solely responsible for all activities that occur under your account. You must notify ReadyPixels immediately at sharif@readypixels.com if you suspect unauthorized access to or use of your account.
+You are solely responsible for all activities that occur under your account. You must notify ReadyPixels immediately through https://new.readypixels.com/contact if you suspect unauthorized access to or use of your account.
 
 ### 6.3 Account Termination
 
@@ -247,7 +247,7 @@ All transactions are denominated in United States Dollars (USD). Currency conver
 
 ### 9.5 Payment Disputes and Chargebacks
 
-If you believe a charge is erroneous, you must contact ReadyPixels at sharif@readypixels.com within thirty (30) days of the charge before initiating a chargeback with your financial institution. Initiating a chargeback without first contacting ReadyPixels may result in immediate account suspension.
+If you believe a charge is erroneous, you must contact ReadyPixels through https://new.readypixels.com/contact within thirty (30) days of the charge before initiating a chargeback with your financial institution. Initiating a chargeback without first contacting ReadyPixels may result in immediate account suspension.
 
 ---
 
@@ -316,7 +316,7 @@ These Terms shall be governed by and construed in accordance with the laws of th
 
 ### 14.1 Informal Resolution
 
-Before initiating formal dispute proceedings, you agree to first contact ReadyPixels at sharif@readypixels.com and provide a written description of the dispute, the relief sought, and your contact information. The parties shall make good-faith efforts to resolve the dispute informally for a period of thirty (30) days from receipt of the notice.
+Before initiating formal dispute proceedings, you agree to first contact ReadyPixels through https://new.readypixels.com/contact and provide a written description of the dispute, the relief sought, and your contact information. The parties shall make good-faith efforts to resolve the dispute informally for a period of thirty (30) days from receipt of the notice.
 
 ### 14.2 Binding Arbitration
 
@@ -392,7 +392,7 @@ You may not assign or transfer your rights or obligations under these Terms with
 
 ### 18.5 Notices
 
-All legal notices to ReadyPixels must be sent in writing to sharif@readypixels.com. ReadyPixels may provide notices to you via email at the address associated with your account or via a posting on the Platform.
+All legal notices to ReadyPixels must be sent through https://new.readypixels.com/contact. ReadyPixels may provide notices to you via email at the address associated with your account or via a posting on the Platform.
 
 ### 18.6 Force Majeure
 
@@ -410,7 +410,7 @@ For questions about these Terms of Service, please contact:
 
 **ReadyPixels**
 **Attn:** Sharif
-**Email:** sharif@readypixels.com
+**Contact form:** https://new.readypixels.com/contact
 **Project:** https://volqan.link
 **Marketplace:** https://bazarix.link
 

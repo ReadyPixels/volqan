@@ -7,7 +7,7 @@
 **Last Updated:** April 5, 2026
 
 **Project Owner:** Sharif / ReadyPixels ("Licensor")
-**Contact:** sharif@readypixels.com
+**Contact:** https://new.readypixels.com/contact
 **Project URL:** https://volqan.link
 **Repository:** https://github.com/ReadyPixels/volqan
 **Governing Law:** Wyoming, United States of America
@@ -16,7 +16,7 @@
 
 ## Recitals
 
-This Contributor License Agreement ("Agreement" or "CLA") is entered into between ReadyPixels ("Licensor," "Company," "we," or "us"), operated by Sharif (sharif@readypixels.com), and the individual or legal entity submitting a Contribution (as defined below) to the Volqan project ("Contributor," "you," or "your").
+This Contributor License Agreement ("Agreement" or "CLA") is entered into between ReadyPixels ("Licensor," "Company," "we," or "us"), operated by Sharif (reachable at https://new.readypixels.com/contact), and the individual or legal entity submitting a Contribution (as defined below) to the Volqan project ("Contributor," "you," or "your").
 
 **WHEREAS,** Licensor operates and maintains the Volqan open-source application framework (the "Project") under the Open Core Attribution License v1.0;
 
@@ -60,7 +60,7 @@ This Contributor License Agreement ("Agreement" or "CLA") is entered into betwee
 
 ### 1.5 "Licensor"
 
-"Licensor" means ReadyPixels, operated by Sharif (sharif@readypixels.com), its successors, assigns, and any entity that controls, is controlled by, or is under common control with ReadyPixels.
+"Licensor" means ReadyPixels, operated by Sharif (reachable at https://new.readypixels.com/contact), its successors, assigns, and any entity that controls, is controlled by, or is under common control with ReadyPixels.
 
 ---
 
@@ -174,7 +174,7 @@ Licensor retains the right to change the license governing the Project (or porti
 
 ### 5.1 Notification of Changed Circumstances
 
-Contributor agrees to promptly notify Licensor at sharif@readypixels.com if Contributor becomes aware after submission of any circumstances that would make the warranties in Section 3 inaccurate or that would give a third party a claim in any Contribution.
+Contributor agrees to promptly notify Licensor through https://new.readypixels.com/contact if Contributor becomes aware after submission of any circumstances that would make the warranties in Section 3 inaccurate or that would give a third party a claim in any Contribution.
 
 ### 5.2 Cooperation
 
@@ -237,7 +237,7 @@ By submitting a Contribution to the Volqan project, including by opening a pull 
 
 ## Record-Keeping
 
-For corporate contributors, please provide the following information and send it to sharif@readypixels.com with the subject line "CLA — Corporate Entity":
+For corporate contributors, please provide the following information through https://new.readypixels.com/contact (select CLA — Corporate Entity as the topic):
 
 - **Full legal name of entity:**
 - **Business address:**
@@ -252,8 +252,7 @@ Individual contributors indicate acceptance through GitHub pull request submissi
 ## Contact
 
 **ReadyPixels / Sharif**
-**Email:** sharif@readypixels.com
-**Subject Line:** CLA — [Inquiry / Corporate Submission / Dispute]
+**Contact form:** https://new.readypixels.com/contact (select CLA as the topic)
 **Repository:** https://github.com/ReadyPixels/volqan
 **Project URL:** https://volqan.link
 

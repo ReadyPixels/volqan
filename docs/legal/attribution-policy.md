@@ -7,7 +7,7 @@
 **Last Updated:** April 5, 2026
 
 **Owner and Operator:** Sharif / ReadyPixels
-**Contact:** sharif@readypixels.com
+**Contact:** https://new.readypixels.com/contact
 **Project URL:** https://volqan.link
 **License API:** https://bazarix.link/api/v1/license
 
@@ -152,7 +152,7 @@ Attribution removal remains active only for the duration of an active, paid subs
 
 Each Support Plan subscription covers attribution removal for a **single Installation ID**. If you operate multiple deployments of the Software (e.g., staging and production environments, or multiple client sites), each deployment's Installation ID must be covered by its own active Support Plan, or you must obtain written permission from ReadyPixels for multi-installation coverage under a single subscription.
 
-If you require coverage for multiple installations, please contact sharif@readypixels.com to discuss enterprise or bulk licensing arrangements.
+If you require coverage for multiple installations, please reach out through https://new.readypixels.com/contact to discuss enterprise or bulk licensing arrangements.
 
 ### 4.4 Effect of Non-Payment
 
@@ -206,13 +206,13 @@ ReadyPixels encourages good-faith compliance. If you have inadvertently removed 
 
 1. Immediately restore the required notice (`"Powered by Volqan — https://volqan.link"`) to all affected deployments;
 
-2. Contact ReadyPixels at sharif@readypixels.com to notify us of the violation and its remediation;
+2. Contact ReadyPixels through https://new.readypixels.com/contact to notify us of the violation and its remediation;
 
 3. If the violation was inadvertent and promptly remediated, ReadyPixels, at its sole discretion, may choose not to pursue further legal action. No waiver of ReadyPixels' rights is implied by a decision not to pursue legal action in any particular instance.
 
 ### 5.6 Reporting Violations
 
-If you are aware of a deployment of the Software that is removing the Attribution Notice without a valid Support Plan, you may report it to ReadyPixels at sharif@readypixels.com (Subject: "Attribution Violation Report"). ReadyPixels will investigate all credible reports.
+If you are aware of a deployment of the Software that is removing the Attribution Notice without a valid Support Plan, you may report it to ReadyPixels through https://new.readypixels.com/contact (select Attribution Violation Report as the topic). ReadyPixels will investigate all credible reports.
 
 ---
 
@@ -251,8 +251,7 @@ Any extension or theme found to include functionality that circumvents the attri
 For questions about attribution compliance, license verification, or to report a violation:
 
 **ReadyPixels / Sharif**
-**Email:** sharif@readypixels.com
-**Subject Line:** Attribution — [Compliance / Inquiry / Violation Report]
+**Contact form:** https://new.readypixels.com/contact (select Attribution as the topic)
 **License API:** https://bazarix.link/api/v1/license
 **Support Plans:** https://volqan.link/pricing
 
