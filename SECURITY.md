@@ -13,10 +13,7 @@ If you discover a security vulnerability in Volqan, please report it responsibly
 
 **Do not** open a public GitHub issue for security vulnerabilities.
 
-Instead, report via one of the following methods:
-
-1. **Email**: Send details to the project maintainers at the contact address listed in the repository.
-2. **GitHub Security Advisory**: Use the [GitHub Security Advisory](https://github.com/ReadyPixels/volqan/security/advisories/new) form to privately report the vulnerability.
+Instead, report it privately using the [GitHub Security Advisory](https://github.com/ReadyPixels/volqan/security/advisories/new) form. It reaches the maintainers directly and stays private until a fix ships.
 
 Please include:
 

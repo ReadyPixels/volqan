@@ -11,7 +11,7 @@ Volqan is pre-1.0 software. Security fixes are applied on a best-effort basis to
 
 ## Reporting a vulnerability
 
-Please report suspected security vulnerabilities privately to **sharif@readypixels.com**.
+Please report suspected security vulnerabilities privately using the [GitHub Security Advisory](https://github.com/ReadyPixels/volqan/security/advisories/new) form. It reaches the maintainers directly and stays private until a fix ships.
 
 Include as much detail as possible:
 
